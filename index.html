@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Rec.la Explorer</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- Le styles -->
+    <link href="./css/bootstrap.css" rel="stylesheet">
+    <link href="./css/styles.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="span12 center jumbotron margin_top">
+          <h1>Rec.la Explorer</h1>    
+        </div>
+      </div>
+      <div id="view_entry" class="row">
+
+      </div>
+    </div>
+
+    <script id="landing_view_template" type="text/template">
+      <div class="offset4 span4 margin_top">
+        <form id="signin_form" class="well">
+          <label>Username</label>
+          <input id="username" type="text"></input>
+          <label>Password</label>
+          <input id="password" type="password"></input>
+          <a id="signin_btn" type="submit" class="btn btn-primary" href="/#/channels">Sign in</a>
+        </form>
+      </div>
+    </script>
+    <script id="channel_view_template" type="text/template">
+      <div class="offset1 span3 margin_top">
+        <h1>Channels</h1>
+        <div id="channels" class="well box">
+          <button id="add_channel_btn" class="btn btn-primary">Add channel</button>
+        </div>
+      </div>
+      <div class="span8 margin_top">
+        <h1 class="inline">Events</h1>
+        <button id="signout_btn" class="btn float_right">Sign out</button>
+        <div id="events" class="well box">
+          <button id="add_event_btn" class="btn btn-primary">Add event</button>
+        </div>
+      </div>
+    </script>
+    <script src="./js/vendor/underscore.js"></script>
+    <script src="./js/vendor/jquery.js"></script>
+    <script src="./js/vendor/backbone.js"></script>
+    <script src="./js/common.js"></script>
+    <script src="./js/views/landing.js"></script>
+    <script src="./js/views/channel.js"></script>
+    <script src="./js/app.js"></script>
+  </body>
+</html>
