@@ -7,51 +7,80 @@
     <meta name="author" content="">
     <!-- Le styles -->
     <link href="./css/bootstrap.css" rel="stylesheet">
+    <link href="./css/font-awesome.css" rel="stylesheet">
     <link href="./css/styles.css" rel="stylesheet">
   </head>
   <body>
-    <div class="container">
+    <div id="view_entry" class="container"></div>
+
+    <script id="landing_view_template" type="text/template">
       <div class="row">
         <div class="span12 center jumbotron margin_top">
           <img src="./images/logo.jpg" width="250px">
           <h1>Explorer</h1>    
         </div>
       </div>
-      <div id="view_entry" class="row">
-
-      </div>
-    </div>
-
-    <script id="landing_view_template" type="text/template">
-      <div class="offset4 span4 margin_top">
-        <form id="signin_form" class="well span3">
-          <label>Username</label>
-          <input id="username" type="text"></input>
-          <label>Password</label>
-          <input id="password" type="password"></input>
-          <a id="signin_btn" type="submit" class="btn btn-primary" href="/#/channels">Sign in</a>
-        </form>
-      </div>
-    </script>
-    <script id="channel_view_template" type="text/template">
-      <div class="offset1 span3 margin_top">
-        <h1>Channels</h1>
-        <div id="channels" class="well box">
-          <button id="add_channel_btn" class="btn btn-primary">Add channel</button>
+      <div class="row">
+        <div class="offset4 span4 margin_top">
+          <form id="signin_form" class="well margin-top">
+            <label>Username</label>
+            <input id="username" type="text" value="jonmaim"></input>
+            <label>Password</label>
+            <input id="password" type="password" value="pd9d7UqfXRey"></input>
+            <a id="signin_btn" type="submit" class="btn btn-primary" href="/#/channels">Sign in</a>
+          </form>
         </div>
       </div>
-      <div class="span8 margin_top">
-        <h1 class="inline">Events</h1>
-        <button id="signout_btn" class="btn float_right">Sign out</button>
-        <div id="events" class="well box">
-          <button id="add_event_btn" class="btn btn-primary">Add event</button>
+    </script>
+
+    <script id="channel_entry_template" type="text/template">
+      <li><a class="view" tabindex="-1"><%=name%></a></li>
+    </script>
+
+    <script id="event_entry_template" type="text/template">
+      <tr><td><%=id%></td><td><%=comment%></td></tr>
+    </script>
+
+    <script id="channel_view_template" type="text/template">
+      <div class="row">
+        <div class="span12 center jumbotron margin_top">  
+          <h1>
+            <img id="logo_channel" src="./images/logo.jpg" width="100px">
+            Explorer
+          </h1>    
+        </div>
+      </div>
+      <div class="row">
+        <div class="offset1 span3 margin_top">
+          <h1>Channels</h1>
+          <div id="channels" class="well box">
+            <button id="add_channel_btn" class="btn btn-primary">Add channel</button>
+            <ul id="channel_list" class="nav nav-list"></ul>
+          </div>
+        </div>
+        <div class="span8 margin_top">
+          <h1 class="inline">Events</h1>
+          <button id="signout_btn" class="btn float_right">Sign out</button>
+          <div id="events" class="well box">
+            <button id="add_event_btn" class="btn btn-primary">Add event</button>
+            <table class="table table-striped">
+              <tbody id="event_list">
+                
+              </tbody> 
+            </table>
+          </div>
         </div>
       </div>
     </script>
     <script src="./js/vendor/underscore.js"></script>
     <script src="./js/vendor/jquery.js"></script>
     <script src="./js/vendor/backbone.js"></script>
+    <script src="./js/vendor/bootstrap.js"></script>
     <script src="./js/common.js"></script>
+    <script src="./js/models/event.js"></script>
+    <script src="./js/models/channel.js"></script>
+    <script src="./js/collections/events.js"></script>
+    <script src="./js/collections/channels.js"></script>
     <script src="./js/views/landing.js"></script>
     <script src="./js/views/channel.js"></script>
     <script src="./js/app.js"></script>

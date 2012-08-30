@@ -11,19 +11,23 @@
   });
 
   /* Router. */
-  window.App = Backbone.Router.extend({
+  window.app.App = Backbone.Router.extend({
     routes: {
         '*filter' : 'setFilter'
     }
     , initialize: function(){
       showlog('router:initialize');
+      /* Init collections. */
+      this.channels = new window.app.Channels();
       /* Init views. */
       this.landingView  = new window.app.LandingView({});
-      this.channelView = new window.app.ChannelView({});
+      this.channelView = new window.app.ChannelView({
+        collection: this.channels
+      });
     }
-    , setFilter: function(param){
+    , setFilter: function(param){
       showlog('router:setFilter', param);
-      param = param.trim() || '';
+      param = param.trim() || '';
       switch(param){
         case 'channels': {
           showlog('router:channels');
@@ -38,7 +42,7 @@
   });
 
   /* Main entry point. */
-  window.app = new App();
+  new window.app.App();
   Backbone.history.start({root:'/'}); 
 
 })();

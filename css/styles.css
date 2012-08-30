@@ -46,3 +46,22 @@
 .box {
   height: 500px;
 }
+
+/* Landing view. */
+#signin_form input[type=text]{
+  width:170px;
+}  
+#signin_form input[type=password]{
+  width:170px;
+}  
+
+/* Channel view. */
+#logo_channel {
+  margin-top:-15px;
+}
+table {
+  margin-top: 10px;
+}
+#channel_list {
+  margin-top:10px;
+}

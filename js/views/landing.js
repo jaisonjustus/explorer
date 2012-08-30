@@ -22,17 +22,23 @@
     }
     , onClickSigninBtn  : function(e){
       showlog('LandingView:onClickSigninBtn');
-      var username  = this.$username.val()
-        , password  = this.$password.val()
-        , url       = 'http://'+username+'/admin/login'
-        ;   
 
-      var xhr = $.post(url, {userName:username, password:password}, 'json')
-        .success(_.bind(function(data){ 
-          showlog("login success"); 
+      window.app.username = this.$username.val();
+      //window.app.baseUrl = 'http://'+window.app.username+'.rec.la';
+      window.app.baseUrl = 'http://localhost:3080/'+window.app.username;
+
+      var password  = this.$password.val()
+        , url       = window.app.baseUrl+'/admin/login'
+        , data      = {userName:window.app.username,password:password}
+        ; 
+
+      showlog("cookies",document.cookie);
+      var xhr = $.post(url, data, 'json')
+        .success(_.bind(function(res){ 
+          showlog("login success",xhr.getAllResponseHeaders()); 
+          window.location.href = e.target.href;
         }, this));
-
-      window.location.href = e.target.href;
+    
       return false;
     }
   });
