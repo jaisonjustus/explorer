@@ -1,5 +1,5 @@
 (function(){
-
+  "use strict"
   /* Namespace. */
   window.app = window.app || {};
 
@@ -16,25 +16,25 @@
         '*filter' : 'setFilter'
     }
     , initialize: function(){
-      showlog('router:initialize');
+      //showlog('router:initialize');
       /* Init collections. */
       this.channels = new window.app.Channels();
       /* Init views. */
       this.landingView  = new window.app.LandingView({});
       this.channelView = new window.app.ChannelView({
-        collection: this.channels
+        collection: this.channels
       });
     }
     , setFilter: function(param){
-      showlog('router:setFilter', param);
+      //showlog('router:setFilter', param);
       param = param.trim() || '';
       switch(param){
         case 'channels': {
-          showlog('router:channels');
+          //showlog('router:channels');
           this.channelView.render();
         } break;
         default: { 
-          showlog('router:landing');
+          //showlog('router:landing');
           this.landingView.render();
         }
       }

@@ -1,4 +1,5 @@
 (function(){
+  "use strict"
   /* Namespace. */
   window.app = window.app || {};
 
@@ -8,7 +9,7 @@
       , name: "Main Channel"
     }
     , initialize: function(){
-      showlog('Channel:initialize');
+      //showlog('Channel:initialize');
       /* Create event collection. */
       this.events = new window.app.Events({});
     } 

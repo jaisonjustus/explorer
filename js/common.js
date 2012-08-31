@@ -1,3 +1,5 @@
+"use strict"
+
 /* Make console.log wrapper so that it's working on IE as well. */
 var showlog = function(){};
 var debug = true;
