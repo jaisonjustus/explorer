@@ -19,11 +19,23 @@
       }, this);
     }
     , addChannel: function(data, cb){
-      var url = window.app.baseUrl+'/admin/channels'
+      var url = window.app.baseUrl+'/admin/channels'
       $.ajaxSetup({
         'beforeSend': function(){}
       });
-      var xhr = $.post(url, data, 'json')
+      var xhr = $.post(url, data, 'json')
+        .success(_.bind(function(res){
+          /* Reload channel list. */
+          this.reset().fetch({add:true});
+          cb();
+        }, this));  
+    }
+    , removeChannel: function(data, cb){
+      var url = window.app.baseUrl+'/admin/channels'
+      $.ajaxSetup({
+        'beforeSend': function(){}
+      });
+      var xhr = $.del(url, data, 'json')
         .success(_.bind(function(res){
           /* Reload channel list. */
           this.reset().fetch({add:true});

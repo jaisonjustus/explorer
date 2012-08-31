@@ -26,20 +26,17 @@
       this.template = _.template( $('#channel_entry_template').html() );
     }
     , events: {
-      'click .view'               : 'onClickView'
-      //, 'click .edit' : 'onClickEdit'
+        'click .channel'  : 'onClick'
+      , 'click .delete'   : 'onClickDelete'
     }
     , render: function(){
       //showlog('ChannelEntryView:render');
       this.$el.append( this.template( this.model.toJSON() ) );
       return this;
     }
-    // , onClickEdit: function(){
-    //   showlog('ChannelEntryView:onClickEdit');
-    // }
-    , onClickView: function(){
+    , onClick: function(){
       var channelId = this.model.get('id');
-      showlog('ChannelEntryView:onClickView',channelId);  
+      showlog('ChannelEntryView:onClick',channelId);  
       this.model.events.reset();
       $.ajaxSetup({
         'beforeSend': function(xhr){
@@ -55,6 +52,11 @@
           }, this);
         }, this))
       ;
+      return false;
+    }
+    , onClickDelete: function(){
+      var channelId = this.model.get('id');
+      showlog('ChannelEntryView:onClickDelete', channelId);
       return false;
     }
   });
@@ -88,10 +90,12 @@
       }, this));
     } 
     , events : {
-        'click #signout_btn'            : 'onClickSignoutBtn' 
+        'click #signout_btn'                : 'onClickSignoutBtn' 
       , 'click #show_add_channel_modal_btn' : 'onClickShowAddChannelModalBtn'
       , 'click #show_add_event_modal_btn'   : 'onClickShowAddEventModalBtn' 
-      , 'click #add_channel_btn' : 'onClickAddChannelBtn'
+      , 'click #toggle_edit_channels_btn'   : 'onClickToggleEditChannels'
+      , 'click #toggle_edit_events_btn'     : 'onClickToggleEditEvents'
+      , 'click #save_channel_btn'           : 'onClickSaveChannelBtn'
     }
     , render : function(){
       //showlog('ChannelView:render');
@@ -108,6 +112,8 @@
       /* Shortcuts. */
       this.$channelList = this.$('#channel_list');
       this.$eventList = this.$('#event_list');
+      this.$toggleEditChannels = this.$('#toggle_edit_channels_btn');
+      this.$toggleEditEvents = this.$('#toggle_edit_events_btn');
       this.$addChannelModal = this.$('#add_channel_modal');
       this.$newChannelInput = this.$('#add_channel_form #name');
       return this;
@@ -121,8 +127,22 @@
       showlog('ChannelView:onClickShowAddEventModalBtn');
       return false;
     }
-    , onClickAddChannelBtn  : function(e){
-      showlog('ChannelView:onClickAddChannelModalBtn');
+    , onClickToggleEditChannels: function(){
+      var $i = this.$toggleEditChannels.find('i');
+      var editMode = $i.hasClass('icon-edit');
+      showlog('ChannelView:onClickToggleEditChannels',editMode);
+      this.$toggleEditChannels.toggleClass('btn-primary', editMode);
+      $i.toggleClass('icon-edit icon-ok');
+      this.$('.channel').toggleClass('pull-right');
+      this.$('.delete').toggle();
+      return false;
+    }
+    , onClickToggleEditEvents: function(){
+      showlog('ChannelView:onClickToggleEditEvents');
+      return false;
+    }
+    , onClickSaveChannelBtn  : function(e){
+      showlog('ChannelView:onClickSaveChannelModalBtn');
       this.collection.addChannel(
         {name:this.$newChannelInput.val()}, 
         _.bind(function(){

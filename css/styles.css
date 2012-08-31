@@ -39,10 +39,6 @@
   display: inline-block;
 }
 
-.float_right {
-  float: right;
-}
-
 .box {
   height: 500px;
 }
@@ -53,9 +49,16 @@
 #logo_channel {
   margin-top:-15px;
 }
-table {
-  margin-top: 10px;
+#channel_list li {
+  width:100%;
+  display:inline-block;
 }
-#channel_list {
-  margin-top:10px;
+.nav li > a {
+  display:inline-block;
+}
+#channel_list .delete {
+  display:none;
+}
+#channel_list, table {
+  margin-top:50px;
 }
