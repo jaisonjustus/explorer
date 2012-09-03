@@ -31,7 +31,12 @@
     }
     , render: function(){
       //showlog('ChannelEntryView:render');
+      var editMode = ! $('#toggle_edit_channels_btn > i').hasClass('icon-edit');
+
       this.$el.append( this.template( this.model.toJSON() ) );
+      this.$el.find('.channel').toggleClass('pull-right', editMode);
+      this.$el.find('.delete').toggle( editMode );
+
       return this;
     }
     , onClick: function(){
@@ -57,6 +62,7 @@
     , onClickDelete: function(){
       var channelId = this.model.get('id');
       showlog('ChannelEntryView:onClickDelete', channelId);
+      this.model.destroy({wait:true});
       return false;
     }
   });
@@ -71,12 +77,20 @@
         showlog('ChannelView::collection->reset');
         this.$channelList.empty();
       }, this));
-      this.collection.on('add', _.bind(function(mod,col,idx){
+      this.collection.on('destroy', _.bind(function(mod,col,opts){
+        showlog('ChannelView::collection->destroy');  
+        col.reset().fetch({add:true});
+      },this));
+      this.collection.on('add', _.bind(function(mod,col,opts){
         showlog('ChannelView::collection->add');
         this.$channelList.append( 
           new window.app.ChannelEntryView({model:mod}).render().$el
         );
-        /* Events "events" */
+        /* Channel's events. */
+        mod.on('destroy', _.bind(function(){
+          showlog('mod->destroy');
+        }),this);
+        /* Channel event's events. */
         mod.events.on('reset',_.bind(function(mod){
           showlog('mod.events->reset'); 
           this.$eventList.empty();
@@ -120,6 +134,7 @@
     }
     , onClickShowAddChannelModalBtn  : function(e){
       showlog('ChannelView:onClickShowAddChannelModalBtn');
+      this.onClickToggleEditChannels();
       $('#add_channel_modal').modal();
       return false;
     }
