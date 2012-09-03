@@ -22,7 +22,8 @@
       /* Init views. */
       this.landingView  = new window.app.LandingView({});
       this.channelView = new window.app.ChannelView({
-        collection: this.channels
+          model       : new window.app.State()
+        , collection  : this.channels
       });
     }
     , setFilter: function(param){

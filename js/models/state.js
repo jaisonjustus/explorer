@@ -3,13 +3,12 @@
   /* Namespace. */
   window.app = window.app || {};
 
-  window.app.Event = Backbone.Model.extend({
+  window.app.State = Backbone.Model.extend({
     defaults: {
-        id: "5007a606e1689cc071000002" 
-      , comment: "My event"
+        current_channel: null 
     }
     , initialize: function(){
-      //showlog('Event:initialize');
+      //showlog('State:initialize');
     } 
   });
 

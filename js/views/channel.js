@@ -42,6 +42,9 @@
     , onClick: function(){
       var channelId = this.model.get('id');
       showlog('ChannelEntryView:onClick',channelId);  
+      /* Store current focused channel. */
+      this.options.state.set('current_channel', this.model);
+      /* Empty events. */
       this.model.events.reset();
       $.ajaxSetup({
         'beforeSend': function(xhr){
@@ -84,7 +87,10 @@
       this.collection.on('add', _.bind(function(mod,col,opts){
         showlog('ChannelView::collection->add');
         this.$channelList.append( 
-          new window.app.ChannelEntryView({model:mod}).render().$el
+          new window.app.ChannelEntryView({
+              model: mod
+            , state: this.model
+          }).render().$el
         );
         /* Channel's events. */
         mod.on('destroy', _.bind(function(){
@@ -110,6 +116,7 @@
       , 'click #toggle_edit_channels_btn'   : 'onClickToggleEditChannels'
       , 'click #toggle_edit_events_btn'     : 'onClickToggleEditEvents'
       , 'click #save_channel_btn'           : 'onClickSaveChannelBtn'
+      , 'click #save_event_btn'             : 'onClickSaveEventBtn'
     }
     , render : function(){
       //showlog('ChannelView:render');
@@ -129,17 +136,21 @@
       this.$toggleEditChannels = this.$('#toggle_edit_channels_btn');
       this.$toggleEditEvents = this.$('#toggle_edit_events_btn');
       this.$addChannelModal = this.$('#add_channel_modal');
+      this.$addEventModal = this.$('#add_event_modal');
       this.$newChannelInput = this.$('#add_channel_form #name');
+      this.$newEventInput = this.$('#add_event_form #comment');
       return this;
     }
     , onClickShowAddChannelModalBtn  : function(e){
       showlog('ChannelView:onClickShowAddChannelModalBtn');
       this.onClickToggleEditChannels();
-      $('#add_channel_modal').modal();
+      this.$addChannelModal.modal();
       return false;
     }
     , onClickShowAddEventModalBtn  : function(e){
       showlog('ChannelView:onClickShowAddEventModalBtn');
+      this.onClickToggleEditEvents();
+      this.$addEventModal.modal();
       return false;
     }
     , onClickToggleEditChannels: function(){
@@ -157,11 +168,23 @@
       return false;
     }
     , onClickSaveChannelBtn  : function(e){
-      showlog('ChannelView:onClickSaveChannelModalBtn');
+      showlog('ChannelView:onClickSaveChannelBtn');
       this.collection.addChannel(
         {name:this.$newChannelInput.val()}, 
         _.bind(function(){
+          this.$newChannelInput.val('');
           this.$addChannelModal.modal('hide') 
+        },this)
+      );
+      return false;
+    }
+    , onClickSaveEventBtn  : function(e){
+      showlog('ChannelView:onClickSaveEventBtn');
+      this.model.get('current_channel').addEvent(
+        {comment:this.$newEventInput.val()}, 
+        _.bind(function(){
+          this.$newEventInput.val('');
+          this.$addEventModal.modal('hide') 
         },this)
       );
       return false;
