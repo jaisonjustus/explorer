@@ -27,7 +27,7 @@
             <input id="username" class="span3" type="text" value="jonmaim"></input>
             <label>Password</label>
             <input id="password" class="span3" type="password" value="pd9d7UqfXRey"></input>
-            <a id="signin_btn" type="submit" class="btn btn-primary" href="/#/channels">Sign in</a>
+            <a id="signin_btn" type="submit" class="btn btn-primary" href="/#/explore">Sign in</a>
           </form>
         </div>
       </div>
@@ -39,10 +39,13 @@
     </script>
 
     <script id="event_entry_template" type="text/template">
-      <td><%=id%></td><td><%=comment%></td>
+      <td><a class="delete pull-left danger"><i class="icon-remove-circle"></i></a></td>
+      <td><small><%=id%></small></td>
+      <td><small><%=contextId%></small></td>
+      <td><small><%=comment%></small</td>
     </script>
 
-    <script id="channel_view_template" type="text/template">
+    <script id="explorer_view_template" type="text/template">
       <div class="row">
         <div class="span12 center jumbotron margin_top">  
           <h1>
@@ -67,6 +70,12 @@
             <button id="toggle_edit_events_btn" class="btn pull-left"><i class="icon-edit"></i></button>
             <button id="show_add_event_modal_btn" class="btn pull-right"><i class="icon-plus"></i></button>
             <table class="table table-striped">
+              <theader>
+                <td></td>
+                <td><a>id</a></td>
+                <td><a>contextId</a></td>
+                <td><a>comment</a></td>
+              </theader>
               <tbody id="event_list"></tbody> 
             </table>
           </div>
@@ -114,11 +123,10 @@
     <script src="./js/common.js"></script>
     <script src="./js/models/event.js"></script>
     <script src="./js/models/channel.js"></script>
-    <script src="./js/models/state.js"></script>
     <script src="./js/collections/events.js"></script>
     <script src="./js/collections/channels.js"></script>
     <script src="./js/views/landing.js"></script>
-    <script src="./js/views/channel.js"></script>
+    <script src="./js/views/explorer.js"></script>
     <script src="./js/app.js"></script>
   </body>
 </html>

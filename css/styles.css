@@ -59,7 +59,13 @@
 .nav li > a {
   display:inline-block;
 }
-#channel_list .delete {
+.nav li > a.channel {
+  display:block;
+}
+.nav li > a.selected {
+  background-color:#eeeeee;
+}
+#channel_list .delete, #event_list .delete {
   display:none;
 }
 #channel_list, table {

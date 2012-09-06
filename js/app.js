@@ -21,18 +21,17 @@
       this.channels = new window.app.Channels();
       /* Init views. */
       this.landingView  = new window.app.LandingView({});
-      this.channelView = new window.app.ChannelView({
-          model       : new window.app.State()
-        , collection  : this.channels
+      this.explorerView = new window.app.ExplorerView({
+        collection  : this.channels
       });
     }
     , setFilter: function(param){
       //showlog('router:setFilter', param);
       param = param.trim() || '';
       switch(param){
-        case 'channels': {
-          //showlog('router:channels');
-          this.channelView.render();
+        case 'explore': {
+          //showlog('router:explore');
+          this.explorerView.render();
         } break;
         default: { 
           //showlog('router:landing');
@@ -44,6 +43,7 @@
 
   /* Main entry point. */
   new window.app.App();
+  /* Make correct root. */
   Backbone.history.start({root:'/'}); 
 
 })();

@@ -12,11 +12,9 @@
       return window.app.baseUrl+'/admin/channels';
     }
     , parse: function(res){
-      //showlog('Channels:parse',res);
+      showlog('Channels:parse',res);
       window.app.serverNow = res.serverNow;
-      _.each(res.channels, function(c){
-        this.add( new window.app.Channel(c) );
-      }, this);
+      return res.channels;
     }
     , addChannel: function(data, cb){
       var url = window.app.baseUrl+'/admin/channels'
@@ -26,7 +24,7 @@
       var xhr = $.post(url, data, 'json')
         .success(_.bind(function(res){
           /* Reload channel list. */
-          this.reset().fetch({add:true});
+          this.fetch();
           cb();
         }, this));  
     }
@@ -38,7 +36,7 @@
       var xhr = $.del(url, data, 'json')
         .success(_.bind(function(res){
           /* Reload channel list. */
-          this.reset().fetch({add:true});
+          this.fetch();
           cb();
         }, this));  
     }

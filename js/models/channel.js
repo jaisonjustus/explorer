@@ -9,9 +9,12 @@
       , name: "Main Channel"
     }
     , initialize: function(){
-      //showlog('Channel:initialize');
+      //showlog('Channel:initialize',this.get('id'));
       /* Create event collection. */
-      this.events = new window.app.Events({});
+      this.events = new window.app.Events(
+        [], 
+        { contextId: this.get('id') }
+      );
     } 
     , sync: function(method, model, options){
       showlog('Channel:sync',arguments);
@@ -34,20 +37,6 @@
       var id = this.get('id');
       var url = window.app.baseUrl+'/'+id+'/events';
       var e = new window.app.Event(data);
-      $.ajaxSetup({
-        'beforeSend': function(xhr){
-          xhr.setRequestHeader("Authorization", window.app.token);
-        }
-      });
-      var xhr = $.post(window.app.baseUrl+'/'+id+'/events', data, 'json')
-        .success(_.bind(function(res){
-          showlog('event',res,typeof(res));
-          window.app.serverNow = res.serverNow;
-          e.set('id',res.id);
-          this.events.add( e );
-          cb();
-        }, this))
-      ;
     }
   });
 
