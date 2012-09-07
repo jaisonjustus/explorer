@@ -12,6 +12,9 @@
       var events = this.model.events
         , $eventList = $('#event_list')
         ; 
+      this.model.on('destroy', function(){
+        $eventList.empty();
+      });
       events.on('destroy', function(/*mod,col,opts*/){
         showlog('channel.events->destroy');
         events.fetch();
