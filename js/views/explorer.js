@@ -120,34 +120,33 @@
     }
     , render : function(){
       this.$el.html( this.template() );
-      /* Get tokens. */
-      console.log(window.location);
-      var url = window.app.baseApiUrl+'/admin/tokens';
-      showlog('ExplorerView:render',url);
+      showlog('ExplorerView:render');
       /* Check if token is in local storage. */
-      var token = store.get('token');
-      if (!token){
+      window.app.token = store.get('token');
+      if (!window.app.token){
+        /* Get tokens. */
+        var url = window.app.baseApiUrl+'/admin/tokens';
         $.getJSON(url)
           .success(_.bind(function(res){
             window.app.serverNow = res.serverNow;
-            token = res.tokens[0].id;
+            window.app.token = res.tokens[0].id;
             /* Init local storage with latest app data. */
             store.clear();
-            store.set('token', token);
+            store.set('token', window.app.token);
             store.set('username', window.app.username);
             store.set('baseApiUrl', window.app.baseApiUrl);
             /* Get channels. */
-            console.log('token',token,'now fetching channels');
+            console.log('token',window.app.token,'now fetching channels');
             this.collection.fetch();
           }, this))
         ;
       } else {
         /* Init app with local storage data. */
-        window.app.token = store.get('token');
-        window.app.username = store.get('username');
-        window.app.baseApiUrl = store.get('baseApiUrl');
+        window.app.token = store.get('token');
+        window.app.username = store.get('username');
+        window.app.baseApiUrl = store.get('baseApiUrl');
         /* Get channels. */
-        console.log('token',token,'now fetching channels');
+        console.log('token',window.app.token,'now fetching channels');
         this.collection.fetch();
       }
       /* Shortcuts. */
