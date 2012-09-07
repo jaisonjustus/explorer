@@ -11,10 +11,6 @@
     , initialize: function(){
       //showlog('Event:initialize');
     } 
-    , parse: function(res){
-      showlog('Event:parse',res);
-      return res;
-    }
     , sync: function(method, model, options){
       var channelId = window.app.currentChannel.get('id');
       showlog('Event:sync',channelId,'method',method,'model',model,'options',options);

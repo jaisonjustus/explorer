@@ -210,7 +210,6 @@
             this.$addEventModal.modal('hide');
             window.app.currentChannel.events.fetch();
           }, this)
-          , wait:true
         }
       );
       return false;
