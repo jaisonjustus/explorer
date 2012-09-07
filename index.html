@@ -87,16 +87,16 @@
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
           <h3>Add Channel</h3>
         </div>
-        <div class="modal-body">
-          <form id="add_channel_form" class="">
+        <form id="add_channel_form" class="form">
+          <div class="modal-body">
             <label>Name</label>
             <input id="name" type="text" placeholder="New channel"></input>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
-          <a id="save_channel_btn" class="btn btn-primary">Save</a>
-        </div>
+          </div>
+          <div class="modal-footer">
+            <a class="btn" data-dismiss="modal" aria-hidden="true">Cancel</a>
+            <button id="save_channel_btn" class="btn btn-primary">Save</button>
+          </div>
+        </form>
       </div> 
 
       <div id="add_event_modal" class="modal hide fade">
@@ -104,16 +104,16 @@
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
           <h3>Add Event</h3>
         </div>
-        <div class="modal-body">
-          <form id="add_event_form" class="">
+        <form id="add_event_form" class="form">
+          <div class="modal-body">
             <label>Comment</label>
             <input id="comment" type="text" placeholder="New event"></input>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
-          <a id="save_event_btn" class="btn btn-primary">Save</a>
-        </div>
+          </div>
+          <div class="modal-footer">
+            <a class="btn" data-dismiss="modal" aria-hidden="true">Cancel</a>
+            <button id="save_event_btn" class="btn btn-primary">Save</button>
+          </div>
+        </form>
       </div> 
     </script>
     <script src="./js/vendor/underscore.js"></script>

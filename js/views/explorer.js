@@ -136,7 +136,7 @@
             store.set('username', window.app.username);
             store.set('baseApiUrl', window.app.baseApiUrl);
             /* Get channels. */
-            console.log('token',window.app.token,'now fetching channels');
+            showlog('token',window.app.token,'now fetching channels');
             this.collection.fetch();
           }, this))
         ;
@@ -146,7 +146,7 @@
         window.app.username = store.get('username');
         window.app.baseApiUrl = store.get('baseApiUrl');
         /* Get channels. */
-        console.log('token',window.app.token,'now fetching channels');
+        showlog('token',window.app.token,'now fetching channels');
         this.collection.fetch();
       }
       /* Shortcuts. */
@@ -197,7 +197,7 @@
       flag = window.app.eventEditMode;
       showlog('ExplorerView:onClickToggleEditEvents', e, flag);
       /* Simulated click? */
-      if (e) this.onClickToggleEditChannels(null, false);
+      if (e) this.onClickToggleEditChannels(null, false);
       this.$toggleEditEvents.toggleClass('btn-primary', flag);
       this.$toggleEditEvents.find('i')
         .toggleClass('icon-edit', !flag)
