@@ -20,7 +20,7 @@
       showlog('Channel:sync',arguments);
       if (method === 'delete'){
         var id = model.get('id');
-        var url = window.app.baseUrl+'/admin/channels/'+id+'?deleteChannelData=true';
+        var url = window.app.baseApiUrl+'/admin/channels/'+id+'?deleteChannelData=true';
         $.ajax({
           url: url,
           type: 'DELETE',
@@ -35,7 +35,7 @@
     }
     , addEvent: function(data, cb){
       var id = this.get('id');
-      var url = window.app.baseUrl+'/'+id+'/events';
+      var url = window.app.baseApiUrl+'/'+id+'/events';
       var e = new window.app.Event(data);
     }
   });

@@ -20,7 +20,7 @@
             xhr.setRequestHeader("Authorization", window.app.token);
           }
         });
-        var xhr = $.post(window.app.baseUrl+'/'+channelId+'/events', model.toJSON(), 'json')
+        var xhr = $.post(window.app.baseApiUrl+'/'+channelId+'/events', model.toJSON(), 'json')
           .success(_.bind(function(res){
             showlog('event',res,typeof(res));
             options.success(res);
@@ -28,7 +28,7 @@
         ;
       } else if (method === 'delete'){
         var eventId = model.get('id')
-          , url = window.app.baseUrl+'/'+channelId+'/events/'+eventId;
+          , url = window.app.baseApiUrl+'/'+channelId+'/events/'+eventId;
           ;
         showlog('eventId',eventId);
         $.ajax({

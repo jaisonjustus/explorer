@@ -11,7 +11,7 @@
       this.contextId = options.contextId;
     } 
     , url: function(){
-      return window.app.baseUrl+'/'+this.contextId+'/events' 
+      return window.app.baseApiUrl+'/'+this.contextId+'/events' 
     }
     , parse: function(res){
       showlog('Events:parse',res,'# events',res.events.length);  
@@ -24,9 +24,9 @@
         $.ajaxSetup({
           'beforeSend': function(xhr){
             xhr.setRequestHeader("Authorization", window.app.token);
-          }
+          'token'}
         });
-        $.getJSON(window.app.baseUrl+'/'+this.contextId+'/events')
+        $.getJSON(window.app.baseApiUrl+'/'+this.contextId+'/events')
           .success(function(res){
             showlog('events',res);
             options.success(res);

@@ -118,17 +118,35 @@
     , render : function(){
       this.$el.html( this.template() );
       /* Get tokens. */
-      var url = window.app.baseUrl+'/admin/tokens';
+      console.log(window.location);
+      var url = window.app.baseApiUrl+'/admin/tokens';
       showlog('ExplorerView:render',url);
-      $.getJSON(url)
-        .success(_.bind(function(res){
-          window.app.serverNow = res.serverNow;
-          window.app.token = res.tokens[0].id;
-          /* Get channels. */
-          console.log('token',window.app.token,'now fetching channels');
-          this.collection.fetch();
-        }, this))
-      ;
+      /* Check if token is in local storage. */
+      var token = store.get('token');
+      if (!token){
+        $.getJSON(url)
+          .success(_.bind(function(res){
+            window.app.serverNow = res.serverNow;
+            token = res.tokens[0].id;
+            /* Init local storage with latest app data. */
+            store.clear();
+            store.set('token', token);
+            store.set('username', window.app.username);
+            store.set('baseApiUrl', window.app.baseApiUrl);
+            /* Get channels. */
+            console.log('token',token,'now fetching channels');
+            this.collection.fetch();
+          }, this))
+        ;
+      } else {
+        /* Init app with local storage data. */
+        window.app.token = store.get('token');
+        window.app.username = store.get('username');
+        window.app.baseApiUrl = store.get('baseApiUrl');
+        /* Get channels. */
+        console.log('token',token,'now fetching channels');
+        this.collection.fetch();
+      }
       /* Shortcuts. */
       this.$channelList         = this.$('#channel_list');
       this.$eventList           = this.$('#event_list');
@@ -216,6 +234,8 @@
     }
     , onClickSignoutBtn  : function(e){
       showlog('ExplorerView:onClickSignoutBtn');
+      store.clear();
+      window.location.href = e.target.href; 
       return false;
     }
   });

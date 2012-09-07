@@ -24,11 +24,11 @@
       showlog('LandingView:onClickSigninBtn');
 
       window.app.username = this.$username.val();
-      //window.app.baseUrl = 'http://'+window.app.username+'.rec.la';
-      window.app.baseUrl = 'http://localhost:3080/'+window.app.username;
+      //window.app.baseApiUrl = 'http://'+window.app.username+'.rec.la';
+      window.app.baseApiUrl = 'http://localhost:3080/'+window.app.username;
 
       var password  = this.$password.val()
-        , url       = window.app.baseUrl+'/admin/login'
+        , url       = window.app.baseApiUrl+'/admin/login'
         , data      = {userName:window.app.username,password:password}
         ; 
 

@@ -9,7 +9,7 @@
       //showlog('Channels:initialize');
     } 
     , url: function(){
-      return window.app.baseUrl+'/admin/channels';
+      return window.app.baseApiUrl+'/admin/channels';
     }
     , parse: function(res){
       showlog('Channels:parse',res);
@@ -17,7 +17,7 @@
       return res.channels;
     }
     , addChannel: function(data, cb){
-      var url = window.app.baseUrl+'/admin/channels'
+      var url = window.app.baseApiUrl+'/admin/channels'
       $.ajaxSetup({
         'beforeSend': function(){}
       });
@@ -29,7 +29,7 @@
         }, this));  
     }
     , removeChannel: function(data, cb){
-      var url = window.app.baseUrl+'/admin/channels'
+      var url = window.app.baseApiUrl+'/admin/channels'
       $.ajaxSetup({
         'beforeSend': function(){}
       });
