@@ -34,9 +34,9 @@
       }
     }
     , addEvent: function(data, cb){
-      var id = this.get('id');
+      var id = this.get('id');
       var url = window.app.baseApiUrl+'/'+id+'/events';
-      var e = new window.app.Event(data);
+      var e = new window.app.Event(data);
     }
   });
 

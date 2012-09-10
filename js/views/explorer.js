@@ -38,7 +38,6 @@
       this.$el.append( this.template( this.model.toJSON() ) );
       this.$el.find('.channel').toggleClass('pull-right', window.app.channelEditMode);
       this.$el.find('.delete').toggle( window.app.channelEditMode );
-
       return this;
     }
     , onClick: function(){
@@ -83,6 +82,7 @@
       this.model.destroy({wait:true});
     }
   });
+
   window.app.ExplorerView = Backbone.View.extend({
     el: '#view_entry'
     , initialize: function(){
@@ -93,8 +93,28 @@
       this.collection.on('reset', _.bind(function(col,opts){
         showlog('ExplorerView::channels->reset',col,this.collection);
         this.$channelList.empty();
+        /* Dont show edit toggle if no channel. */
+        if (this.collection.length){
+          this.$toggleEditChannels.show();
+        } else {
+          this.$toggleEditChannels.hide();
+          if (window.app.channelEditMode){
+            this.onClickToggleEditChannels(null, false);
+          }
+        }
         col.each(function(channel){
-          this.$channelList.append( 
+          /* Dont show edit toggle if no events. */
+          channel.events.on('reset', function(){
+            if (channel.events.length){
+              this.$toggleEditEvents.show();
+            } else {
+              this.$toggleEditEvents.hide();
+              if (window.app.eventEditMode){
+                this.onClickToggleEditEvents(null, false);
+              }
+            }
+          }, this);
+          this.$channelList.append(
             new window.app.ChannelEntryView({
                 model: channel
             }).render().$el
@@ -158,6 +178,7 @@
       this.$addEventModal       = this.$('#add_event_modal');
       this.$newChannelInput     = this.$('#add_channel_form #name');
       this.$newEventInput       = this.$('#add_event_form #comment');
+
       return this;
     }
     , onClickShowAddChannelModalBtn  : function(e){
