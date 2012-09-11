@@ -13,28 +13,14 @@
     , url: function(){
       return window.app.baseApiUrl+'/'+this.contextId+'/events' 
     }
-    , parse: function(res){
-      showlog('Events:parse',res,'# events',res.events.length);  
-      window.app.serverNow = res.serverNow;
-      return res.events;
-    } 
     , sync: function(method, model, options){
       showlog('Events:sync',arguments);
-      if (method === 'read') {
-        $.ajaxSetup({
-          'beforeSend': function(xhr){
-            xhr.setRequestHeader("Authorization", window.app.token);
-          'token'}
-        });
-        $.getJSON(window.app.baseApiUrl+'/'+this.contextId+'/events')
-          .success(function(res){
-            showlog('events',res);
-            options.success(res);
-          })
-        ;
-      } else {
-        Backbone.sync(method, model, options);
-      }
+      $.ajaxSetup({
+        beforeSend: function(xhr){
+          xhr.setRequestHeader('Authorization',window.app.token);
+        }
+      });
+      Backbone.sync(method, model, options);
     }
   });
 

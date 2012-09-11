@@ -11,34 +11,14 @@
     , url: function(){
       return window.app.baseApiUrl+'/admin/channels';
     }
-    , parse: function(res){
-      showlog('Channels:parse',res);
-      window.app.serverNow = res.serverNow;
-      return res.channels;
-    }
-    , addChannel: function(data, cb){
-      var url = window.app.baseApiUrl+'/admin/channels'
+    , sync: function(method, model, options){
+      showlog('Channels:sync', arguments);
       $.ajaxSetup({
-        'beforeSend': function(){}
+        beforeSend: function(xhr){
+          xhr.setRequestHeader('Authorization',window.app.sessionID);
+        }
       });
-      var xhr = $.post(url, data, 'json')
-        .success(_.bind(function(res){
-          /* Reload channel list. */
-          this.fetch();
-          cb();
-        }, this));  
-    }
-    , removeChannel: function(data, cb){
-      var url = window.app.baseApiUrl+'/admin/channels'
-      $.ajaxSetup({
-        'beforeSend': function(){}
-      });
-      var xhr = $.del(url, data, 'json')
-        .success(_.bind(function(res){
-          /* Reload channel list. */
-          this.fetch();
-          cb();
-        }, this));  
+      Backbone.sync(method, model, options);
     }
   });
 

@@ -27,15 +27,20 @@
       //window.app.baseApiUrl = 'http://'+window.app.username+'.rec.la';
       window.app.baseApiUrl = 'http://localhost:3080/'+window.app.username;
 
+      store.set('username', window.app.username);
+      store.set('baseApiUrl', window.app.baseApiUrl);
+
       var password  = this.$password.val()
         , url       = window.app.baseApiUrl+'/admin/login'
         , data      = {userName:window.app.username,password:password}
         ; 
 
       var xhr = $.post(url, data, 'json')
-        .success(_.bind(function(res){ 
+        .success(function(res){ 
+          window.app.sessionID = res.sessionID;
+          store.set('sessionID',window.app.sessionID);
           window.location.href = e.target.href;
-        }, this));
+        });
     
       return false;
     }

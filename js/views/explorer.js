@@ -10,7 +10,7 @@
       this.template = _.template( $('#channel_entry_template').html() );
 
       var events = this.model.events
-        , $eventList = $('#event_list')
+        , $eventList = $('#event_list')
         ; 
       this.model.on('destroy', function(){
         $eventList.empty();
@@ -47,7 +47,7 @@
       $('#channel_list a').removeClass('selected');
       this.$('a').addClass('selected');
       /* Store current focused channel. */
-      window.app.currentChannel = this.model;
+      window.app.currentChannel = this.model;
       /* Empty events. */
       this.model.events.fetch();
       return false;
@@ -87,11 +87,11 @@
     el: '#view_entry'
     , initialize: function(){
       //showlog('ExplorerView:initialize');
-      window.app.channelEditMode = window.app.eventEditMode = false;
+      window.app.channelEditMode = window.app.eventEditMode = false;
       this.template = _.template( $('#explorer_view_template').html() ); 
       /* Events. */
       this.collection.on('reset', _.bind(function(col,opts){
-        showlog('ExplorerView::channels->reset',col,this.collection);
+        showlog('ExplorerView::channels->reset');
         this.$channelList.empty();
         /* Dont show edit toggle if no channel. */
         if (this.collection.length){
@@ -125,9 +125,9 @@
         showlog('ExplorerView::channels->destroy');  
         col.fetch();
       });
-      this.collection.on('add', function(channel,col,opts){
-        showlog('ExplorerView::channels->add');
-      });
+      // this.collection.on('add', function(channel,col,opts){
+      //   showlog('ExplorerView::channels->add');
+      // });
     } 
     , events : {
         'click #signout_btn'                : 'onClickSignoutBtn' 
@@ -139,36 +139,8 @@
       , 'click #save_event_btn'             : 'onClickSaveEventBtn'
     }
     , render : function(){
+      //showlog('ExplorerView:render');
       this.$el.html( this.template() );
-      showlog('ExplorerView:render');
-      /* Check if token is in local storage. */
-      window.app.token = store.get('token');
-      if (!window.app.token){
-        /* Get tokens. */
-        var url = window.app.baseApiUrl+'/admin/tokens';
-        $.getJSON(url)
-          .success(_.bind(function(res){
-            window.app.serverNow = res.serverNow;
-            window.app.token = res.tokens[0].id;
-            /* Init local storage with latest app data. */
-            store.clear();
-            store.set('token', window.app.token);
-            store.set('username', window.app.username);
-            store.set('baseApiUrl', window.app.baseApiUrl);
-            /* Get channels. */
-            showlog('token',window.app.token,'now fetching channels');
-            this.collection.fetch();
-          }, this))
-        ;
-      } else {
-        /* Init app with local storage data. */
-        window.app.token = store.get('token');
-        window.app.username = store.get('username');
-        window.app.baseApiUrl = store.get('baseApiUrl');
-        /* Get channels. */
-        showlog('token',window.app.token,'now fetching channels');
-        this.collection.fetch();
-      }
       /* Shortcuts. */
       this.$channelList         = this.$('#channel_list');
       this.$eventList           = this.$('#event_list');
@@ -179,6 +151,38 @@
       this.$newChannelInput     = this.$('#add_channel_form #name');
       this.$newEventInput       = this.$('#add_event_form #comment');
 
+      var _postInit = _.bind(function(){
+        this.collection.fetch();
+      }, this);
+
+      /* Check if token is in local storage. */
+      window.app.token = store.get('token');
+      if (!window.app.token){
+        /* Get tokens. */
+        $.ajaxSetup({
+          beforeSend: function(xhr){
+            xhr.setRequestHeader('Authorization',window.app.sessionID);
+          }
+        });
+        var url = window.app.baseApiUrl+'/admin/tokens';
+        $.getJSON(url)
+          .success(function(res){
+            window.app.serverNow = res.serverNow;
+            window.app.token = res.tokens[0].id;
+            /* Init local storage with latest app data. */
+            store.clear();
+            store.set('token', window.app.token);
+            _postInit();
+          })
+        ;
+      } else {
+        /* Init app with local storage data. */
+        window.app.sessionID = store.get('sessionID');
+        window.app.token = store.get('token');
+        window.app.username = store.get('username');
+        window.app.baseApiUrl = store.get('baseApiUrl');
+        _postInit();
+      }
       return this;
     }
     , onClickShowAddChannelModalBtn  : function(e){
@@ -229,12 +233,16 @@
     }
     , onClickSaveChannelBtn  : function(e){
       showlog('ExplorerView:onClickSaveChannelBtn');
-      this.collection.addChannel(
-        {name:this.$newChannelInput.val()}, 
-        _.bind(function(){
-          this.$newChannelInput.val('');
-          this.$addChannelModal.modal('hide') 
-        },this)
+      this.collection.create(
+        { name:this.$newChannelInput.val() },
+        {
+          success:_.bind(function(channel){
+            showlog('success creating new channel',arguments);
+            this.$newChannelInput.val('');
+            this.$addChannelModal.modal('hide');
+            this.collection.fetch();
+          }, this)
+        }    
       );
       return false;
     }
