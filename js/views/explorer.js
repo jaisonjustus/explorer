@@ -167,8 +167,8 @@
       this.$newEventInput       = this.$('#add_event_form #comment');
       this.$editChannelModal    = this.$('#edit_channel_modal');
       this.$editEventModal      = this.$('#edit_event_modal');
-      this.$editChannelInput     = this.$('#edit_channel_form #name');
-      this.$editEventInput       = this.$('#edit_event_form #comment');
+      this.$editChannelInput    = this.$('#edit_channel_form #name');
+      this.$editEventInput      = this.$('#edit_event_form #comment');
 
       var _postInit = _.bind(function(){
         this.collection.fetch();
@@ -189,14 +189,13 @@
             window.app.serverNow = res.serverNow;
             window.app.token = res.tokens[0].id;
             /* Init local storage with latest app data. */
-            store.clear();
             store.set('token', window.app.token);
             _postInit();
           })
         ;
       } else {
         /* Init app with local storage data. */
-        window.app.sessionID = store.get('sessionID');
+        window.app.sessionID = store.get('sessionID');
         window.app.token = store.get('token');
         window.app.username = store.get('username');
         window.app.baseApiUrl = store.get('baseApiUrl');
