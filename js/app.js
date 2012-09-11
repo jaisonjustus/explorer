@@ -16,7 +16,6 @@
         '*filter' : 'setFilter'
     }
     , initialize: function(){
-      //showlog('router:initialize');
       /* Init collections. */
       this.channels = new window.app.Channels();
       /* Init views. */
@@ -30,11 +29,9 @@
       param = param.trim() || '';
       switch(param){
         case 'explore': {
-          //showlog('router:explore');
           this.explorerView.render();
         } break;
         default: { 
-          //showlog('router:landing');
           this.landingView.render();
         }
       }
