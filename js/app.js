@@ -41,6 +41,6 @@
   /* Main entry point. */
   new window.app.App();
   /* Make correct root. */
-  Backbone.history.start({root:'/'+window.location.hash}); 
+  Backbone.history.start({root:'/'+window.location.pathname}); 
 
 })();
