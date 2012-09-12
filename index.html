@@ -35,11 +35,15 @@
 
     <script id="channel_entry_template" type="text/template">
       <a class="delete pull-left danger"><i class="icon-remove-circle"></i></a>
+      <a class="edit pull-left"><i class="icon-edit"></i></a>
       <a class="channel"><%=name%></a>
     </script>
 
     <script id="event_entry_template" type="text/template">
-      <td><a class="delete pull-left danger"><i class="icon-remove-circle"></i></a></td>
+      <td width="28px">
+        <a class="delete danger"><i class="icon-remove-circle"></i></a>
+        <a class="edit"><i class="icon-edit"></i></a>
+      </td>
       <td><small><%=id%></small></td>
       <td><small><%=contextId%></small></td>
       <td><small><%=comment%></small</td>
@@ -99,6 +103,23 @@
         </form>
       </div> 
 
+      <div id="edit_channel_modal" class="modal hide fade">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h3>Edit Channel</h3>
+        </div>
+        <form id="edit_channel_form" class="form">
+          <div class="modal-body">
+            <label>Name</label>
+            <input id="name" type="text" placeholder="New channel"></input>
+          </div>
+          <div class="modal-footer">
+            <a class="btn" data-dismiss="modal" aria-hidden="true">Cancel</a>
+            <button id="save_changes_channel_btn" class="btn btn-primary">Save</button>
+          </div>
+        </form>
+      </div> 
+
       <div id="add_event_modal" class="modal hide fade">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -112,6 +133,23 @@
           <div class="modal-footer">
             <a class="btn" data-dismiss="modal" aria-hidden="true">Cancel</a>
             <button id="save_event_btn" class="btn btn-primary">Save</button>
+          </div>
+        </form>
+      </div> 
+
+      <div id="edit_event_modal" class="modal hide fade">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h3>Edit Event</h3>
+        </div>
+        <form id="edit_event_form" class="form">
+          <div class="modal-body">
+            <label>Comment</label>
+            <input id="comment" type="text" placeholder="New event"></input>
+          </div>
+          <div class="modal-footer">
+            <a class="btn" data-dismiss="modal" aria-hidden="true">Cancel</a>
+            <button id="save_changes_event_btn" class="btn btn-primary">Save</button>
           </div>
         </form>
       </div> 

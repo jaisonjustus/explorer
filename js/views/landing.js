@@ -26,7 +26,7 @@
       window.app.username = this.$username.val();
       window.app.baseApiUrl = 'http://'+window.app.username+'.rec.la';
       //window.app.baseApiUrl = 'http://localhost:3080/'+window.app.username;
-
+      store.clear();
       store.set('username', window.app.username);
       store.set('baseApiUrl', window.app.baseApiUrl);
 
