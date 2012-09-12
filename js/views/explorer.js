@@ -32,12 +32,14 @@
     , events: {
         'click .channel'  : 'onClick'
       , 'click .delete'   : 'onClickDelete'
+      , 'click .edit'     : 'onClickEdit'
     }
     , render: function(){
       //showlog('ChannelEntryView:render');
       this.$el.append( this.template( this.model.toJSON() ) );
       this.$el.find('.channel').toggleClass('pull-right', window.app.channelEditMode);
       this.$el.find('.delete').toggle( window.app.channelEditMode );
+      this.$el.find('.edit').toggle( window.app.channelEditMode );
       return this;
     }
     , onClick: function(){
@@ -57,6 +59,10 @@
       this.model.destroy({wait:true});
       return false;
     }
+    , onClickEdit: function(){
+      $('#edit_channel_modal').modal();
+      return false;
+    }
   });
 
   window.app.EventEntryView = Backbone.View.extend({
@@ -66,7 +72,8 @@
       this.template = _.template( $('#event_entry_template').html() );
     }
     , events: {
-      'click .delete'   : 'onClickDelete'
+        'click .delete'   : 'onClickDelete'
+      , 'click .edit'     : 'onClickEdit'
     }
     , render: function(){
       //showlog('EventEntryView:render');
@@ -80,6 +87,12 @@
       var eventId = this.model.get('id');
       showlog('EventEntryView:onClickDelete', eventId);
       this.model.destroy({wait:true});
+    }
+    , onClickEdit: function(){
+      var eventId = this.model.get('id');
+      showlog('EventEntryView:onClickEdit', eventId);
+      $('#edit_event_modal').modal();
+      return false;
     }
   });
 
@@ -137,6 +150,8 @@
       , 'click #toggle_edit_events_btn'     : 'onClickToggleEditEvents'
       , 'click #save_channel_btn'           : 'onClickSaveChannelBtn'
       , 'click #save_event_btn'             : 'onClickSaveEventBtn'
+      , 'click #save_changes_channel_btn'   : 'onClickSaveChangesChannelBtn'
+      , 'click #save_changes_event_btn'     : 'onClickSaveChangesEventBtn'
     }
     , render : function(){
       //showlog('ExplorerView:render');
@@ -150,6 +165,10 @@
       this.$addEventModal       = this.$('#add_event_modal');
       this.$newChannelInput     = this.$('#add_channel_form #name');
       this.$newEventInput       = this.$('#add_event_form #comment');
+      this.$editChannelModal    = this.$('#edit_channel_modal');
+      this.$editEventModal      = this.$('#edit_event_modal');
+      this.$editChannelInput     = this.$('#edit_channel_form #name');
+      this.$editEventInput       = this.$('#edit_event_form #comment');
 
       var _postInit = _.bind(function(){
         this.collection.fetch();
@@ -213,6 +232,7 @@
         .toggleClass('icon-ok', flag);
       this.$('.channel').toggleClass('pull-right', flag);
       this.$('#channel_list .delete').toggle(flag);
+      this.$('#channel_list .edit').toggle(flag);
       return false;
     }
     , onClickToggleEditEvents: function(e, flag){
@@ -229,6 +249,7 @@
         .toggleClass('icon-ok', flag);
       this.$('.event').toggleClass('pull-right', flag);
       this.$('#event_list .delete').toggle(flag);
+      this.$('#event_list .edit').toggle(flag);
       return false;
     }
     , onClickSaveChannelBtn  : function(e){
@@ -261,6 +282,14 @@
           }, this)
         }
       );
+      return false;
+    }
+    , onClickSaveChangesChannelBtn  : function(e){
+      showlog('ExplorerView:onClickSaveChangesChannelBtn');
+      return false;
+    }
+    , onClickSaveChangesEventBtn  : function(e){
+      showlog('ExplorerView:onClickSaveChangesEventBtn', e);
       return false;
     }
     , onClickSignoutBtn  : function(e){

@@ -65,7 +65,7 @@
 .nav li > a.selected {
   background-color:#eeeeee;
 }
-#channel_list .delete, #event_list .delete {
+#channel_list .delete, #channel_list .edit, #event_list .delete, #event_list .edit  {
   display:none;
 }
 #channel_list, table {
