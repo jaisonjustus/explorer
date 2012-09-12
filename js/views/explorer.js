@@ -60,6 +60,10 @@
       return false;
     }
     , onClickEdit: function(){
+      /* Select the channel to edit. */
+      this.onClick();
+      /* Open modal. */
+      $('#edit_channel_form #name').val(this.model.get('name'));
       $('#edit_channel_modal').modal();
       return false;
     }
@@ -81,6 +85,10 @@
         /* When event is at the root, contextId is not defined. Bummer! */
         this.template( _.extend( {contextId:null}, this.model.toJSON() ) ) 
       );
+      if (window.app.eventEditMode){
+      this.$('.delete').toggle(true);
+      this.$('.edit').toggle(true);
+      }
       return this;
     }
     , onClickDelete: function(){
@@ -89,8 +97,10 @@
       this.model.destroy({wait:true});
     }
     , onClickEdit: function(){
+      window.app.currentEvent = this.model;
       var eventId = this.model.get('id');
       showlog('EventEntryView:onClickEdit', eventId);
+      $('#edit_event_form #comment').val(this.model.get('comment'));
       $('#edit_event_modal').modal();
       return false;
     }
@@ -246,7 +256,6 @@
       this.$toggleEditEvents.find('i')
         .toggleClass('icon-edit', !flag)
         .toggleClass('icon-ok', flag);
-      this.$('.event').toggleClass('pull-right', flag);
       this.$('#event_list .delete').toggle(flag);
       this.$('#event_list .edit').toggle(flag);
       return false;
@@ -285,10 +294,34 @@
     }
     , onClickSaveChangesChannelBtn  : function(e){
       showlog('ExplorerView:onClickSaveChangesChannelBtn');
+      window.app.currentChannel.save(
+        { name:this.$editChannelInput.val() },
+        {
+          success:_.bind(function(channel){
+            showlog('success editing channel',arguments);
+            this.$editChannelInput.val('');
+            this.$editChannelModal.modal('hide');
+            this.collection.fetch();
+          }, this)
+        }    
+      );
       return false;
     }
     , onClickSaveChangesEventBtn  : function(e){
       showlog('ExplorerView:onClickSaveChangesEventBtn', e);
+      window.app.currentEvent.save(
+        {
+            comment:this.$editEventInput.val()
+        }, 
+        {
+          success:_.bind(function(event){
+            showlog('success editing event',arguments);
+            this.$editEventInput.val('');
+            this.$editEventModal.modal('hide');
+            window.app.currentChannel.events.fetch();
+          }, this)
+        }
+      );
       return false;
     }
     , onClickSignoutBtn  : function(e){
