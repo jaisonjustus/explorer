@@ -327,7 +327,7 @@
     , onClickSignoutBtn  : function(e){
       showlog('ExplorerView:onClickSignoutBtn');
       store.clear();
-      window.location.href = e.target.href; 
+      window.location.href = window.location.pathname; 
       return false;
     }
   });
