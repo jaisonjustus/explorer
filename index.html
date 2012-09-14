@@ -46,6 +46,7 @@
       </td>
       <td><small><%=id%></small></td>
       <td><small><%=contextId%></small></td>
+      <td><small><%=value%></small</td>
       <td><small><%=comment%></small</td>
     </script>
 
@@ -78,6 +79,7 @@
                 <td></td>
                 <td><a>id</a></td>
                 <td><a>contextId</a></td>
+                <td><a>value</a></td>
                 <td><a>comment</a></td>
               </theader>
               <tbody id="event_list"></tbody> 
@@ -128,7 +130,9 @@
         <form id="add_event_form" class="form">
           <div class="modal-body">
             <label>Comment</label>
-            <input id="comment" type="text" placeholder="New event"></input>
+            <input id="comment" class="span4" type="text" placeholder="New event"></input>
+            <label>Value (valid JSON)</label>
+            <input id="value" class="span4" type="text" placeholder='{"Type":"Mass:Kilogram","value":100}' value='{"Type":"Mass:Kilogram","value":100}'></input>
           </div>
           <div class="modal-footer">
             <a class="btn" data-dismiss="modal" aria-hidden="true">Cancel</a>
