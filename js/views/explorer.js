@@ -117,10 +117,13 @@
         showlog('ExplorerView::channels->reset');
         this.$channelList.empty();
         /* Dont show edit toggle if no channel. */
-        if (this.collection.length){
+        var len = this.collection.size()
+        if (len){
           this.$toggleEditChannels.show();
+          this.$showAddChannelBtn.show();
         } else {
           this.$toggleEditChannels.hide();
+          this.$showAddChannelBtn.hide();
           if (window.app.channelEditMode){
             this.onClickToggleEditChannels(null, false);
           }
@@ -128,10 +131,14 @@
         col.each(function(channel){
           /* Dont show edit toggle if no events. */
           channel.events.on('reset', function(){
-            if (channel.events.length){
+            var len = channel.events.size();
+            showlog('ExplorerView::channel.events->reset',len);
+            if (len){
               this.$toggleEditEvents.show();
+              this.$showAddEventBtn.show();
             } else {
               this.$toggleEditEvents.hide();
+              this.$showAddEventBtn.hide();
               if (window.app.eventEditMode){
                 this.onClickToggleEditEvents(null, false);
               }
@@ -179,6 +186,8 @@
       this.$editEventModal      = this.$('#edit_event_modal');
       this.$editChannelInput    = this.$('#edit_channel_form #name');
       this.$editEventInput      = this.$('#edit_event_form #comment');
+      this.$showAddEventBtn     = this.$('#show_add_event_modal_btn');
+      this.$showAddChannelBtn   = this.$('#show_add_channel_modal_btn');
 
       var _postInit = _.bind(function(){
         this.collection.fetch();
