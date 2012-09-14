@@ -6,7 +6,8 @@
   window.app.Event = Backbone.Model.extend({
     defaults: {
       /* id, contextId */
-      comment: null
+        comment: null
+      , value:null
     }
     , initialize: function(){
       //showlog('Event:initialize');

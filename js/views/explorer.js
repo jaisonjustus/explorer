@@ -81,9 +81,11 @@
     }
     , render: function(){
       //showlog('EventEntryView:render');
+      var data = this.model.toJSON();
+      data.value = JSON.stringify( data.value );
       this.$el.append(
         /* When event is at the root, contextId is not defined. Bummer! */
-        this.template( _.extend( {contextId:null}, this.model.toJSON() ) ) 
+        this.template( _.extend( {contextId:null}, data ) ) 
       );
       if (window.app.eventEditMode){
       this.$('.delete').toggle(true);
@@ -117,8 +119,7 @@
         showlog('ExplorerView::channels->reset');
         this.$channelList.empty();
         /* Dont show edit toggle if no channel. */
-        var len = this.collection.size()
-        if (len){
+        if (this.collection.size()){
           this.$toggleEditChannels.show();
           this.$showAddChannelBtn.show();
         } else {
@@ -128,17 +129,18 @@
             this.onClickToggleEditChannels(null, false);
           }
         }
+
         col.each(function(channel){
           /* Dont show edit toggle if no events. */
           channel.events.on('reset', function(){
-            var len = channel.events.size();
-            showlog('ExplorerView::channel.events->reset',len);
-            if (len){
+            showlog('ExplorerView::channel.events->reset');
+
+            if (window.app.currentChannel) this.$showAddEventBtn.show();
+
+            if (channel.events.size()){
               this.$toggleEditEvents.show();
-              this.$showAddEventBtn.show();
             } else {
               this.$toggleEditEvents.hide();
-              this.$showAddEventBtn.hide();
               if (window.app.eventEditMode){
                 this.onClickToggleEditEvents(null, false);
               }
@@ -181,7 +183,8 @@
       this.$addChannelModal     = this.$('#add_channel_modal');
       this.$addEventModal       = this.$('#add_event_modal');
       this.$newChannelInput     = this.$('#add_channel_form #name');
-      this.$newEventInput       = this.$('#add_event_form #comment');
+      this.$newEventComment     = this.$('#add_event_form #comment');
+      this.$newEventValue       = this.$('#add_event_form #value');
       this.$editChannelModal    = this.$('#edit_channel_modal');
       this.$editEventModal      = this.$('#edit_event_modal');
       this.$editChannelInput    = this.$('#edit_channel_form #name');
@@ -285,15 +288,15 @@
       return false;
     }
     , onClickSaveEventBtn  : function(e){
-      showlog('ExplorerView:onClickSaveEventBtn');
+      var comment = this.$newEventComment.val()
+        , value = JSON.parse(this.$newEventValue.val());
+      showlog('ExplorerView:onClickSaveEventBtn',comment,value);
       window.app.currentChannel.events.create(
-        {
-            comment:this.$newEventInput.val()
-        }, 
+        { comment:comment, value:value }, 
         {
           success:_.bind(function(event){
             showlog('success creating new event',arguments);
-            this.$newEventInput.val('');
+            this.$newEventComment.val('');
             this.$addEventModal.modal('hide');
             window.app.currentChannel.events.fetch();
           }, this)
