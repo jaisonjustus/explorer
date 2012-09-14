@@ -71,6 +71,12 @@
 #channel_list, table {
   margin-top:50px;
 }
+#show_add_event_modal_btn {
+  display:none;
+}
+#show_add_channel_modal_btn {
+  display:none;
+}
 .form {
   margin-bottom: 0px;
 }
