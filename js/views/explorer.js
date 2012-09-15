@@ -9,12 +9,30 @@
       //showlog('ChannelEntryView:initialize');
       this.template = _.template( $('#channel_entry_template').html() );
 
-      var events = this.model.events
+      var folders = this.model.folders
+        , events = this.model.events
         , $eventList = $('#event_list')
+        , $folderList = $('#folder_list');
         ; 
       this.model.on('destroy', function(){
+        $folderList.empty();
         $eventList.empty();
       });
+      /* Folders collection. */
+      folders.on('destroy', function(/*mod,col,opts*/){
+        showlog('channel.folders->destroy');
+        folders.fetch();
+      });
+      folders.on('reset', function(){
+        showlog('channel.folders->reset'); 
+        $folderList.empty();
+        folders.each(function(e){
+          $folderList.append(
+            new window.app.FolderEntryView({model:e}).render().$el
+          );
+        });
+      });
+      /* Events collection. */
       events.on('destroy', function(/*mod,col,opts*/){
         showlog('channel.events->destroy');
         events.fetch();
@@ -35,7 +53,7 @@
       , 'click .edit'     : 'onClickEdit'
     }
     , render: function(){
-      //showlog('ChannelEntryView:render');
+      //showlog('ChannelEntryView:render',this.model.toJSON());
       this.$el.append( this.template( this.model.toJSON() ) );
       this.$el.find('.channel').toggleClass('pull-right', window.app.channelEditMode);
       this.$el.find('.delete').toggle( window.app.channelEditMode );
@@ -50,8 +68,9 @@
       this.$('a').addClass('selected');
       /* Store current focused channel. */
       window.app.currentChannel = this.model;
-      /* Empty events. */
+      /* Reload folders and events. */
       this.model.events.fetch();
+      this.model.folders.fetch();
       return false;
     }
     , onClickDelete: function(){
@@ -65,6 +84,41 @@
       /* Open modal. */
       $('#edit_channel_form #name').val(this.model.get('name'));
       $('#edit_channel_modal').modal();
+      return false;
+    }
+  });
+
+  window.app.FolderEntryView = Backbone.View.extend({
+    tagName: 'tr'
+    , initialize: function(){
+      //showlog('FolderEntryView:initialize');
+      this.template = _.template( $('#folder_entry_template').html() );
+    }
+    , events: {
+        'click .delete'   : 'onClickDelete'
+      , 'click .edit'     : 'onClickEdit'
+    }
+    , render: function(){
+      //showlog('FolderEntryView:render');
+      this.$el.append( this.template( this.model.toJSON() ) );
+      if (window.app.eventEditMode){
+        this.$('.delete').show();
+        this.$('.edit').show();
+      }
+      return this;
+    }
+    , onClickDelete: function(){
+      var eventId = this.model.get('id');
+      showlog('FolderEntryView:onClickDelete', eventId);
+      this.model.destroy({wait:true});
+      return false;
+    }
+    , onClickEdit: function(){
+      window.app.currentFolder = this.model;
+      var folderId = this.model.get('id');
+      showlog('FolderEntryView:onClickEdit', folderId);
+      $('#edit_folder_form #name').val(this.model.get('name'));
+      $('#edit_folder_modal').modal();
       return false;
     }
   });
@@ -83,13 +137,10 @@
       //showlog('EventEntryView:render');
       var data = this.model.toJSON();
       data.value = JSON.stringify( data.value );
-      this.$el.append(
-        /* When event is at the root, contextId is not defined. Bummer! */
-        this.template( _.extend( {contextId:null}, data ) ) 
-      );
+      this.$el.append( this.template( data ) );
       if (window.app.eventEditMode){
-      this.$('.delete').toggle(true);
-      this.$('.edit').toggle(true);
+        this.$('.delete').show();
+        this.$('.edit').show();
       }
       return this;
     }
@@ -97,6 +148,7 @@
       var eventId = this.model.get('id');
       showlog('EventEntryView:onClickDelete', eventId);
       this.model.destroy({wait:true});
+      return false;
     }
     , onClickEdit: function(){
       window.app.currentEvent = this.model;
@@ -131,12 +183,29 @@
         }
 
         col.each(function(channel){
-          /* Dont show edit toggle if no events. */
+          /* Folders collection. */
+          channel.folders.on('reset', function(){
+            showlog('ExplorerView::channel.folders->reset');
+            /* Dont show edit toggle if no events. */
+            if (window.app.currentChannel !== undefined) {
+              this.$showAddFolderBtn.show();
+            }
+            if (channel.folders.size()){
+              this.$toggleEditFolders.show();
+            } else {
+              this.$toggleEditFolders.hide();
+              if (window.app.folderEditMode){
+                this.onClickToggleEditFolders(null, false);
+              }
+            }
+          }, this);
+          /* Events collection. */
           channel.events.on('reset', function(){
             showlog('ExplorerView::channel.events->reset');
-
-            if (window.app.currentChannel) this.$showAddEventBtn.show();
-
+            /* Dont show edit toggle if no events. */
+            if (window.app.currentChannel !== undefined) {
+              this.$showAddEventBtn.show();
+            }
             if (channel.events.size()){
               this.$toggleEditEvents.show();
             } else {
@@ -146,6 +215,7 @@
               }
             }
           }, this);
+          /* Fill channels. */
           this.$channelList.append(
             new window.app.ChannelEntryView({
                 model: channel
@@ -164,32 +234,43 @@
     , events : {
         'click #signout_btn'                : 'onClickSignoutBtn' 
       , 'click #show_add_channel_modal_btn' : 'onClickShowAddChannelModalBtn'
+      , 'click #show_add_folder_modal_btn'  : 'onClickShowAddFolderModalBtn'
       , 'click #show_add_event_modal_btn'   : 'onClickShowAddEventModalBtn' 
       , 'click #toggle_edit_channels_btn'   : 'onClickToggleEditChannels'
+      , 'click #toggle_edit_folders_btn'    : 'onClickToggleEditFolders'
       , 'click #toggle_edit_events_btn'     : 'onClickToggleEditEvents'
-      , 'click #save_channel_btn'           : 'onClickSaveChannelBtn'
-      , 'click #save_event_btn'             : 'onClickSaveEventBtn'
-      , 'click #save_changes_channel_btn'   : 'onClickSaveChangesChannelBtn'
-      , 'click #save_changes_event_btn'     : 'onClickSaveChangesEventBtn'
+      , 'click #add_channel_form #save_btn' : 'onClickSaveChannelBtn'
+      , 'click #add_folder_form #save_btn'  : 'onClickSaveFolderBtn'
+      , 'click #add_event_form #save_btn'   : 'onClickSaveEventBtn'
+      , 'click #edit_channel_form #save_btn': 'onClickSaveChangesChannelBtn'
+      , 'click #edit_folder_form #save_btn': 'onClickSaveChangesFolderBtn'
+      , 'click #edit_event_form #save_btn'  : 'onClickSaveChangesEventBtn'
     }
     , render : function(){
       //showlog('ExplorerView:render');
       this.$el.html( this.template() );
       /* Shortcuts. */
       this.$channelList         = this.$('#channel_list');
+      this.$folderList          = this.$('#folder_list');
       this.$eventList           = this.$('#event_list');
       this.$toggleEditChannels  = this.$('#toggle_edit_channels_btn');
+      this.$toggleEditFolders   = this.$('#toggle_edit_folders_btn');
       this.$toggleEditEvents    = this.$('#toggle_edit_events_btn');
-      this.$addChannelModal     = this.$('#add_channel_modal');
-      this.$addEventModal       = this.$('#add_event_modal');
+      this.$addChannel          = this.$('#add_channel_modal');
+      this.$addFolder           = this.$('#add_folder_modal');
+      this.$addEvent            = this.$('#add_event_modal');
       this.$newChannelInput     = this.$('#add_channel_form #name');
+      this.$newFolderInput      = this.$('#add_folder_form #name');
       this.$newEventComment     = this.$('#add_event_form #comment');
       this.$newEventValue       = this.$('#add_event_form #value');
       this.$editChannelModal    = this.$('#edit_channel_modal');
+      this.$editFolderModal     = this.$('#edit_folder_modal');
       this.$editEventModal      = this.$('#edit_event_modal');
       this.$editChannelInput    = this.$('#edit_channel_form #name');
+      this.$editFolderInput     = this.$('#edit_folder_form #name');
       this.$editEventInput      = this.$('#edit_event_form #comment');
-      this.$showAddEventBtn     = this.$('#show_add_event_modal_btn');
+      this.$showAddEventBtn     = this.$('#show_add_event_modal_btn');
+      this.$showAddFolderBtn    = this.$('#show_add_folder_modal_btn');
       this.$showAddChannelBtn   = this.$('#show_add_channel_modal_btn');
 
       var _postInit = _.bind(function(){
@@ -225,18 +306,26 @@
       }
       return this;
     }
+    , switchOffEditModes : function(){
+      this.onClickToggleEditChannels(null, false);
+      this.onClickToggleEditFolders(null, false);
+      this.onClickToggleEditEvents(null, false);
+    }
     , onClickShowAddChannelModalBtn  : function(e){
       showlog('ExplorerView:onClickShowAddChannelModalBtn');
-      this.onClickToggleEditChannels(null, false);
-      this.onClickToggleEditEvents(null, false);
-      this.$addChannelModal.modal();
+      this.switchOffEditModes();
+      this.$addChannel.modal();
+      return false;
+    }
+    , onClickShowAddFolderModalBtn  : function(e){
+      showlog('ExplorerView:onClickShowAddFolderModalBtn');
+      this.switchOffEditModes();
+      this.$addFolder.modal();
       return false;
     }
     , onClickShowAddEventModalBtn  : function(e){
       showlog('ExplorerView:onClickShowAddEventModalBtn');
-      this.onClickToggleEditEvents(null, false);
-      this.onClickToggleEditChannels(null, false);
-      this.$addEventModal.modal();
+      this.switchOffEditModes();
       return false;
     }
     , onClickToggleEditChannels: function(e, flag){
@@ -246,7 +335,10 @@
       flag = window.app.channelEditMode;
       showlog('ExplorerView:onClickToggleEditChannels', e, flag);
       /* Simulated click? */
-      if (e) this.onClickToggleEditEvents(null, false);
+      if (e) { 
+        this.onClickToggleEditEvents(null, false);
+        this.onClickToggleEditFolders(null, false);
+      }
       this.$toggleEditChannels.toggleClass('btn-primary', flag);
       this.$toggleEditChannels.find('i')
         .toggleClass('icon-edit', !flag)
@@ -256,6 +348,25 @@
       this.$('#channel_list .edit').toggle(flag);
       return false;
     }
+    , onClickToggleEditFolders: function(e, flag){
+      /* Toggle edit mode. */
+      window.app.folderEditMode = (flag !== undefined) ? flag :
+        !window.app.folderEditMode;
+      flag = window.app.folderEditMode;
+      showlog('ExplorerView:onClickToggleEditFolders', e, flag);
+      /* Simulated click? */
+      if (e) {
+        this.onClickToggleEditChannels(null, false);
+        this.onClickToggleEditEvents(null, false);
+      }
+      this.$toggleEditFolders.toggleClass('btn-primary', flag);
+      this.$toggleEditFolders.find('i')
+        .toggleClass('icon-edit', !flag)
+        .toggleClass('icon-ok', flag);
+      this.$('#folder_list .delete').toggle(flag);
+      this.$('#folder_list .edit').toggle(flag);
+      return false;
+    }
     , onClickToggleEditEvents: function(e, flag){
       /* Toggle edit mode. */
       window.app.eventEditMode = (flag !== undefined) ? flag :
@@ -263,7 +374,10 @@
       flag = window.app.eventEditMode;
       showlog('ExplorerView:onClickToggleEditEvents', e, flag);
       /* Simulated click? */
-      if (e) this.onClickToggleEditChannels(null, false);
+      if (e) {
+        this.onClickToggleEditChannels(null, false);
+        this.onClickToggleEditFolders(null, false);
+      }
       this.$toggleEditEvents.toggleClass('btn-primary', flag);
       this.$toggleEditEvents.find('i')
         .toggleClass('icon-edit', !flag)
@@ -280,8 +394,24 @@
           success:_.bind(function(channel){
             showlog('success creating new channel',arguments);
             this.$newChannelInput.val('');
-            this.$addChannelModal.modal('hide');
+            this.$addChannel.modal('hide');
             this.collection.fetch();
+          }, this)
+        }    
+      );
+      return false;
+    }
+    , onClickSaveFolderBtn  : function(e){
+      showlog('ExplorerView:onClickSaveFolderBtn');
+      var folders = window.app.currentChannel.folders;
+      folders.create(
+        { name:this.$newFolderInput.val() },
+        {
+          success:_.bind(function(channel){
+            showlog('success creating new folder',arguments);
+            this.$newFolderInput.val('');
+            this.$addFolder.modal('hide');
+            folders.fetch();
           }, this)
         }    
       );
@@ -297,7 +427,7 @@
           success:_.bind(function(event){
             showlog('success creating new event',arguments);
             this.$newEventComment.val('');
-            this.$addEventModal.modal('hide');
+            this.$addEvent.modal('hide');
             window.app.currentChannel.events.fetch();
           }, this)
         }
@@ -314,6 +444,22 @@
             this.$editChannelInput.val('');
             this.$editChannelModal.modal('hide');
             this.collection.fetch();
+          }, this)
+        }    
+      );
+      return false;
+    }
+    , onClickSaveChangesFolderBtn  : function(e){
+      showlog('ExplorerView:onClickSaveChangesFolderBtn',_.clone(window.app.currentFolder));
+      var folder = window.app.currentFolder;
+      folder.save(
+        { name:this.$editFolderInput.val() },
+        {
+          success:_.bind(function(channel){
+            showlog('success editing folder',arguments);
+            this.$editFolderInput.val('');
+            this.$editFolderModal.modal('hide');
+            window.app.currentChannel.folders.fetch();
           }, this)
         }    
       );

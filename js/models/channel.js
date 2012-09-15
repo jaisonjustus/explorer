@@ -8,12 +8,11 @@
       /* id, name */ 
     }
     , initialize: function(){
-      //showlog('Channel:initialize',this.get('id'));
-      /* Create event collection. */
-      this.events = new window.app.Events(
-        [], 
-        { contextId: this.get('id') }
-      );
+      showlog('Channel:initialize',this.get('id'));
+      var id = this.get('id');
+      /* Create collections. */
+      this.folders = new window.app.Folders( [], { parentId: id } );
+      this.events = new window.app.Events( [], { parentId: id } );
     } 
     , sync: function(method, model, options){
       showlog('Channel:sync', arguments);

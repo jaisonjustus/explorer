@@ -5,8 +5,9 @@
 
   window.app.Event = Backbone.Model.extend({
     defaults: {
-      /* id, contextId */
+      /* id, folderId */
         comment: null
+      , folderId: null
       , value:null
     }
     , initialize: function(){

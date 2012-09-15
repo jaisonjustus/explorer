@@ -65,16 +65,13 @@
 .nav li > a.selected {
   background-color:#eeeeee;
 }
-#channel_list .delete, #channel_list .edit, #event_list .delete, #event_list .edit  {
+#channel_list .delete, #channel_list .edit, #event_list .delete, #event_list .edit, #folder_list .delete, #folder_list .edit {
   display:none;
 }
 #channel_list, table {
   margin-top:50px;
 }
-#show_add_event_modal_btn {
-  display:none;
-}
-#show_add_channel_modal_btn {
+#show_add_event_modal_btn, #show_add_channel_modal_btn, #show_add_folder_modal_btn {
   display:none;
 }
 .form {

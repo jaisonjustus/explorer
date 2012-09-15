@@ -5,13 +5,13 @@
 
   window.app.Events = Backbone.Collection.extend({
       model: window.app.Event
-    , contextId: '-1'
+    , parentId: '-1'
     , initialize: function(models, options){
       //showlog('Events:initialize',this,options);
-      this.contextId = options.contextId;
+      this.parentId = options.parentId;
     } 
     , url: function(){
-      return window.app.baseApiUrl+'/'+this.contextId+'/events' 
+      return window.app.baseApiUrl+'/'+this.parentId+'/events' 
     }
     , sync: function(method, model, options){
       showlog('Events:sync',arguments);
