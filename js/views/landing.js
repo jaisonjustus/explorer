@@ -40,6 +40,16 @@
           window.app.sessionID = res.sessionID;
           store.set('sessionID',window.app.sessionID);
           window.location.href = e.target.href;
+          /* User infos. */
+          // $.ajaxSetup({
+          //   beforeSend: function(xhr){
+          //     xhr.setRequestHeader('Authorization',window.app.sessionID);
+          //   }
+          // });
+          // $.getJSON(window.app.baseApiUrl+'/admin/user-info')
+          //   .success(function(res){
+          //     showlog('success getting user-info',res);
+          //   });
         });
     
       return false;

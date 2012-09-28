@@ -11,8 +11,11 @@
       // , value:null
     }
     , initialize: function(){
-      //showlog('Folder:initialize');
-    } 
+      var id = this.get('id');
+      //showlog('Folder:initialize', id);
+      this.folders = new window.app.Folders( this.attributes.children, {channelId:this.collection.channelId, parentId: id } );
+      this.events = new window.app.Events( [], { channelId:this.collection.channelId, parentId: id } );
+    }
     , sync: function(method, model, options){
       showlog('Folder:sync', arguments);
       $.ajaxSetup({
