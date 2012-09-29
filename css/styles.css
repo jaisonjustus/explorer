@@ -46,6 +46,13 @@
   height: 500px;
 }
 
+.container {
+  text-align:center;
+}
+.row {
+  text-align:left;
+}
+
 /* Landing view. */
 
 /* Channel view. */
@@ -63,9 +70,9 @@
   display:block;
 }
 .nav li > a.selected {
-  background-color:#eeeeee;
+  background-color:#A5E6A0;
 }
-#channel_list .delete, #channel_list .edit, #event_list .delete, #event_list .edit, #folder_list .delete, #folder_list .edit {
+#channel_list .delete, #channel_list .edit, #event_list .delete, #event_list .edit, #folder_list .delete, #folder_list .edit, .folder_explorer, .subfolder_explorer {
   display:none;
 }
 #channel_list, table {
