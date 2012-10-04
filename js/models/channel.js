@@ -7,6 +7,10 @@
     defaults: {
       /* id, name */ 
     }
+    /* Variables. */
+    , folders: null
+    , events: null
+    /* Methods. */
     , initialize: function(){
       var id = this.get('id');
       //showlog('Channel:initialize',id);

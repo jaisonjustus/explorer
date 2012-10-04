@@ -12,7 +12,7 @@
     }
     , initialize: function(){
       var id = this.get('id');
-      //showlog('Folder:initialize', id);
+      showlog('Folder:initialize',id,this.attributes);
       this.folders = new window.app.Folders( this.attributes.children, {channelId:this.collection.channelId, parentId: id } );
     }
     , sync: function(method, model, options){

@@ -9,16 +9,16 @@
       //showlog('ChannelEntryView:initialize');
       this.template = _.template( $('#channel_entry_template').html() );
 
-      var folders = this.model.folders
-        , events = this.model.events
-        , $eventList = $('#event_list')
-        , $folderList = $('#folder_list');
+      var folders         = this.model.folders
+        , events          = this.model.events
+        , $eventList      = $('#event_list')
+        , $folderList     = $('#folder_list')
         ; 
       this.model.on('destroy', function(){
-        $folderExplorer.empty();
+        this.$folderExplorer.empty();
         $folderList.empty();
         $eventList.empty();
-      });
+      }, this);
       /* Folders collection. */
       folders.on('destroy', function(/*mod,col,opts*/){
         showlog('channel.folders->destroy');
@@ -26,11 +26,10 @@
       });
       folders.on('reset', function(){
         showlog('channel.folders->reset'); 
-        var $folderExplorer = this.$('.folder_explorer');
-        $folderExplorer.empty();
+        this.$folderExplorer.empty();
         $folderList.empty();
         folders.each(function(e){
-          $folderExplorer.append(
+          this.$folderExplorer.append(
             new window.app.FolderExplorerView({
                 model:e
               , channel: this.model
@@ -40,7 +39,7 @@
             new window.app.FolderEntryView({model:e}).render().$el
           );
         }, this);
-        $folderExplorer.toggle(!$folderExplorer.is(':visible'));
+        this.$folderExplorer.toggle(!this.$folderExplorer.is(':visible'));
       }, this);
       /* Events collection. */
       events.on('destroy', function(/*mod,col,opts*/){
@@ -68,6 +67,8 @@
       this.$el.find('.channel').toggleClass('pull-right', window.app.channelEditMode);
       this.$el.find('.delete').toggle( window.app.channelEditMode );
       this.$el.find('.edit').toggle( window.app.channelEditMode );
+      /* Shortcuts. */
+      this.$folderExplorer = this.$('.folder_explorer');
       return this;
     }
     , onClick: function(){
@@ -308,7 +309,8 @@
       });
     } 
     , events : {
-        'click #signout_btn'                : 'onClickSignoutBtn' 
+        'click #token_btn'                  : 'onClickTokenBtn'
+      , 'click #signout_btn'                : 'onClickSignoutBtn' 
       , 'click #show_add_channel_modal_btn' : 'onClickShowAddChannelModalBtn'
       , 'click #show_add_folder_modal_btn'  : 'onClickShowAddFolderModalBtn'
       , 'click #show_add_event_modal_btn'   : 'onClickShowAddEventModalBtn' 
@@ -319,35 +321,38 @@
       , 'click #add_folder_form #save_btn'  : 'onClickSaveFolderBtn'
       , 'click #add_event_form #save_btn'   : 'onClickSaveEventBtn'
       , 'click #edit_channel_form #save_btn': 'onClickSaveChangesChannelBtn'
-      , 'click #edit_folder_form #save_btn': 'onClickSaveChangesFolderBtn'
+      , 'click #edit_folder_form #save_btn' : 'onClickSaveChangesFolderBtn'
       , 'click #edit_event_form #save_btn'  : 'onClickSaveChangesEventBtn'
     }
     , render : function(){
       showlog('ExplorerView:render');
       this.$el.html( this.template() );
       /* Shortcuts. */
-      this.$channelList           = this.$('#channel_list');
-      this.$folderList            = this.$('#folder_list');
-      this.$eventList             = this.$('#event_list');
-      this.$toggleEditChannels    = this.$('#toggle_edit_channels_btn');
-      this.$toggleEditFolders     = this.$('#toggle_edit_folders_btn');
-      this.$toggleEditEvents      = this.$('#toggle_edit_events_btn');
-      this.$addChannel            = this.$('#add_channel_modal');
-      this.$addFolder             = this.$('#add_folder_modal');
-      this.$addEvent              = this.$('#add_event_modal');
-      this.$newChannelInput       = this.$('#add_channel_form #name');
-      this.$newFolderInput        = this.$('#add_folder_form #name');
-      this.$newEventComment       = this.$('#add_event_form #comment');
-      this.$newEventValue         = this.$('#add_event_form #value');
-      this.$editChannelModal      = this.$('#edit_channel_modal');
-      this.$editFolderModal       = this.$('#edit_folder_modal');
-      this.$editEventModal        = this.$('#edit_event_modal');
-      this.$editChannelInput      = this.$('#edit_channel_form #name');
-      this.$editFolderInput       = this.$('#edit_folder_form #name');
+      this.$channelList         = this.$('#channel_list');
+      this.$folderList          = this.$('#folder_list');
+      this.$eventList           = this.$('#event_list');
+      this.$toggleEditChannels  = this.$('#toggle_edit_channels_btn');
+      this.$toggleEditFolders   = this.$('#toggle_edit_folders_btn');
+      this.$toggleEditEvents    = this.$('#toggle_edit_events_btn');
+      this.$newChannelInput     = this.$('#add_channel_form #name');
+      this.$newFolderInput      = this.$('#add_folder_form #name');
+      this.$newEventComment     = this.$('#add_event_form #comment');
+      this.$newEventValue       = this.$('#add_event_form #value');
+      this.$editChannelInput    = this.$('#edit_channel_form #name');
+      this.$editFolderInput     = this.$('#edit_folder_form #name');
       this.$editEventCommentInput = this.$('#edit_event_form #comment');
-      this.$showAddEventBtn       = this.$('#show_add_event_modal_btn');
-      this.$showAddFolderBtn      = this.$('#show_add_folder_modal_btn');
-      this.$showAddChannelBtn     = this.$('#show_add_channel_modal_btn');
+      this.$showAddEventBtn     = this.$('#show_add_event_modal_btn');
+      this.$showAddFolderBtn    = this.$('#show_add_folder_modal_btn');
+      this.$showAddChannelBtn   = this.$('#show_add_channel_modal_btn');
+      this.$tokenBtn            = this.$('#token_btn');
+      /* Modal shortcuts. */
+      this.$addChannel          = this.$('#add_channel_modal');
+      this.$addFolder           = this.$('#add_folder_modal');
+      this.$addEvent            = this.$('#add_event_modal');
+      this.$editChannelModal    = this.$('#edit_channel_modal');
+      this.$editFolderModal     = this.$('#edit_folder_modal');
+      this.$editEventModal      = this.$('#edit_event_modal');
+      this.$tokensModal         = this.$('#tokens_modal');
 
       var _postInit = _.bind(function(){
         this.collection.fetch();
@@ -585,6 +590,11 @@
           }, this)
         }
       );
+      return false;
+    }
+    , onClickTokenBtn  : function(e){
+      showlog('ExplorerView:onClickTokenBtn');
+      this.$tokensModal.modal();
       return false;
     }
     , onClickSignoutBtn  : function(e){

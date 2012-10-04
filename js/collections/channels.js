@@ -4,11 +4,14 @@
   window.app = window.app || {};
 
   window.app.Channels = Backbone.Collection.extend({
-    model: window.app.Channel
+    /* Variables. */
+      model: window.app.Channel
+    /* Methods. */
     , initialize: function(){
       //showlog('Channels:initialize');
     } 
     , url: function(){
+      showlog('Channels:url');
       return window.app.baseApiUrl+'/admin/channels';
     }
     , sync: function(method, model, options){
