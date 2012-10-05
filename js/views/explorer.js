@@ -117,7 +117,7 @@
         folders.fetch();
       });
       folders.on('reset', function(){
-        showlog('folder.folders->reset'); 
+        showlog('folder.folders->reset', folders); 
         var $subfolderExplorer = this.$('.subfolder_explorer');
         $subfolderExplorer.empty();
         $folderList.empty();

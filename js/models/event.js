@@ -28,7 +28,7 @@
           xhr.setRequestHeader('Authorization',window.app.token);
         }
       });
-      /* Can be removed once the "modified" param is accepted by backend. */
+      /* HACK: can be removed once the "modified" param is accepted by backend. */
       if (method === 'update'){
         showlog("this",model);
          $.ajax({url:this.url(),data:{id:model.get('id'), folderId: model.get('folderId'), comment:model.get('comment'), time:model.get('time')},type:'PUT',success:function(res){
