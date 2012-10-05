@@ -14,7 +14,6 @@
       var id = this.get('id');
       //showlog('Folder:initialize', id);
       this.folders = new window.app.Folders( this.attributes.children, {channelId:this.collection.channelId, parentId: id } );
-      this.events = new window.app.Events( [], { channelId:this.collection.channelId, parentId: id } );
     }
     , sync: function(method, model, options){
       showlog('Folder:sync', arguments);
@@ -26,7 +25,7 @@
 
       /* Need to fix this. Should work without this. (children param should not been sent). */ 
       if (method === "update") {
-        $.ajax({url:this.url(),data:{id:model.get('id'),name:model.get('name')},type:'PUT',success:function(res){
+        $.ajax({url:this.url(),data:{id:model.get('id'), folderId: this.folderId, name:model.get('name')},type:'PUT',success:function(res){
           options.success(res)
         }});
       } else {

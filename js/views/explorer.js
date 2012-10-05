@@ -31,12 +31,15 @@
         $folderList.empty();
         folders.each(function(e){
           $folderExplorer.append(
-            new window.app.FolderExplorerView({model:e}).render().$el
+            new window.app.FolderExplorerView({
+                model:e
+              , channel: this.model
+            }).render().$el
           );
           $folderList.append(
             new window.app.FolderEntryView({model:e}).render().$el
           );
-        });
+        }, this);
         $folderExplorer.toggle(!$folderExplorer.is(':visible'));
       }, this);
       /* Events collection. */
@@ -76,6 +79,8 @@
       /* Store current focused channel. */
       window.app.currentChannel = this.model;
       window.app.currentLeftElement = {type:"channel", model:this.model};
+      /* We're in the channel, no folder filter. */
+      window.app.currentChannel.events.onlyFolders = [];
       /* Reload folders and events. */
       this.model.events.fetch();
       this.model.folders.fetch();
@@ -102,8 +107,7 @@
       //showlog('FolderExplorerView:initialize');
       this.template = _.template( $('#folder_explorer_template').html() );
 
-      var events = this.model.events
-        , folders = this.model.folders
+      var folders = this.model.folders
         , $folderList = $('#folder_list')
         , $eventList = $('#event_list');
 
@@ -119,29 +123,17 @@
         $folderList.empty();
         folders.each(function(e){
           $subfolderExplorer.append(
-            new window.app.FolderExplorerView({model:e}).render().$el
+            new window.app.FolderExplorerView({
+                model:e
+              , channel: this.options.channel
+            }).render().$el
           );
           $folderList.append(
             new window.app.FolderEntryView({model:e}).render().$el
           );
-        });
+        }, this);
         $subfolderExplorer.toggle(!$subfolderExplorer.is(':visible'));
       }, this);
-      /* Events collection. */
-      /* Events collection. */
-      events.on('destroy', function(/*mod,col,opts*/){
-        showlog('folder.events->destroy');
-        events.fetch();
-      });
-      events.on('reset', function(){
-        showlog('folder.events->reset'); 
-        $eventList.empty();
-        events.each(function(e){
-          $eventList.append(
-            new window.app.EventEntryView({model:e}).render().$el
-          );
-        });
-      });
     }
     , events: {
       'click .channel' : 'onClick'
@@ -154,14 +146,19 @@
       $subfolderExplorer.empty();
       this.model.folders.each(function(e){
         $subfolderExplorer.append(
-          new window.app.FolderExplorerView({model:e}).render().$el
+          new window.app.FolderExplorerView({
+              model:e
+            , channel: this.options.channel
+          }).render().$el
         );
-      });
+      }, this);
       return this;
     }
     , onClick: function(){
       var folderId = this.model.get('id');
       window.app.currentLeftElement = {type:"folder", model:this.model};
+      /* We're in a folder, set the folder filter. */
+      window.app.currentChannel.events.onlyFolders = [folderId];
       showlog('FolderExplorerView:onClick',folderId);  
       /* Add selected class. */
       $('#channel_list a').removeClass('selected');
@@ -177,8 +174,8 @@
           new window.app.FolderEntryView({model:e}).render().$el
           );
       });
-      /* Get events for this folder. */
-      this.model.events.fetch();
+      /* Get events. */
+      this.options.channel.events.fetch();
 
       return false;
     }
@@ -329,28 +326,28 @@
       showlog('ExplorerView:render');
       this.$el.html( this.template() );
       /* Shortcuts. */
-      this.$channelList         = this.$('#channel_list');
-      this.$folderList          = this.$('#folder_list');
-      this.$eventList           = this.$('#event_list');
-      this.$toggleEditChannels  = this.$('#toggle_edit_channels_btn');
-      this.$toggleEditFolders   = this.$('#toggle_edit_folders_btn');
-      this.$toggleEditEvents    = this.$('#toggle_edit_events_btn');
-      this.$addChannel          = this.$('#add_channel_modal');
-      this.$addFolder           = this.$('#add_folder_modal');
-      this.$addEvent            = this.$('#add_event_modal');
-      this.$newChannelInput     = this.$('#add_channel_form #name');
-      this.$newFolderInput      = this.$('#add_folder_form #name');
-      this.$newEventComment     = this.$('#add_event_form #comment');
-      this.$newEventValue       = this.$('#add_event_form #value');
-      this.$editChannelModal    = this.$('#edit_channel_modal');
-      this.$editFolderModal     = this.$('#edit_folder_modal');
-      this.$editEventModal      = this.$('#edit_event_modal');
-      this.$editChannelInput    = this.$('#edit_channel_form #name');
-      this.$editFolderInput     = this.$('#edit_folder_form #name');
-      this.$editEventInput      = this.$('#edit_event_form #comment');
-      this.$showAddEventBtn     = this.$('#show_add_event_modal_btn');
-      this.$showAddFolderBtn    = this.$('#show_add_folder_modal_btn');
-      this.$showAddChannelBtn   = this.$('#show_add_channel_modal_btn');
+      this.$channelList           = this.$('#channel_list');
+      this.$folderList            = this.$('#folder_list');
+      this.$eventList             = this.$('#event_list');
+      this.$toggleEditChannels    = this.$('#toggle_edit_channels_btn');
+      this.$toggleEditFolders     = this.$('#toggle_edit_folders_btn');
+      this.$toggleEditEvents      = this.$('#toggle_edit_events_btn');
+      this.$addChannel            = this.$('#add_channel_modal');
+      this.$addFolder             = this.$('#add_folder_modal');
+      this.$addEvent              = this.$('#add_event_modal');
+      this.$newChannelInput       = this.$('#add_channel_form #name');
+      this.$newFolderInput        = this.$('#add_folder_form #name');
+      this.$newEventComment       = this.$('#add_event_form #comment');
+      this.$newEventValue         = this.$('#add_event_form #value');
+      this.$editChannelModal      = this.$('#edit_channel_modal');
+      this.$editFolderModal       = this.$('#edit_folder_modal');
+      this.$editEventModal        = this.$('#edit_event_modal');
+      this.$editChannelInput      = this.$('#edit_channel_form #name');
+      this.$editFolderInput       = this.$('#edit_folder_form #name');
+      this.$editEventCommentInput = this.$('#edit_event_form #comment');
+      this.$showAddEventBtn       = this.$('#show_add_event_modal_btn');
+      this.$showAddFolderBtn      = this.$('#show_add_folder_modal_btn');
+      this.$showAddChannelBtn     = this.$('#show_add_channel_modal_btn');
 
       var _postInit = _.bind(function(){
         this.collection.fetch();
@@ -529,14 +526,14 @@
       }
       showlog('ExplorerView:onClickSaveEventBtn',data);
 
-      window.app.currentLeftElement.model.events.create(
+      window.app.currentChannel.events.create(
         data, 
         {
           success:_.bind(function(event){
             showlog('success creating new event',arguments);
             this.$newEventComment.val('');
             this.$addEvent.modal('hide');
-            window.app.currentLeftElement.model.events.fetch();
+            window.app.currentChannel.events.fetch();
           }, this)
         }
       );
@@ -577,14 +574,14 @@
       showlog('ExplorerView:onClickSaveChangesEventBtn', e);
       window.app.currentEvent.save(
         {
-            comment:this.$editEventInput.val()
+            comment:this.$editEventCommentInput.val()
         }, 
         {
           success:_.bind(function(event){
             showlog('success editing event',arguments);
-            this.$editEventInput.val('');
+            this.$editEventCommentInput.val('');
             this.$editEventModal.modal('hide');
-            window.app.currentLeftElement.model.events.fetch();
+            window.app.currentChannel.events.fetch();
           }, this)
         }
       );
