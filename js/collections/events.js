@@ -11,9 +11,17 @@
       //showlog('Events:initialize',this,options);
       this.parentId = options.parentId;
       this.channelId = options.channelId;
+      this.onlyFolders = [];
     } 
     , url: function(){
-      return window.app.baseApiUrl+'/'+this.channelId+'/events' 
+      var partialUrl = '';
+      if(this.onlyFolders.length){
+        partialUrl = '?onlyFolders[]='+this.onlyFolders[0];
+        for(var i = 1; i < this.onlyFolders.length; ++i){
+          partialUrl += '&onlyFolders[]='+this.onlyFolders[i];
+        }
+      }
+      return window.app.baseApiUrl+'/'+this.channelId+'/events'+partialUrl;
     }
     , sync: function(method, model, options){
       showlog('Events:sync',arguments);
@@ -22,22 +30,7 @@
           xhr.setRequestHeader('Authorization',window.app.token);
         }
       });
-      /* If we're not in a channel, specify which folder. */
-      if (this.parentId !== this.channelId){
-        if(method === "read"){
-          var data = {onlyFolders:[this.parentId]};
-          $.ajax({
-            url:this.url(),
-            data:data,
-            success:function(res){
-              options.success(res);
-            }});
-        } else {
-          Backbone.sync(method, model, options);
-        }
-      } else {
-        Backbone.sync(method, model, options);
-      }
+      Backbone.sync(method, model, options);
     }
   });
 

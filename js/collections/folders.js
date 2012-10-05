@@ -26,6 +26,7 @@
           xhr.setRequestHeader('Authorization',window.app.token);
         }
       });
+
       Backbone.sync(method, model, options);
     }
   });
