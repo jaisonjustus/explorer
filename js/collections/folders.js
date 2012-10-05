@@ -26,8 +26,18 @@
           xhr.setRequestHeader('Authorization',window.app.token);
         }
       });
+      /* HACK: can be removed once the URL is uniform for all API calls. */
+      var url = window.app.baseApiUrl+'/'+this.channelId+'/folders';
+      if (method === 'read' || method === 'create'){
+        if (this.parentId !== this.channelId){
+          url += '/'+this.parentId;
+        }
+      }
+      $.ajax({url:url,success:function(res){
+        options.success(res);
+      }});
 
-      Backbone.sync(method, model, options);
+      //Backbone.sync(method, model, options);
     }
   });
 
