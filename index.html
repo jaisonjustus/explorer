@@ -27,35 +27,43 @@
             <input id="username" class="span3" type="text" value="jonmaim"></input>
             <label>Password</label>
             <input id="password" class="span3" type="password" value="pd9d7UqfXRey"></input>
-            <a id="signin_btn" type="submit" class="btn btn-primary" href="./#/explore">Sign in</a>
+            <a id="signin_btn" type="submit" class="btn btn-primary" href="./#/token">Sign in</a>
           </form>
         </div>
       </div>
     </script>
 
-    <script id="channel_entry_template" type="text/template">
-      <a class="delete pull-left danger"><i class="icon-remove-circle"></i></a>
-      <a class="edit pull-left"><i class="icon-edit"></i></a>
-      <a class="channel"><%=name%></a>
-      <ul class="folder_explorer"></ul>
+    <script id="channel_view" type="text/template">
+      <a class="channel_container">
+        <span class="delete pull-left danger" style="display:none;">
+          <i class="icon-remove-circle"></i>
+        </span>
+        <span class="edit pull-left" style="display:none;">
+          <i class="icon-edit"></i>
+        </span>
+        <span class="channel">
+          <%=name%>
+        </span>
+      </a>
     </script>
 
-    <script id="folder_explorer_template" type="text/template">
-      <a class="channel"><%=name%></a>
-      <ul class="subfolder_explorer">
+    <script id="folder_view" type="text/template">
+      <a class="folder_container">
+        <span class="delete pull-left danger">
+          <i class="icon-remove-circle"></i>
+        </span>
+        <span class="edit pull-left">
+          <i class="icon-edit"></i>
+        </span>
+        <span>
+          <%=name%> (<%=id%>)
+        </span>
+      </a>
+      <ul class="folder nav nav-list">
     </script>
 
-    <script id="folder_entry_template" type="text/template">
-      <td width="28px">
-        <a class="delete danger"><i class="icon-remove-circle"></i></a>
-        <a class="edit"><i class="icon-edit"></i></a>
-      </td>
-      <td><small><%=id%></small></td>
-      <td><small><%=name%></small</td>
-    </script>
-
-    <script id="event_entry_template" type="text/template">
-      <td width="28px">
+    <script id="event_view" type="text/template">
+      <td width="38px">
         <a class="delete danger"><i class="icon-remove-circle"></i></a>
         <a class="edit"><i class="icon-edit"></i></a>
       </td>
@@ -65,98 +73,76 @@
       <td><small><%=comment%></small</td>
     </script>
 
-    <script id="explorer_view_template" type="text/template">
+    <script id="explorer_view" type="text/template">
       <div class="row">
         <div class="span12 center jumbotron margin_top">  
           <h1>
             <img id="logo_channel" src="./images/logo.jpg" width="100px">
             Explorer
           </h1>    
+          <button id="signout_btn" class="btn pull-right margin_left_5" title="Sign out">
+            <i class="icon-signout"></i> Sign out
+          </button>
         </div>
       </div>
       <div class="row">
-        <div class="offset1 span3 margin_top">
-          <h2>Channels</h2>
-          <div id="channels" class="well box">
-            <button id="toggle_edit_channels_btn" class="btn pull-left" title="Edit channels"><i class="icon-edit"></i></button>
-            <button id="show_add_channel_modal_btn" class="btn pull-right" title="Add channel"><i class="icon-plus"></i></button>
-            <ul id="channel_list" class="nav nav-list"></ul>
-          </div>
+        <div class="span12 center">  
+          <ul id="menu" class="nav nav-tabs">
+            <li class="admin"><a href="#/admin">Admin</a></li>
+            <li class="token"><a href="#/token">Token</a></li>
+          </ul>
         </div>
-        <div class="span8 margin_top">
-          <h2 class="inline">Folders</h2>
-          <button id="signout_btn" class="btn pull-right margin_left_5" title="Sign out"><i class="icon-signout"></i></button>
-          <button id="token_btn" class="btn pull-right margin_left_5" title="Manage tokens"><i class="icon-cogs"></i> Tokens</button>
-          <div id="events" class="well">
-            <button id="toggle_edit_folders_btn" class="btn pull-left" style="display:none;" title="Edit folders"><i class="icon-edit"></i></button>
-            <button id="show_add_folder_modal_btn" class="btn pull-right" title="Add folder"><i class="icon-plus"></i></button>
-            <table class="table table-striped">
-              <theader>
-                <td></td>
-                <td><a>id</a></td>
-                <td><a>name</a></td>
-              </theader>
-              <tbody id="folder_list"></tbody> 
-            </table>
-          </div>
-          <h2 class="inline">Events</h2>
-          <div id="events" class="well">
-            <button id="toggle_edit_events_btn" class="btn pull-left" style="display:none;" title="Edit events"><i class="icon-edit"></i></button>
-            <button id="show_add_event_modal_btn" class="btn pull-right" title="Add event"><i class="icon-plus"></i></button>
-            <table class="table table-striped">
-              <theader>
-                <td></td>
-                <td><a>id</a></td>
-                <td><a>folderId</a></td>
-                <td><a>value</a></td>
-                <td><a>comment</a></td>
-              </theader>
-              <tbody id="event_list"></tbody> 
-            </table>
-          </div>
+        <div id="tab"></div>
+      </div>
+    </script>
+
+    <script id="tab_view" type="text/template">
+      <div id="channels" class="span4">
+        <h2>Channels</h2>
+        <div class="well box">
+          <button id="add_channel_modal_btn" class="btn pull-left" title="Add channel" style="display:none;"><i class="icon-plus"></i></button>
+          <ul id="channel_list" class="nav nav-list"></ul>
         </div>
       </div>
-
-      <div id="add_folder_modal" class="modal hide fade">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h3>Add Folder</h3>
+      <div id="folders" class="span8" style="display:none;">
+        <h2 class="inline">Folders</h2>
+        <button id="settings_btn" class="btn pull-right margin_left_5" title="Settings" style="display:none;">
+          <i class="icon-cogs"></i> Settings
+        </button>
+        <div id="folders" class="well">
+          <div style="display:inline-block;width:100%;">
+            <button id="add_folder_modal_btn" class="btn pull-left" title="Add folder"><i class="icon-plus"></i></button>
         </div>
-        <form id="add_folder_form" class="form">
-          <div class="modal-body">
-            <label>Name</label>
-            <input id="name" type="text" placeholder="New folder"></input>
-          </div>
-          <div class="modal-footer">
-            <a class="btn" data-dismiss="modal">Cancel</a>
-            <button id="save_btn" class="btn btn-primary">Save</button>
-          </div>
-        </form>
-      </div> 
-
-      <div id="edit_folder_modal" class="modal hide fade">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h3>Edit Folder</h3>
+          <ul id="folder_list" class="nav nav-list folder margin_top_20"></ul>
         </div>
-        <form id="edit_folder_form" class="form">
-          <div class="modal-body">
-            <label>Name</label>
-            <input id="name" type="text" placeholder="New folder"></input>
-          </div>
-          <div class="modal-footer">
-            <a class="btn" data-dismiss="modal">Cancel</a>
-            <button id="save_btn" class="btn btn-primary">Save</button>
-          </div>
-        </form>
-      </div> 
+      </div>
+      <div id="events" class="span8" style="display:none;">
+        <h2 class="inline">Events</h2>
+        <div class="well">
+          <button id="toggle_edit_events_btn" class="btn pull-left" style="display:none;" title="Edit events"><i class="icon-edit"></i></button>
+          <button id="add_event_modal_btn" class="btn pull-left" title="Add event"><i class="icon-plus"></i></button>
+          <table class="table table-striped">
+            <theader>
+              <td></td>
+              <td><a>id</a></td>
+              <td><a>folderId</a></td>
+              <td><a>value</a></td>
+              <td><a>comment</a></td>
+            </theader>
+            <tbody id="event_list"></tbody> 
+          </table>
+        </div>
+      </div>
+      <div id="modal"></div>
+    </script>
 
+    <script id="add_channel_modal" type="text/template">
       <div id="add_channel_modal" class="modal hide fade">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal">&times;</button>
           <h3>Add Channel</h3>
         </div>
-        <form id="add_channel_form" class="form">
+        <form class="form">
           <div class="modal-body">
             <label>Name</label>
             <input id="name" type="text" placeholder="New channel"></input>
@@ -167,16 +153,18 @@
           </div>
         </form>
       </div> 
+    </script>
 
+    <script id="edit_channel_modal" type="text/template">
       <div id="edit_channel_modal" class="modal hide fade">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal">&times;</button>
           <h3>Edit Channel</h3>
         </div>
-        <form id="edit_channel_form" class="form">
+        <form class="form">
           <div class="modal-body">
             <label>Name</label>
-            <input id="name" type="text" placeholder="New channel"></input>
+            <input id="name" type="text" placeholder="channel name"></input>
           </div>
           <div class="modal-footer">
             <a class="btn" data-dismiss="modal">Cancel</a>
@@ -184,7 +172,9 @@
           </div>
         </form>
       </div> 
+    </script>
 
+    <script id="add_event_modal" type="text/template">
       <div id="add_event_modal" class="modal hide fade">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -203,13 +193,15 @@
           </div>
         </form>
       </div> 
+    </script>
 
+    <script id="edit_event_modal" type="text/template">
       <div id="edit_event_modal" class="modal hide fade">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal">&times;</button>
           <h3>Edit Event</h3>
         </div>
-        <form id="edit_event_form" class="form">
+        <form id="form" class="form">
           <div class="modal-body">
             <label>Comment</label>
             <input id="comment" type="text" placeholder="New event"></input>
@@ -220,18 +212,56 @@
           </div>
         </form>
       </div> 
+    </script>
 
-      <div id="tokens_modal" class="modal hide fade">
+    <script id="token_settings_modal" type="text/template">
+      <div id="token_settings_modal" class="modal hide fade">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h3>Add Token</h3>
+          <h3>Tokens Settings</h3>
         </div>
-        <form id="add_token_form" class="form">
+
+        <table class="table table-striped">
+          <theader>
+            <td></td>
+            <td><a>from</a></td>
+            <td><a>token</a></td>
+            <td></td>
+          </theader>
+          <tbody id="token_list">
+            <tr>
+              <td>
+              </td>
+              <td>
+                <input id="from" class="input-small" type="text" value="biberli"></input>
+              </td>
+              <td>
+                <input id="token" class="input-small" type="text" value="506d13e0f7eede6e2a000032"></input>
+              </td>
+              <td>
+                <button id="add_btn" class="btn">+</button>
+              </td>
+            </tr>
+          </tbody> 
+        </table>
+
+        <div class="modal-footer">
+          <button id="save_btn" class="btn btn-primary">Save</button>
+          <a class="btn" data-dismiss="modal">Cancel</a>
+        </div>
+      </div> 
+    </script>
+
+    <script id="add_folder_modal" type="text/template">
+      <div id="add_folder_modal" class="modal hide fade">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h3>Add Folder</h3>
+        </div>
+        <form id="form" class="form">
           <div class="modal-body">
-            <label>From</label>
-            <input id="from" type="text" value="biberli"></input>
-            <label>Token</label>
-            <input id="token" type="password" value="recla2"></input>
+            <label>Name</label>
+            <input id="name" type="text" placeholder="New folder"></input>
           </div>
           <div class="modal-footer">
             <a class="btn" data-dismiss="modal">Cancel</a>
@@ -240,6 +270,35 @@
         </form>
       </div> 
     </script>
+
+    <script id="edit_folder_modal" type="text/template">
+      <div id="edit_folder_modal" class="modal hide fade">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h3>Edit Folder</h3>
+        </div>
+        <form id="form" class="form">
+          <div class="modal-body">
+            <label>Name</label>
+            <input id="name" type="text" placeholder="New folder"></input>
+          </div>
+          <div class="modal-footer">
+            <a class="btn" data-dismiss="modal">Cancel</a>
+            <button id="save_btn" class="btn btn-primary">Save</button>
+          </div>
+        </form>
+      </div> 
+    </script>
+
+    <script id="token_view" type="text/template">
+      <tr>
+        <td><label class="checkbox"><input type="checkbox" <%=checked?'checked="checked"':''%>></label></td>
+        <td class="username"><small><%=username%></small></td>
+        <td class="token"><small><%=id%></small></td>
+        <td><!--<a class="danger"><i class="icon-remove-circle"></i></a>--></td>
+      </tr>
+    </script>
+
     <script src="./js/vendor/underscore.js"></script>
     <script src="./js/vendor/jquery.js"></script>
     <script src="./js/vendor/backbone.js"></script>
@@ -249,11 +308,15 @@
     <script src="./js/models/event.js"></script>
     <script src="./js/models/channel.js"></script>
     <script src="./js/models/folder.js"></script>
+    <script src="./js/models/token.js"></script>
     <script src="./js/collections/events.js"></script>
     <script src="./js/collections/channels.js"></script>
     <script src="./js/collections/folders.js"></script>
-    <script src="./js/views/landing.js"></script>
+    <script src="./js/collections/tokens.js"></script>
     <script src="./js/views/explorer.js"></script>
+    <script src="./js/views/landing.js"></script>
+    <script src="./js/views/admin.js"></script>
+    <script src="./js/views/token.js"></script>
     <script src="./js/app.js"></script>
   </body>
 </html>

@@ -37,8 +37,9 @@
 
       var xhr = $.post(url, data, 'json')
         .success(function(res){ 
-          window.app.sessionID = res.sessionID;
-          store.set('sessionID',window.app.sessionID);
+          //showlog("success getting sessID");
+          window.app.sessionId = res.sessionID;
+          store.set('sessionId',window.app.sessionId);
           window.location.href = e.target.href;
           /* User infos. */
           // $.ajaxSetup({

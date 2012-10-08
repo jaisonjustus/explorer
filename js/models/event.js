@@ -19,15 +19,15 @@
       if (id){
         url += '/'+id;
       }
+      $.ajaxSetup({
+        beforeSend: _.bind(function(xhr){
+          xhr.setRequestHeader('Authorization', this.collection.token);
+        }, this)
+      });
       return url;
     }
     , sync: function(method, model, options){
       showlog('Event:sync', arguments);
-      $.ajaxSetup({
-        beforeSend: function(xhr){
-          xhr.setRequestHeader('Authorization',window.app.token);
-        }
-      });
       /* HACK: can be removed once the "modified" param is accepted by backend. */
       if (method === 'update'){
         showlog("this",model);
