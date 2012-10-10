@@ -7,11 +7,15 @@
       model: window.app.Event
     , parentId: '-1'
     , channelId: '-1'
+    , token: null
+    , baseApiUrl: null
+    /* Methods. */
     , initialize: function(models, options){
-      //showlog('Events:initialize',this,options);
       this.parentId = options.parentId;
       this.channelId = options.channelId;
-      this.onlyFolders = [];
+      this.token = options.token;
+      this.baseApiUrl = options.baseApiUrl;
+      this.onlyFolders = options.onlyFolders || [];
     } 
     , url: function(){
       var partialUrl = '';
@@ -21,16 +25,12 @@
           partialUrl += '&onlyFolders[]='+this.onlyFolders[i];
         }
       }
-      return window.app.baseApiUrl+'/'+this.channelId+'/events'+partialUrl;
-    }
-    , sync: function(method, model, options){
-      showlog('Events:sync',arguments);
       $.ajaxSetup({
-        beforeSend: function(xhr){
-          xhr.setRequestHeader('Authorization',window.app.token);
-        }
+        beforeSend: _.bind(function(xhr){
+          xhr.setRequestHeader('Authorization',this.token);
+        }, this)
       });
-      Backbone.sync(method, model, options);
+      return this.baseApiUrl+'/'+this.channelId+'/events'+partialUrl;
     }
   });
 

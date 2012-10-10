@@ -6,7 +6,7 @@
   $(function(){
     /* Centralised ajax error handling. */
     $(document).ajaxError(function(e, xhr, settings, exception){
-      showlog('Ajax error',e,'xhr',xhr,'settings',settings,'exception',exception);
+      showlog(xhr.status, xhr.responseText);
     });
   });
 
@@ -16,23 +16,18 @@
         '*filter' : 'setFilter'
     }
     , initialize: function(){
-      /* Init collections. */
-      this.channels = new window.app.Channels();
-      /* Init views. */
-      this.landingView  = new window.app.LandingView({});
-      this.explorerView = new window.app.ExplorerView({
-        collection  : this.channels
-      });
+      this.explorerView = new window.app.ExplorerView({});
     }
     , setFilter: function(param){
       //showlog('router:setFilter', param);
       param = param.trim() || '';
       switch(param){
-        case 'explore': {
-          this.explorerView.render();
-        } break;
+        case 'admin': 
+        case 'token':
+          this.explorerView.setMode(param).render();
+        break;
         default: { 
-          this.landingView.render();
+          new window.app.LandingView({}).render();
         }
       }
     }
