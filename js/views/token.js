@@ -85,7 +85,7 @@
       var channelId = channel.get('id');
       this.views.events.rebuild({ 
         channelId: channelId, 
-        parentId: channelId, 
+        folderId: '', 
         token: channel.collection.token, 
         baseApiUrl: channel.collection.baseApiUrl
       });
@@ -100,7 +100,7 @@
       var folderId = folder.get('id');
       var options = { 
         channelId: folder.collection.channelId, 
-        parentId: folderId, 
+        folderId: folderId, 
         token: folder.collection.token, 
         onlyFolders: [folderId],
         baseApiUrl: folder.collection.baseApiUrl
@@ -206,9 +206,11 @@
       this.setElement(this.id);
       this.$el.html(this.template());
       this.$modal = this.$(this.templateId).modal();
+      this.delegateEvents();
       return this;
     }
     , close: function(){
+      this.undelegateEvents();
       this.$modal.modal('hide');
     }
   });
@@ -311,7 +313,7 @@
       return this;
     }
     , rebuild: function(options){
-      showlog(this.name+':rebuild',options);
+      //showlog(this.name+':rebuild',options);
       /* Attach to Dom. */
       this.render();
       /* Show Add button. */
@@ -345,6 +347,7 @@
     , createEvent: function(comment){
       this.collection.create({
           comment: comment
+        , folderId: this.collection.folderId
         },
         {
           success:_.bind(function(event){
@@ -359,7 +362,8 @@
       showlog(this.name+':saveEvent');
       event.save(
         {
-          comment:comment
+            comment:comment
+          , folderId: this.collection.folderId
         }, 
         {
           success:_.bind(function(event){
@@ -371,8 +375,10 @@
       );
     }
     , deleteEvent: function(event){
-      event.destroy();
-      this.refresh();
+      event.destroy({success:_.bind(function(){
+          this.refresh();
+        }, this)
+      });
     }
     , onClickAddEventBtn: function(){
       this.modals.add.render();
@@ -477,8 +483,8 @@
           add: new AddFolderModal()
         , edit: new EditFolderModal()
       };
-      this.modals.add.on('save', this.create, this);
-      this.modals.edit.on('save', this.save, this);
+      this.modals.add.on('saveAdd', this.createFolder, this);
+      this.modals.edit.on('saveEdit', this.saveFolder, this);
     }
     , events : {
       'click #add_folder_modal_btn':'onClickAddFolderBtn'
@@ -516,13 +522,13 @@
             new FolderView({model: folder})
               .on('click', that.click, that )
               .on('edit', that.edit, that )
-              .on('delete', that.delete, that )
+              .on('delete', that.deleteFolder, that )
               ;
           $folder.append(
             folderView.render().$el
           );
           folder.folders.each(function(subfolder){
-            recursive(subfolder, folderView.$('.folder'), that);
+            recursive(subfolder, folderView.$('.folder:first'), that);
           });
         })(folder, this.$folderList, this);  
       }, this);
@@ -534,7 +540,8 @@
       showlog(this.name+':click',folderView.model.get('id'),this.selected);
       this.trigger('click', folderView.model);
     }
-    , save: function(folder, name){
+    , saveFolder: function(folder, name){
+      showlog(this.name+':saveFolder');
       folder.save({
         name: name
       },
@@ -546,11 +553,10 @@
         }, this)
       });
     }
-    , create: function(name){
+    , createFolder: function(name){
+      showlog(this.name+':createFolder');
       var col = (this.selected) ? 
         this.selected.model.folders : this.collection;
-
-      showlog(this.name+':create',_.clone(col));
 
       col.create(
         {
@@ -565,9 +571,12 @@
         }
       );
     }
-    , delete: function(folder){
-      folder.destroy();
-      this.refresh();
+    , deleteFolder: function(folder){
+      showlog(this.name+':deleteFolder');
+      folder.destroy({success:_.bind(function(){
+        this.refresh();
+      }, this)
+      });
     }
     , edit: function(folder){
       this.modals.edit.setModel( folder ).render();
@@ -636,7 +645,7 @@
       return this;
     }
     , onClickSaveBtn: function(){
-      this.trigger('save', this.model, this.$('#name').val());
+      this.trigger('saveEdit', this.model, this.$('#name').val());
       return false; 
     }
   });
@@ -658,7 +667,7 @@
       return this;
     }
     , onClickSaveBtn: function(){
-      this.trigger('save', this.$('#name').val());
+      this.trigger('saveAdd', this.$('#name').val());
       return false; 
     }
   });
