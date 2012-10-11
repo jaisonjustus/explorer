@@ -5,13 +5,13 @@
 
   window.app.Events = Backbone.Collection.extend({
       model: window.app.Event
-    , parentId: '-1'
+    , folderId: ''
     , channelId: '-1'
     , token: null
     , baseApiUrl: null
     /* Methods. */
     , initialize: function(models, options){
-      this.parentId = options.parentId;
+      this.folderId = options.folderId;
       this.channelId = options.channelId;
       this.token = options.token;
       this.baseApiUrl = options.baseApiUrl;
