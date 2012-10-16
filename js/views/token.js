@@ -568,15 +568,21 @@
     }
     , createFolder: function(name){
       showlog(this.name+':createFolder');
-      var col = (this.selected) ? 
-        this.selected.model.folders : this.collection;
+      if (this.selected){
+        var parentId = this.selected.model.get('id');
+        var col = this.selected.model.folders;
+      } else {
+        var parentId = '';
+        var col = this.collection;
+      } 
 
       col.create(
         {
-          name: name
+            name: name
+          , parentId: parentId
         },
         {
-          success:_.bind(function(event){
+          success:_.bind(function(){
             showlog('success creating folder');
             this.refresh();
             this.modals.add.close();

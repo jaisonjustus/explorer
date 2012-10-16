@@ -26,14 +26,6 @@
       showlog(this.name+':parse',res);
       return res.tokens;
     }
-    // , sync: function(method, model, options){
-    //   $.ajax({
-    //       url:this.url()
-    //     , success:_.bind(function(res){
-    //         showlog("res:",this.url(),res);
-    //       }, this)
-    //   });
-    // }
   });
 
 })();
