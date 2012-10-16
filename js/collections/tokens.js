@@ -22,10 +22,6 @@
       });
       return this.baseApiUrl+'/admin/tokens'; 
     }
-    , parse: function(res){
-      showlog(this.name+':parse',res);
-      return res.tokens;
-    }
   });
 
 })();
