@@ -348,10 +348,12 @@
       showlog(this.name+':openEditModal');
       this.modals.edit.setModel( event ).render();
     }
-    , createEvent: function(comment){
-      this.collection.create({
-          comment: comment
-        , folderId: this.collection.folderId
+    , createEvent: function(comment, value){
+      this.collection.create(
+        {
+            comment: comment
+          , value: JSON.parse(value)
+          , folderId: this.collection.folderId
         },
         {
           success:_.bind(function(event){
@@ -362,11 +364,12 @@
         }
       );
     }
-    , saveEvent: function(event, comment){
+    , saveEvent: function(event, comment, value){
       showlog(this.name+':saveEvent');
       event.save(
         {
             comment:comment
+          , value: JSON.parse(value)
           , folderId: this.collection.folderId
         }, 
         {
@@ -439,6 +442,7 @@
     , render: function(){
       Modal.prototype.render.call(this);
       this.$('#comment').val( this.model.get('comment') );
+      this.$('#value').val( JSON.stringify(this.model.get('value')) );
       return this;
     }
     , setModel: function(model) {
@@ -446,7 +450,12 @@
       return this;
     }
     , onClickSaveBtn: function(){
-      this.trigger('save', this.model, this.$('#comment').val());
+      this.trigger(
+          'save'
+        , this.model
+        , this.$('#comment').val()
+        , this.$('#value').val()
+      );
       return false; 
     }
   });
@@ -468,7 +477,7 @@
       return this;
     }
     , onClickSaveBtn: function(){
-      this.trigger('save', this.$('#comment').val());
+      this.trigger('save', this.$('#comment').val(), this.$('#value').val());
       return false; 
     }
   });

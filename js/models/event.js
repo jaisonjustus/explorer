@@ -27,17 +27,6 @@
       });
       return url;
     }
-    , sync: function(method, model, options){
-      showlog('Event:sync', arguments);
-      /* HACK: can be removed once the "modified" param is accepted by backend. */
-      if (method === 'update'){
-         $.ajax({url:this.url(),data:{id:model.get('id'), folderId: model.get('folderId'), comment:model.get('comment'), time:model.get('time')},type:'PUT',success:function(res){
-           options.success(res)
-         }});
-      } else {
-        Backbone.sync(method, model, options);
-      }
-    }
   });
 
 })();
