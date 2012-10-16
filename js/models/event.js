@@ -15,7 +15,7 @@
       this.folderId = this.collection.folderId;
     } 
     , url: function(){
-      var url = window.app.baseApiUrl+'/'+this.collection.channelId+'/events';
+      var url = this.collection.baseApiUrl+'/'+this.collection.channelId+'/events';
       var id = this.get('id');
       if (id){
         url += '/'+id;

@@ -59,13 +59,13 @@
       showlog(this.name+':render'); 
       this.setElement(this.id);
       this.$el.html(this.template());
-
       this.$modal = this.$('#add_channel_modal').modal();
       this.$name = this.$('#name');
-
+      this.delegateEvents();
       return this;
     }
     , close: function(){
+      this.undelegateEvents();
       this.$modal.modal('hide');
       this.$name.val('');
     }
@@ -95,14 +95,14 @@
       showlog(this.name+':render'); 
       this.setElement(this.id);
       this.$el.html(this.template());
-
       this.$modal = this.$('#edit_channel_modal').modal();
       this.$name = this.$('#name');
       this.$name.val(this.model.get('name'));
-
+      this.delegateEvents();
       return this;
     }
     , close: function(){
+      this.undelegateEvents();
       this.$modal.modal('hide');
       this.$name.val('');
     }
