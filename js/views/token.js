@@ -34,9 +34,11 @@
     }
     , render: function(){
       window.app.sessionId = store.get('sessionId');
+      window.app.appToken = store.get('appToken');
       window.app.username = store.get('username');
       window.app.baseApiUrl = store.get('baseApiUrl');
       if (!window.app.sessionId || 
+          !window.app.appToken || 
           !window.app.username || 
           !window.app.baseApiUrl){
         return this.trigger('signOut');
@@ -44,7 +46,7 @@
 
       var _attach = function(that){
         that.setElement(that.id);
-        that.$el.html( that.template() ); 
+        that.$el.html( that.template()); 
         that.$('#settings_btn').show();
         that.$('#folders').show();
         that.$('#events').show();
@@ -55,7 +57,9 @@
       }
       var _processUserTokens = function(){
         _attach(this);
+        /* Manually add the app token to the user tokens. */
         /* Main user token is active by default. */
+        this.tokensByUsername[ window.app.username ].unshift(window.app.appToken);
         this.tokensByUsername[ window.app.username ].at(0).active = true;
         _renderChannels(this);
       };

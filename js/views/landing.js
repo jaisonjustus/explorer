@@ -20,6 +20,26 @@
       this.$password = this.$('#password');
       return this;
     }
+    , getToken: function(){
+      /* Get app token. */
+      var url = window.app.baseApiUrl + '/admin/get-my-token';
+      var data = {applicationId: 1};
+      $.ajaxSetup({
+        beforeSend: _.bind(function(xhr){
+          xhr.setRequestHeader('Authorization', window.app.sessionId);
+        }, this)
+      });
+
+      var xhr = $.post(url, data, 'json')
+        .success(function(res){ 
+          //showlog("success getting token");
+          var appToken = new window.app.Token({id:res.id});
+          window.app.appToken = appToken;
+          //showlog("appToken", appToken);
+          store.set('appToken',window.app.appToken);
+          window.location.href = './#/token';
+        });
+    }
     , onClickSigninBtn  : function(e){
       showlog('LandingView:onClickSigninBtn');
 
@@ -30,29 +50,20 @@
       store.set('username', window.app.username);
       store.set('baseApiUrl', window.app.baseApiUrl);
 
+      /* Get session ID. */
       var password  = this.$password.val()
         , url       = window.app.baseApiUrl+'/admin/login'
         , data      = {userName:window.app.username,password:password}
         ; 
 
       var xhr = $.post(url, data, 'json')
-        .success(function(res){ 
+        .success(_.bind(function(res){ 
           //showlog("success getting sessID");
           window.app.sessionId = res.sessionID;
           store.set('sessionId',window.app.sessionId);
-          window.location.href = e.target.href;
-          /* User infos. */
-          // $.ajaxSetup({
-          //   beforeSend: function(xhr){
-          //     xhr.setRequestHeader('Authorization',window.app.sessionID);
-          //   }
-          // });
-          // $.getJSON(window.app.baseApiUrl+'/admin/user-info')
-          //   .success(function(res){
-          //     showlog('success getting user-info',res);
-          //   });
-        });
-    
+          this.getToken();
+        }, this));
+
       return false;
     }
   });
