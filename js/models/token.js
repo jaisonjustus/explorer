@@ -16,7 +16,6 @@
     }
     , baseApiUrl: function(username){
       return 'https://'+username+'.rec.la';
-      //window.app.baseApiUrl = 'http://localhost:3080/'+username;
     }
   });
 

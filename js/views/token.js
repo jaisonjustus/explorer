@@ -34,9 +34,11 @@
     }
     , render: function(){
       window.app.sessionId = store.get('sessionId');
+      window.app.appToken = store.get('appToken');
       window.app.username = store.get('username');
       window.app.baseApiUrl = store.get('baseApiUrl');
       if (!window.app.sessionId || 
+          !window.app.appToken || 
           !window.app.username || 
           !window.app.baseApiUrl){
         return this.trigger('signOut');
@@ -44,7 +46,7 @@
 
       var _attach = function(that){
         that.setElement(that.id);
-        that.$el.html( that.template() ); 
+        that.$el.html( that.template()); 
         that.$('#settings_btn').show();
         that.$('#folders').show();
         that.$('#events').show();
@@ -55,7 +57,9 @@
       }
       var _processUserTokens = function(){
         _attach(this);
+        /* Manually add the app token to the user tokens. */
         /* Main user token is active by default. */
+        this.tokensByUsername[ window.app.username ].unshift(window.app.appToken);
         this.tokensByUsername[ window.app.username ].at(0).active = true;
         _renderChannels(this);
       };
@@ -344,10 +348,12 @@
       showlog(this.name+':openEditModal');
       this.modals.edit.setModel( event ).render();
     }
-    , createEvent: function(comment){
-      this.collection.create({
-          comment: comment
-        , folderId: this.collection.folderId
+    , createEvent: function(comment, value){
+      this.collection.create(
+        {
+            comment: comment
+          , value: JSON.parse(value)
+          , folderId: this.collection.folderId
         },
         {
           success:_.bind(function(event){
@@ -358,11 +364,12 @@
         }
       );
     }
-    , saveEvent: function(event, comment){
+    , saveEvent: function(event, comment, value){
       showlog(this.name+':saveEvent');
       event.save(
         {
             comment:comment
+          , value: JSON.parse(value)
           , folderId: this.collection.folderId
         }, 
         {
@@ -435,6 +442,7 @@
     , render: function(){
       Modal.prototype.render.call(this);
       this.$('#comment').val( this.model.get('comment') );
+      this.$('#value').val( JSON.stringify(this.model.get('value')) );
       return this;
     }
     , setModel: function(model) {
@@ -442,7 +450,12 @@
       return this;
     }
     , onClickSaveBtn: function(){
-      this.trigger('save', this.model, this.$('#comment').val());
+      this.trigger(
+          'save'
+        , this.model
+        , this.$('#comment').val()
+        , this.$('#value').val()
+      );
       return false; 
     }
   });
@@ -464,7 +477,7 @@
       return this;
     }
     , onClickSaveBtn: function(){
-      this.trigger('save', this.$('#comment').val());
+      this.trigger('save', this.$('#comment').val(), this.$('#value').val());
       return false; 
     }
   });
@@ -555,15 +568,21 @@
     }
     , createFolder: function(name){
       showlog(this.name+':createFolder');
-      var col = (this.selected) ? 
-        this.selected.model.folders : this.collection;
+      if (this.selected){
+        var parentId = this.selected.model.get('id');
+        var col = this.selected.model.folders;
+      } else {
+        var parentId = '';
+        var col = this.collection;
+      } 
 
       col.create(
         {
-          name: name
+            name: name
+          , parentId: parentId
         },
         {
-          success:_.bind(function(event){
+          success:_.bind(function(){
             showlog('success creating folder');
             this.refresh();
             this.modals.add.close();
