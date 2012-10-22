@@ -23,14 +23,13 @@
     , getToken: function(){
       /* Get app token. */
       var url = window.app.baseApiUrl + '/admin/get-my-token';
-      var data = {applicationId: 1};
       $.ajaxSetup({
         beforeSend: _.bind(function(xhr){
           xhr.setRequestHeader('Authorization', window.app.sessionId);
         }, this)
       });
 
-      var xhr = $.post(url, data, 'json')
+      var xhr = $.post(url, 'json')
         .success(function(res){ 
           //showlog("success getting token");
           var appToken = new window.app.Token({id:res.id});
@@ -53,7 +52,11 @@
       /* Get session ID. */
       var password  = this.$password.val()
         , url       = window.app.baseApiUrl+'/admin/login'
-        , data      = {userName:window.app.username,password:password}
+        , data      = {
+            userName:window.app.username
+          , password:password
+          , appId: 'exporer'
+        }
         ; 
 
       var xhr = $.post(url, data, 'json')
