@@ -3,12 +3,12 @@
   /* Namespace. */
   window.app = window.app || {};
 
-  window.app.Tokens = Backbone.Collection.extend({
+  window.app.Accesses = Backbone.Collection.extend({
     /* Variables. */
-      model: window.app.Token
+      model: window.app.Access
     , sessionId: null
     , baseApiUrl: null
-    , name: 'Tokens'
+    , name: 'Accesses'
     /* Methods. */
     , initialize: function(models, options){
       this.sessionId = options.sessionId || null;
@@ -20,7 +20,7 @@
           xhr.setRequestHeader('Authorization', this.sessionId);
         }, this)
       });
-      return this.baseApiUrl+'/admin/tokens'; 
+      return this.baseApiUrl+'/admin/accesses'; 
     }
   });
 

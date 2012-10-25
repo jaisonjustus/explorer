@@ -3,9 +3,10 @@
   /* Namespace. */
   window.app = window.app || {};
 
-  window.app.Token = Backbone.Model.extend({
+  window.app.Access = Backbone.Model.extend({
     /* Variables */
-      name: 'Token'
+      name: 'Access'
+    , token: null
     , active: false
     , defaults: {
         name : null

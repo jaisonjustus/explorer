@@ -22,7 +22,7 @@
     }
     , getToken: function(){
       /* Get app token. */
-      var url = window.app.baseApiUrl + '/admin/get-my-token';
+      var url = window.app.baseApiUrl + '/admin/get-app-token';
       $.ajaxSetup({
         beforeSend: _.bind(function(xhr){
           xhr.setRequestHeader('Authorization', window.app.sessionId);
@@ -31,8 +31,8 @@
 
       var xhr = $.post(url, 'json')
         .success(function(res){ 
-          //showlog("success getting token");
-          var appToken = new window.app.Token({id:res.id});
+          //showlog("success getting token", res);
+          var appToken = new window.app.Access({token:res.token});
           window.app.appToken = appToken;
           //showlog("appToken", appToken);
           store.set('appToken',window.app.appToken);
@@ -55,7 +55,7 @@
         , data      = {
             userName:window.app.username
           , password:password
-          , appId: 'exporer'
+          , appId: 'explorer'
         }
         ; 
 
