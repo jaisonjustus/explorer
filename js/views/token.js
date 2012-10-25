@@ -7,7 +7,7 @@
     /* Variables */
       id: '#tab'
     , template: '#tab_view'
-    , tokensByUsername: {}
+    , accessesByUsername: {}
     , views: null
     , modals: null
     , name:'TokenView'
@@ -24,7 +24,7 @@
 
       this.modals = {
           tokenSettings: new TokenSettingsModal({
-            tokensByUsername:this.tokensByUsername
+            accessesByUsername:this.accessesByUsername
         })
       };
       this.modals.tokenSettings.on('save', this.saveTokenSettings, this);
@@ -53,25 +53,25 @@
       };
       var _renderChannels = function(that){
         /* Rebuild channels. */
-        that.views.channels.rebuild( that.tokensByUsername );
+        that.views.channels.rebuild( that.accessesByUsername );
       }
-      var _processUserTokens = function(){
+      var _processUserAccesses = function(){
         _attach(this);
-        /* Manually add the app token to the user tokens. */
-        /* Main user token is active by default. */
-        this.tokensByUsername[ window.app.username ].unshift(window.app.appToken);
-        this.tokensByUsername[ window.app.username ].at(0).active = true;
+        /* Manually add the app token to the user accesses. */
+        /* Main user app token is active by default. */
+        this.accessesByUsername[ window.app.username ].unshift(window.app.appToken);
+        this.accessesByUsername[ window.app.username ].at(0).active = true;
         _renderChannels(this);
       };
 
-      if (!this.tokensByUsername[ window.app.username ]) {
-        this.tokensByUsername[ window.app.username ] = 
-          new window.app.Tokens([], {
+      if (!this.accessesByUsername[ window.app.username ]) {
+        this.accessesByUsername[ window.app.username ] = 
+          new window.app.Accesses([], {
               sessionId: window.app.sessionId
             , baseApiUrl: window.app.baseApiUrl
           });
-        this.tokensByUsername[ window.app.username ]
-          .on('reset', _processUserTokens, this)
+        this.accessesByUsername[ window.app.username ]
+          .on('reset', _processUserAccesses, this)
           .fetch()
           ;
       } else {
@@ -83,7 +83,7 @@
     }
     , saveTokenSettings: function(){
       this.modals.tokenSettings.close();
-      this.views.channels.rebuild( this.tokensByUsername );
+      this.views.channels.rebuild( this.accessesByUsername );
     } 
     , updateFoldersAndEvents: function(channel){
       var channelId = channel.get('id');
@@ -134,19 +134,20 @@
       this.$channelList = this.$('#channel_list');
       return this;
     }
-    , rebuild: function(tokensByUsername){
+    , rebuild: function(accessesByUsername){
       /* Attach to Dom. */
       this.render();
       /* Empty channels. */
       this.$channelList.empty();
       this.collections = [];
       /* Rebuild. */
-      _.each(tokensByUsername, function(tokens, username){
-        tokens.each(function(token){
-          if (token.active) {
+      _.each(accessesByUsername, function(accesses, username){
+        accesses.each(function(access){
+          if (access.active) {
             /* Add. */
             var col = new window.app.TokenChannels([], {
-              token:token.get('id'), baseApiUrl:token.baseApiUrl(username)
+                token:access.get('token')
+              , baseApiUrl:access.baseApiUrl(username)
             });
             col
               .on('reset', this.renderCollection, this)
@@ -224,14 +225,14 @@
       templateId: '#token_settings_modal'
     , tokenViewTemplId: '#token_view'
     , tokenViewTempl: null
-    , tokensByUsername: null
+    , accessesByUsername: null
     , name: 'TokenSettingsModal'   
     , $name: null
     /* Methods */
     , initialize: function(){
       Modal.prototype.initialize.call(this);
       this.tokenViewTempl = _.template($(this.tokenViewTemplId).html());
-      this.tokensByUsername = this.options.tokensByUsername;
+      this.accessesByUsername = this.options.accessesByUsername;
     } 
     , events: {
         'click #save_btn' : 'onClickSaveBtn' 
@@ -243,13 +244,13 @@
       this.$tokenList = this.$('#token_list');
       this.$name = this.$('#name');
 
-      _.each(this.tokensByUsername, function(tokens, username){
-        tokens.each(function(token){
+      _.each(this.accessesByUsername, function(accesses, username){
+        accesses.each(function(access){
           this.$tokenList.prepend(
             this.tokenViewTempl({
                 username:username
-              , id:token.get('id')
-              , checked:token.active
+              , id:access.get('token')
+              , checked:access.active
             })  
           );
         }, this);
@@ -263,18 +264,18 @@
     }
     , onClickSaveBtn: function(){
       showlog(this.name+':onClickSaveBtn');
-      var tokensByUsername = this.tokensByUsername;
+      var accessesByUsername = this.accessesByUsername;
       this.$('input[type=checkbox]').parents('tr').each(function(){
         var $this = $(this);
         var username = $this.find('.username').text();
         var id = $this.find('.token').text();
         var checked = $this.find('input[type=checkbox]').is(':checked');
-        if(!tokensByUsername[username]){
-          tokensByUsername[username] = new window.app.Tokens([{id:id}], {});
-        } else if (!tokensByUsername[username].get(id)){
-          tokensByUsername[username].add({id:id});
+        if(!accessesByUsername[username]){
+          accessesByUsername[username] = new window.app.Accesses([{token:id}], {});
+        } else if (!(accessesByUsername[username].where({token:id})).length){
+          accessesByUsername[username].add({token:id});
         }
-        tokensByUsername[username].get(id).active = checked;
+        accessesByUsername[username].where({token:id})[0].active = checked;
       });
       this.trigger('save');
       return false; 
