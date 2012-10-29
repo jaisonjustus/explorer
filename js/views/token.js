@@ -89,7 +89,7 @@
       var channelId = channel.get('id');
       this.views.events.rebuild({ 
         channelId: channelId, 
-        folderId: '', 
+        folderId: null, 
         token: channel.collection.token, 
         baseApiUrl: channel.collection.baseApiUrl
       });

@@ -5,7 +5,7 @@
 
   window.app.Events = Backbone.Collection.extend({
       model: window.app.Event
-    , folderId: ''
+    , folderId: null 
     , channelId: '-1'
     , token: null
     , baseApiUrl: null
@@ -20,9 +20,9 @@
     , url: function(){
       var partialUrl = '';
       if(this.onlyFolders.length){
-        partialUrl = '?onlyFolders[]='+this.onlyFolders[0];
+        partialUrl = '?onlyFolders[0]='+this.onlyFolders[0];
         for(var i = 1; i < this.onlyFolders.length; ++i){
-          partialUrl += '&onlyFolders[]='+this.onlyFolders[i];
+          partialUrl += '&onlyFolders['+i+']='+this.onlyFolders[i];
         }
       }
       $.ajaxSetup({

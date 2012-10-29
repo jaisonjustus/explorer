@@ -7,7 +7,7 @@
     defaults: {
       /* id, folderId */
         comment: null
-      , folderId: ''
+      , folderId: null
       , value:null
     }
     , initialize: function(){
