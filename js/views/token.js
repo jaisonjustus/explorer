@@ -101,6 +101,7 @@
       });
     }
     , updateEvents: function(folder){
+      showlog(this.name+':updateEvents');
       var folderId = folder.get('id');
       var options = { 
         channelId: folder.collection.channelId, 
@@ -109,7 +110,6 @@
         onlyFolders: [folderId],
         baseApiUrl: folder.collection.baseApiUrl
       };
-      showlog(this.name+':updateEvents',folder,options);
       this.views.events.rebuild( options );
     }
     , onClickSettingsBtn: function(){
@@ -299,6 +299,7 @@
     , collection: null
     , name: 'EventsView'
     , $eventList: null
+    , runningEvent: null
     , modals: null
     /* Methods */
     , initialize: function(){
@@ -308,6 +309,8 @@
       }
       this.modals.edit.on('save', this.saveEvent, this);
       this.modals.add.on('save', this.createEvent, this);
+      this.modals.add.on('start', this.startEvent, this);
+      this.modals.add.on('stop', this.stopEvent, this);
     }
     , events : {
       'click #add_event_modal_btn':'onClickAddEventBtn'
@@ -358,15 +361,37 @@
         },
         {
           success:_.bind(function(event){
-            showlog('success creating event');
+            showlog('success creating mark event');
             this.refresh();
             this.modals.add.close();
           }, this)
         }
       );
     }
+    , startEvent: function(comment, value){
+      this.collection.create(
+        {
+            comment: comment
+          , value: JSON.parse(value)
+          , folderId: this.collection.folderId
+          , duration: null 
+        },
+        {
+          success: function(event){
+            showlog('success creating duration event');
+          }
+        }
+      );
+    }
+    , stopEvent: function(){
+      this.collection.stopCurrentEvent(_.bind(function(data, status, xhr){
+          showlog('success stopping event');
+          this.refresh();
+          this.modals.add.close();
+        }, this)
+      );
+    }
     , saveEvent: function(event, comment, value){
-      showlog(this.name+':saveEvent');
       event.save(
         {
             comment:comment
@@ -408,9 +433,35 @@
       , 'click .edit'     : 'onClickEdit'
     }
     , render: function(){
+
+      var _beautify = function(data){
+        /* Beautify value. */
+        data.value = JSON.stringify(data.value);
+        /* Beautify id. */
+        if (data.id.length > 11){
+          var length = data.id.length;
+          data.id = '...'+data.id.substr(length-8, 8);
+        }
+        /* Beautify folderId. */
+        if (data.folderId !== null && data.folderId.length > 11){
+          var length = data.folderId.length;
+          data.folderId = '...'+data.folderId.substr(length-8, 8);
+        }
+        /* Beautify duration if any. */
+        if (data.duration === undefined){
+          data.duration = 'mark';
+        } else if (data.duration === null){
+          data.duration = 'running';
+        } else {
+          data.duration = data.duration.toFixed(2);
+        }
+      }
+
       /* Stringify JSON object. */
       var data = this.model.toJSON();
-      data.value = JSON.stringify(data.value);
+      _beautify(data);
+
+
       this.$el.html( this.template( data ) );
       return this;
     }
@@ -464,6 +515,7 @@
   var AddEventModal = Modal.extend({
     /* Variables */
       templateId: '#add_event_modal'
+    , mode: 'mark'
     , name: 'AddEventModal'   
     , $name: null
     /* Methods */
@@ -471,15 +523,54 @@
       Modal.prototype.initialize.call(this);
     } 
     , events: {
-        'click #save_btn' : 'onClickSaveBtn' 
+        'click #save_btn'   : 'onClickSaveBtn' 
+      , 'click #start_btn'  : 'onClickStartBtn' 
+      , 'click #stop_btn'   : 'onClickStopBtn' 
+      , 'change #event_mode': 'onChangeEventMode'
     }
     , render: function(){
-      Modal.prototype.render.call(this);
+      /* Override Modal so that you can't close it. */
+      this.setElement(this.id);
+      this.$el.html(this.template());
+      this.$modal = this.$(this.templateId).modal({backdrop:'static'});
+      this.delegateEvents();
       return this;
+    }
+    , close: function(){
+      this.$('#stop_btn').hide();
+      this.$('#start_btn').show();
+      this.$('#cancel_btn').show();
+      Modal.prototype.close.call(this);
+    }
+    , onChangeEventMode: function(){
+      // showlog(this.name + ':onChangeEventMode');
+      this.$('.optional').hide();
+      var selected = this.$('#event_mode > option:selected').attr('id');
+      this.$('.'+selected+'_btn').show();
     }
     , onClickSaveBtn: function(){
       this.trigger('save', this.$('#comment').val(), this.$('#value').val());
       return false; 
+    }
+    , onClickStartBtn: function(){
+      this.$('#start_btn').hide();
+      this.$('#cancel_btn').hide();
+      this.$('#value').attr('disabled', 'disabled');
+      this.$('#comment').attr('disabled', 'disabled');
+      this.$('#stop_btn').show();
+      this.trigger('start', this.$('#comment').val(), this.$('#value').val());
+      /* Small counter to help timing events. */
+      window.app.interval = window.setInterval(function(time){
+        var time = parseInt($('#timer').text());
+        time += 1;
+        $('#timer').text(time.toString()+' s.');
+      }, 1000)
+      return false;
+    }
+    , onClickStopBtn: function(){
+      /* Stop counter. */
+      window.clearInterval(window.app.interval);
+      this.trigger('stop');
     }
   });
 
@@ -551,7 +642,6 @@
       this.$('.folder_container').removeClass('selected');
       folderView.$('.folder_container:first').addClass('selected');
       this.selected = folderView;
-      showlog(this.name+':click',folderView.model.get('id'),this.selected);
       this.trigger('click', folderView.model);
     }
     , saveFolder: function(folder, name){

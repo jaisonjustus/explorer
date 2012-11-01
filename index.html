@@ -63,14 +63,15 @@
     </script>
 
     <script id="event_view" type="text/template">
-      <td width="38px">
+      <td>
         <a class="delete danger"><i class="icon-remove-circle"></i></a>
         <a class="edit"><i class="icon-edit"></i></a>
       </td>
       <td><small><%=id%></small></td>
       <td><small><%=folderId%></small></td>
-      <td><small><%=value%></small</td>
-      <td><small><%=comment%></small</td>
+      <td><small><%=duration%></small></td>
+      <td><small><%=value%></small></td>
+      <td><small><%=comment%></small></td>
     </script>
 
     <script id="explorer_view" type="text/template">
@@ -122,13 +123,22 @@
           <button id="toggle_edit_events_btn" class="btn pull-left" style="display:none;" title="Edit events"><i class="icon-edit"></i></button>
           <button id="add_event_modal_btn" class="btn pull-left" title="Add event"><i class="icon-plus"></i></button>
           <table class="table table-striped">
-            <theader>
-              <td></td>
-              <td><a>id</a></td>
-              <td><a>folderId</a></td>
-              <td><a>value</a></td>
-              <td><a>comment</a></td>
-            </theader>
+            <col style="width:10%">
+            <col style="width:16%">
+            <col style="width:16%">
+            <col style="width:10%">
+            <col style="width:24%">
+            <col style="width:24%">
+            <thead>
+              <tr>
+                <th></th>
+                <th><a>id</a></th>
+                <th><a>folderId</a></th>
+                <th><a>duration</a></th>
+                <th><a>value</a></th>
+                <th><a>comment</a></th>
+              </tr>
+            </thead>
             <tbody id="event_list"></tbody> 
           </table>
         </div>
@@ -182,14 +192,23 @@
         </div>
         <form id="add_event_form" class="form">
           <div class="modal-body">
+            <select id="event_mode">
+              <option id="mark">mark event</option>
+              <option id="duration">duration event</option>
+            </select>
             <label>Comment</label>
             <input id="comment" class="span4" type="text" placeholder="New event"></input>
             <label>Value (valid JSON)</label>
             <input id="value" class="span4" type="text" placeholder='{"Type":"Mass:Kilogram","value":100}' value='{"Type":"Mass:Kilogram","value":100}'></input>
           </div>
           <div class="modal-footer">
-            <a class="btn" data-dismiss="modal">Cancel</a>
-            <button id="save_btn" class="btn btn-primary">Save</button>
+            <label id="timer" class="duration_btn">0 s.</label>
+            <div class="modal_buttons">
+              <a id="cancel_btn" class="btn" data-dismiss="modal">Cancel</a>
+              <a id="save_btn" class="btn btn-primary mark_btn optional">Save</button>
+              <a id="start_btn" class="btn btn-primary duration_btn optional"><i class="icon-play"></i> Start</a>
+              <a id="stop_btn" class="btn optional"><i class="icon-stop"></i> Stop & Save</a>
+            </div>
           </div>
         </form>
       </div> 

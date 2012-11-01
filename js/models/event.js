@@ -5,15 +5,11 @@
 
   window.app.Event = Backbone.Model.extend({
     defaults: {
-      /* id, folderId */
-        comment: null
-      , folderId: null
-      , value:null
+        /* id, folderId */
+          comment: null
+        , folderId: null
+        , value:null
     }
-    , initialize: function(){
-      // showlog('Event:initialize', this);
-      this.folderId = this.collection.folderId;
-    } 
     , url: function(){
       var url = this.collection.baseApiUrl+'/'+this.collection.channelId+'/events';
       var id = this.get('id');
@@ -29,4 +25,18 @@
     }
   });
 
+  window.app.DurationEvent = window.app.Event.extend({
+    /* Variables. */
+      name: 'DurationEvent'
+    , duration: null
+    /* Methods. */
+    , url: function(){
+      if (!this.get('id')){
+        /* We only override the event creation. */
+        return this.collection.baseApiUrl+'/'+this.collection.channelId+'/events/start';
+      } else {
+        return window.app.Event.prototype.url.call(this);
+      }
+    } 
+  });
 })();
