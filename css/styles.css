@@ -85,7 +85,8 @@
 #channel_list, table {
   margin-top:50px;
 }
-#add_event_modal_btn, #show_add_channel_modal_btn, #add_folder_modal_btn {
+#add_event_modal_btn, #show_add_channel_modal_btn, 
+#add_folder_modal_btn, .duration_btn, #stop_btn {
   display:none;
 }
 .form {
