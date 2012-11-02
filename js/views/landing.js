@@ -32,6 +32,9 @@
       var xhr = $.post(url, 'json')
         .success(function(res){ 
           //showlog("success getting token", res);
+          if (typeof(res) === 'string'){
+            res = JSON.parse(res);
+          }
           var appToken = new window.app.Access({token:res.token});
           window.app.appToken = appToken;
           //showlog("appToken", appToken);
@@ -49,7 +52,7 @@
       store.set('username', window.app.username);
       store.set('baseApiUrl', window.app.baseApiUrl);
 
-      /* Get session ID. */
+      /* Get session ID. */
       var password  = this.$password.val()
         , url       = window.app.baseApiUrl+'/admin/login'
         , data      = {
@@ -61,6 +64,9 @@
 
       var xhr = $.post(url, data, 'json')
         .success(_.bind(function(res){ 
+          if (typeof(res) === 'string'){
+            res = JSON.parse(res);
+          }
           //showlog("success getting sessID");
           window.app.sessionId = res.sessionID;
           store.set('sessionId',window.app.sessionId);
