@@ -89,6 +89,10 @@
 #add_folder_modal_btn, .duration_btn, #stop_btn {
   display:none;
 }
+#file_upload {
+  opacity:0;
+  position:absolute;
+}
 .form {
   margin-bottom: 0px;
 }

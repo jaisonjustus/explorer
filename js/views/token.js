@@ -235,8 +235,8 @@
       this.accessesByUsername = this.options.accessesByUsername;
     } 
     , events: {
-        'click #save_btn' : 'onClickSaveBtn' 
-      , 'click #add_btn'  : 'onClickAddBtn'
+        'click #save_btn'   : 'onClickSaveBtn' 
+      , 'click #add_btn'    : 'onClickAddBtn'
     }
     , render: function(){
       Modal.prototype.render.call(this);
@@ -307,7 +307,9 @@
           edit: new EditEventModal()
         , add: new AddEventModal()
       }
-      this.modals.edit.on('save', this.saveEvent, this);
+      this.modals.edit
+        .on('save', this.saveEvent, this)
+        ;
       this.modals.add.on('save', this.createEvent, this);
       this.modals.add.on('start', this.startEvent, this);
       this.modals.add.on('stop', this.stopEvent, this);
@@ -489,12 +491,28 @@
       Modal.prototype.initialize.call(this);
     } 
     , events: {
-        'click #save_btn' : 'onClickSaveBtn' 
+        'click #save_btn'   : 'onClickSaveBtn'
     }
     , render: function(){
       Modal.prototype.render.call(this);
       this.$('#comment').val( this.model.get('comment') );
       this.$('#value').val( JSON.stringify(this.model.get('value')) );
+
+      this.$('#file_upload').fileupload({
+        dataType: 'json',
+        add: _.bind(function(e, data){
+          showlog('Adding',data);
+          this.$('#file_upload').attr('name',data.files[0].name);
+          data.url = this.model.url()+'?auth='+this.model.collection.token,
+          data.submit(); 
+        },this),
+        error: function(o){
+          showlog('Error',o);
+        },
+        done: function(e, data){
+          showlog('Done',data); 
+        }
+      });
       return this;
     }
     , setModel: function(model) {
@@ -781,4 +799,5 @@
       return false; 
     }
   });
+
 })()
