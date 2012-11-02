@@ -436,33 +436,33 @@
     }
     , render: function(){
 
-      var _beautify = function(data){
-        /* Beautify value. */
-        data.value = JSON.stringify(data.value);
-        /* Beautify id. */
-        if (data.id.length > 11){
-          var length = data.id.length;
-          data.id = '...'+data.id.substr(length-8, 8);
-        }
-        /* Beautify folderId. */
-        if (data.folderId !== null && data.folderId.length > 11){
-          var length = data.folderId.length;
-          data.folderId = '...'+data.folderId.substr(length-8, 8);
-        }
-        /* Beautify duration if any. */
-        if (data.duration === undefined){
-          data.duration = 'mark';
-        } else if (data.duration === null){
-          data.duration = 'running';
-        } else {
-          data.duration = data.duration.toFixed(2);
-        }
-      }
-
       /* Stringify JSON object. */
       var data = this.model.toJSON();
-      _beautify(data);
 
+      /* Beautify value. */
+      data.value = JSON.stringify(data.value);
+      /* Beautify id. */
+      if (data.id.length > 11){
+        var length = data.id.length;
+        data.id = '...'+data.id.substr(length-8, 8);
+      }
+      /* Beautify folderId. */
+      if (data.folderId !== null && data.folderId.length > 11){
+        var length = data.folderId.length;
+        data.folderId = '...'+data.folderId.substr(length-8, 8);
+      }
+      /* Beautify duration if any. */
+      if (data.duration === undefined){
+        data.duration = 'mark';
+      } else if (data.duration === null){
+        data.duration = 'running';
+      } else {
+        data.duration = data.duration.toFixed(2);
+      }
+      /* Attachments? */
+      data.file = (data.attachments) ?
+        data.file = this.model.url()+'/'+data.attachments.attachment.fileName+'?auth='+this.model.collection.token :
+        '';
 
       this.$el.html( this.template( data ) );
       return this;
@@ -501,9 +501,9 @@
       this.$('#file_upload').fileupload({
         dataType: 'json',
         add: _.bind(function(e, data){
-          showlog('Adding',data);
           this.$('#file_upload').attr('name',data.files[0].name);
           data.url = this.model.url()+'?auth='+this.model.collection.token,
+          showlog('Adding',data);
           data.submit(); 
         },this),
         error: function(o){
