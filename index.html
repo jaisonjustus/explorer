@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Rec-la Explorer</title>
+    <title>Explorer | Pryv</title>
     <meta name="description" content="">
     <meta name="author" content="">
     <!-- Le styles -->
@@ -72,6 +72,7 @@
       <td><small><%=duration%></small></td>
       <td><small><%=value%></small></td>
       <td><small><%=comment%></small></td>
+      <td><% if(file) print('<a href="'+file+'" target="_blank"><i class="icon-file"></i></a>') %></td>
     </script>
 
     <script id="explorer_view" type="text/template">
@@ -127,8 +128,9 @@
             <col style="width:16%">
             <col style="width:16%">
             <col style="width:10%">
-            <col style="width:24%">
-            <col style="width:24%">
+            <col style="width:18%">
+            <col style="width:18%">
+            <col style="width:10%">
             <thead>
               <tr>
                 <th></th>
@@ -137,6 +139,7 @@
                 <th><a>duration</a></th>
                 <th><a>value</a></th>
                 <th><a>comment</a></th>
+                <th><a>file</a></th>
               </tr>
             </thead>
             <tbody id="event_list"></tbody> 
@@ -220,18 +223,19 @@
           <button type="button" class="close" data-dismiss="modal">&times;</button>
           <h3>Edit Event</h3>
         </div>
-        <form id="form" class="form">
-          <div class="modal-body">
-            <label>Comment</label>
-            <input id="comment" type="text" placeholder="New event"></input>
-            <label>Value (valid JSON)</label>
-            <input id="value" class="span4" type="text" placeholder='{"Type":"Mass:Kilogram","value":100}' value='{"Type":"Mass:Kilogram","value":100}'></input>
-          </div>
-          <div class="modal-footer">
-            <a class="btn" data-dismiss="modal">Cancel</a>
-            <button id="save_btn" class="btn btn-primary">Save</button>
-          </div>
-        </form>
+        <div class="modal-body">
+          <label>Comment</label>
+          <input id="comment" type="text" placeholder="New event"></input>
+          <label>Value (valid JSON)</label>
+          <input id="value" class="span4" type="text" placeholder='{"Type":"Mass:Kilogram","value":100}' value='{"Type":"Mass:Kilogram","value":100}'></input>
+          <label>File attachment</label>
+          <input id="file_upload" type="file" name="attachment">
+          <button id="attach_btn" class="btn">Attach file</button>
+        </div>
+        <div class="modal-footer">
+          <a class="btn" data-dismiss="modal">Cancel</a>
+          <button id="save_btn" class="btn btn-primary">Save</button>
+        </div>
       </div> 
     </script>
 
@@ -321,10 +325,18 @@
     </script>
 
     <script src="./js/vendor/underscore.js"></script>
-    <script src="./js/vendor/jquery.js"></script>
+    <script src="./js/vendor/jquery.min.js"></script>
     <script src="./js/vendor/backbone.js"></script>
     <script src="./js/vendor/bootstrap.js"></script>
     <script src="./js/vendor/store.js"></script>
+    <!--jQuery file upload -->
+    <script src="./js/vendor/jquery.ui.widget.js"></script>
+    <script src="./js/vendor/jquery.iframe-transport.js"></script>
+    <script src="./js/vendor/jquery.fileupload.js"></script>
+    <!-- <script src="./js/vendor/load-image.js"></script> -->
+    <!-- <script src="./js/vendor/canvas-to-blob.js"></script> -->
+    <!-- <script src="./js/vendor/jquery.fileupload-fp.js"></script> -->
+
     <script src="./js/common.js"></script>
     <script src="./js/models/event.js"></script>
     <script src="./js/models/channel.js"></script>
