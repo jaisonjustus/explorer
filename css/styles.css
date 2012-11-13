@@ -60,6 +60,9 @@
 }
 
 /* Landing view. */
+#domain {
+  width: 100%;
+}
 
 /* Channel view. */
 #logo_channel {
