@@ -11,6 +11,9 @@
     <link href="./css/styles.css" rel="stylesheet">
   </head>
   <body>
+    <a href="https://github.com/pryv/explorer">
+      <img style="position:absolute;top:1;right:0;border:0;" src="./images/forkme.png" alt="Fork me on GitHub">
+    </a>
     <div id="view_entry" class="container"></div>
 
     <script id="landing_view_template" type="text/template">
@@ -27,6 +30,12 @@
             <input id="username" class="span3" type="text" value="jonmaim"></input>
             <label>Password</label>
             <input id="password" class="span3" type="password" value="pd9d7UqfXRey"></input>
+            <label>Domain</label>
+            <select id="domain">
+              <option>pryv.io</option>
+              <option>rec.la</option>
+              <option>localhost:2443</option>
+            </select>
             <a id="signin_btn" type="submit" class="btn btn-primary" href="./#/token">Sign in</a>
           </form>
         </div>
