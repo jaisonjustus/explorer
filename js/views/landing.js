@@ -72,7 +72,8 @@
           window.app.sessionId = res.sessionID;
           store.set('sessionId',window.app.sessionId);
           this.getToken();
-        }, this));
+        }, this))
+      ;
 
       return false;
     }
