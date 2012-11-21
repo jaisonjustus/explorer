@@ -1,14 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
   <head>
     <meta charset="utf-8">
-    <title>Explorer | Pryv</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title></title>
     <meta name="description" content="">
-    <meta name="author" content="">
-    <!-- Le styles -->
-    <link href="./css/bootstrap.css" rel="stylesheet">
-    <link href="./css/font-awesome.css" rel="stylesheet">
-    <link href="./css/styles.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width">
+
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+    <link rel="stylesheet" href="styles/2efea3f4.bootstrap.css"/>
+    <link rel="stylesheet" href="components/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" href="styles/9857012e.main.css">
+    <script src="scripts/vendor/cf69c6f2.modernizr.min.js"></script>
   </head>
   <body>
     <div id="view_entry" class="container"></div>
@@ -16,7 +23,7 @@
     <script id="landing_view_template" type="text/template">
       <div class="row">
         <div class="span12 center jumbotron margin_top">
-          <img src="./images/logo.jpg" width="250px">
+          <img src="images/b7ee4668.logo.jpg" width="250px">
           <h1>Explorer</h1>    
         </div>
       </div>
@@ -27,6 +34,12 @@
             <input id="username" class="span3" type="text" value="jonmaim"></input>
             <label>Password</label>
             <input id="password" class="span3" type="password" value="pd9d7UqfXRey"></input>
+            <label>Domain</label>
+            <select id="domain">
+              <option>pryv.io</option>
+              <option>rec.la</option>
+              <option>localhost:3443</option>
+            </select>
             <a id="signin_btn" type="submit" class="btn btn-primary" href="./#/token">Sign in</a>
           </form>
         </div>
@@ -324,32 +337,15 @@
       </tr>
     </script>
 
-    <script src="./js/vendor/underscore.js"></script>
-    <script src="./js/vendor/jquery.min.js"></script>
-    <script src="./js/vendor/backbone.js"></script>
-    <script src="./js/vendor/bootstrap.js"></script>
-    <script src="./js/vendor/store.js"></script>
-    <!--jQuery file upload -->
-    <script src="./js/vendor/jquery.ui.widget.js"></script>
-    <script src="./js/vendor/jquery.iframe-transport.js"></script>
-    <script src="./js/vendor/jquery.fileupload.js"></script>
-    <!-- <script src="./js/vendor/load-image.js"></script> -->
-    <!-- <script src="./js/vendor/canvas-to-blob.js"></script> -->
-    <!-- <script src="./js/vendor/jquery.fileupload-fp.js"></script> -->
+    <!--[if lt IE 7]>
+    <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+    <![endif]-->
 
-    <script src="./js/common.js"></script>
-    <script src="./js/models/event.js"></script>
-    <script src="./js/models/channel.js"></script>
-    <script src="./js/models/folder.js"></script>
-    <script src="./js/models/access.js"></script>
-    <script src="./js/collections/events.js"></script>
-    <script src="./js/collections/channels.js"></script>
-    <script src="./js/collections/folders.js"></script>
-    <script src="./js/collections/accesses.js"></script>
-    <script src="./js/views/explorer.js"></script>
-    <script src="./js/views/landing.js"></script>
-    <script src="./js/views/admin.js"></script>
-    <script src="./js/views/token.js"></script>
-    <script src="./js/app.js"></script>
+    <!-- Add your site or application content here -->
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="scripts/vendor/8bc61845.jquery.min.js"><\/script>')</script>
+
+    <script src="scripts/d185e94c.amd-app.js"></script>
   </body>
 </html>
