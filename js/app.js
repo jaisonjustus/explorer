@@ -11,8 +11,8 @@
   });
 
   /* Backbone hacking to get API-Version and Server-Time headers. */
-  Backbone._ajax = Backbone.ajax;
-  Backbone.ajax = function(){
+  Backbone._ajax = Backbone.ajax;
+  Backbone.ajax = function(){
     Backbone._ajax.apply(this, arguments)
       .success(function(res, textStatus, jqXHR){
 
@@ -37,11 +37,11 @@
           return headers;
         }
 
-        var h = _parseResponseHeaders( jqXHR.getAllResponseHeaders() );
+        var h = _parseResponseHeaders( jqXHR.getAllResponseHeaders() );
 
-        var remoteAPIVersion = h['API-Version'];
+        var remoteAPIVersion = h['API-Version'];
         if (remoteAPIVersion !== undefined) {
-          localAPIVersion = store.get('API-Version');
+          localAPIVersion = store.get('API-Version');
           if (localAPIVersion !== undefined && 
               localAPIVersion !== remoteAPIVersion) {
             showlog('Remote API version is now', remoteAPIVersion);
@@ -52,8 +52,8 @@
           } 
         }
 
-        var serverTime = h['Server-Time'];
-        if (serverTime !== undefined) {
+        var serverTime = h['Server-Time'];
+        if (serverTime !== undefined) {
           showlog('Server-Time is', serverTime);
           store.set('Server-Time', serverTime);
         }

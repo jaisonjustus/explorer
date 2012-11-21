@@ -3,7 +3,6 @@
   /* Namespace. */
   window.app = window.app || {};
 
-
   var Channels = Backbone.Collection.extend({
     /* Variables. */
       model: window.app.Channel
