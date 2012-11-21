@@ -1,3 +1,3 @@
-# REC-la Explorer
+# Pryv Explorer
 
-Explore the data you stored on the rec.la service.
+Explore the data you stored on the Pryv service.

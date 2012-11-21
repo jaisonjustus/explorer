@@ -1,0 +1,103 @@
+/* Will be compiled down to a single stylesheet with your sass files */
+
+/* Jumbotrons
+ * -------------------------------------------------- */
+.jumbotron {
+   position: relative;
+}
+.jumbotron h1 {
+   margin-bottom: 9px;
+   font-size: 81px;
+   font-weight: bold;
+   letter-spacing: -1px;
+   line-height: 1;
+}
+.jumbotron p {
+   margin-bottom: 18px;
+   font-weight: 300;
+}
+.jumbotron .btn-large {
+   font-size: 20px;
+   font-weight: normal;
+   padding: 14px 24px;
+   margin-right: 10px;
+   -webkit-border-radius: 6px;
+   -moz-border-radius: 6px;
+   border-radius: 6px;
+}
+.jumbotron .btn-large small {
+   font-size: 14px;
+}
+.danger {
+  color:#ee5f5b;
+}
+.danger:hover {
+  color:#bd362f;
+}
+
+.center {
+  text-align: center;
+}
+.margin_top {
+  margin-top: 30px;
+}
+.margin_top_20 {
+  margin-top: 20px;
+}
+.margin_left_5 {
+  margin-left: 5px;
+}
+.inline {
+  display: inline-block;
+}
+.box {
+  height: 500px;
+}
+
+.container {
+  text-align:center;
+}
+.row, .modal {
+  text-align:left;
+}
+
+/* Landing view. */
+#domain {
+  width: 100%;
+}
+
+/* Channel view. */
+#logo_channel {
+  margin-top:-15px;
+}
+#channel_list li {
+  width:100%;
+  display:inline-block;
+}
+#channel_list.nav li > a {
+  display:inline-block;
+  width:100%;
+}
+#channel_list.nav li > a span{
+  display:block;
+}
+.nav li > a.selected {
+  background-color:#A5E6A0;
+}
+#channel_list .delete, #channel_list .edit {
+  display:none;
+}
+#channel_list, table {
+  margin-top:50px;
+}
+#add_event_modal_btn, #show_add_channel_modal_btn, 
+#add_folder_modal_btn, .duration_btn, #stop_btn {
+  display:none;
+}
+#file_upload {
+  opacity:0;
+  position:absolute;
+}
+.form {
+  margin-bottom: 0px;
+}
