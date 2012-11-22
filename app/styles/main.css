@@ -50,9 +50,6 @@
 .inline {
   display: inline-block;
 }
-.box {
-  height: 500px;
-}
 
 .container {
   text-align:center;
@@ -65,6 +62,18 @@
 #domain {
   width: 100%;
 }
+
+/* Token view layout */
+#channels .nano, #folders .nano {
+  height:200px;
+}
+#events .nano {
+  height:500px;
+}
+#channels .well, #folders .well {
+  height:270px;
+}
+
 
 /* Channel view. */
 #logo_channel {
@@ -88,7 +97,7 @@
   display:none;
 }
 #channel_list, table {
-  margin-top:50px;
+  margin-top:20px;
 }
 #add_event_modal_btn, #show_add_channel_modal_btn, 
 #add_folder_modal_btn, .duration_btn, #stop_btn {

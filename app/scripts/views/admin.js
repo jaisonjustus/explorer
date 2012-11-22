@@ -219,7 +219,7 @@ define(['jquery', 'underscore', 'backbone', 'store', 'session_channels'], functi
       } else {
         this.setElement(this.id);
         this.$el.html( this.template() ); 
-        this.$('#add_channel_modal_btn').show();
+        this.$('#add_channel_modal_btn').removeClass('disabled').show();
         /* Reset and render channels. */
         this.views.channels.resetCollection(
             SessionChannels

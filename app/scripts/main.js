@@ -10,6 +10,7 @@ require.config({
     , backbone:             '../components/backbone-amd-lodash/backbone'
     , store:                '../components/store.js/store'
     , bootstrap:            '../components/bootstrap/docs/assets/js/bootstrap'
+    , nanoscroller:         '../components/nanoscroller/bin/javascripts/jquery.nanoscroller'
     , settings:             'models/settings'
     , access:               'models/access'
     , channel:              'models/channel'
