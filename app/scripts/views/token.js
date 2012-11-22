@@ -1,4 +1,4 @@
-define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'folders', 'token_channels', 'bootstrap', 'jquery.fileupload'], function($, _, Backbone, Store, Accesses, Events, Folders, TokenChannels) {
+define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'folders', 'token_channels', 'bootstrap', 'jquery.fileupload', 'nanoscroller'], function($, _, Backbone, Store, Accesses, Events, Folders, TokenChannels) {
   'use strict';
 
   var ChannelsView = Backbone.View.extend({
@@ -40,6 +40,7 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
           }
         }, this);
       }, this);
+
     }
     , renderCollection: function(col){
       col.each(function(channel){
@@ -54,6 +55,8 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
           this.trigger('click', channelView.model);
         }, this);
       }, this);
+      /* Rebuild page scrollers */
+      $('.nano').nanoScroller(); 
     }
   });
 
@@ -224,8 +227,8 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
       //console.log(this.name+':rebuild',options);
       /* Attach to Dom. */
       this.render();
-      /* Show Add button. */
-      $('#add_event_modal_btn').show();
+      /* Enable add button. */
+      $('#add_event_modal_btn').removeClass('disabled');
       /* Empty events. */
       this.collection = 
         new Events([], options)
@@ -239,14 +242,18 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
       this.collection.fetch();
     }
     , renderCollection: function(){
+      this.$('table').hide(); 
       this.collection.each(function(event){
         var eventView = 
           new EventView({model: event})
             .on('edit', this.openEditModal, this)
             .on('delete', this.deleteEvent, this)
             ;
+        this.$('table').show(); 
         this.$eventList.append( eventView.render().$el );
       }, this);
+      /* Rebuild page scrollers */
+      $('.nano').nanoScroller(); 
     }
     , openEditModal: function(event){
       console.log(this.name+':openEditModal');
@@ -346,10 +353,10 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
     , rebuild: function(options){
       /* Attach to Dom. */
       this.render();
-      /* Show Add button. */
-      $('#add_folder_modal_btn').show();
+      /* Enable add buttons */
+      $('#add_folder_modal_btn').removeClass('disabled').show();
+      $('#add_event_modal_btn').removeClass('disabled').show();
       /* Empty collection. */
-      $('#add_event_modal_btn').show();
       this.collection = new Folders([], options)
         .on('reset', this.renderCollection, this)
         ;
@@ -388,6 +395,9 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
         })(folder, this.$folderList, this);  
 
       }, this);
+
+      /* Rebuild page scrollers */
+      $('.nano').nanoScroller(); 
     }
     , click: function(folderView){
       this.$('.folder_container').removeClass('selected');
