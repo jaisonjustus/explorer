@@ -1,7 +1,7 @@
-# AdminView:initialize (http://localhost:3501/scripts/d185e94c.amd-app.js, #1)
+# AdminView:initialize (http://localhost:3501/scripts/e2859136.amd-app.js, #1)
 CACHE MANIFEST
 
-# Time: Wed Nov 21 2012 16:53:19 GMT+0530 (IST)
+# Time: Fri Nov 23 2012 18:03:41 GMT+0530 (IST)
 # This manifest was created by confess.js, http://github.com/jamesgpearce/confess
 #
 # Retrieved URL: http://localhost:3501/
@@ -22,15 +22,14 @@ CACHE MANIFEST
 #  configFile: /home/jon/.nvm/v0.8.8/lib/node_modules/yeoman/lib/support/confess.json
 
 CACHE:
-components/font-awesome/css/font-awesome.css
 http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js
 http://localhost:3501/img/glyphicons-halflings-white.png
 http://localhost:3501/img/glyphicons-halflings.png
 images/b7ee4668.logo.jpg
-scripts/d185e94c.amd-app.js
+scripts/e2859136.amd-app.js
 scripts/vendor/cf69c6f2.modernizr.min.js
-styles/2efea3f4.bootstrap.css
-styles/9857012e.main.css
+styles/38c44198.lib.css
+styles/b6f84bc0.main.css
 
 NETWORK:
 *

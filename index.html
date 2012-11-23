@@ -12,9 +12,9 @@
 
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
-    <link rel="stylesheet" href="styles/2efea3f4.bootstrap.css"/>
-    <link rel="stylesheet" href="components/font-awesome/css/font-awesome.css">
-    <link rel="stylesheet" href="styles/9857012e.main.css">
+    <link rel="stylesheet" href="styles/38c44198.lib.css"/>
+    <link rel="stylesheet" href="styles/b6f84bc0.main.css">
+
     <script src="scripts/vendor/cf69c6f2.modernizr.min.js"></script>
   </head>
   <body>
@@ -98,6 +98,14 @@
           <button id="signout_btn" class="btn pull-right margin_left_5" title="Sign out">
             <i class="icon-signout"></i> Sign out
           </button>
+          <span class="form-horizontal pull-right">
+            <label style="display:inline-block">View settings:</label>
+            <select id="view_select" class="span2">
+              <option>default</option>
+              <option>all</option>
+              <option>trashed</option>
+            </select>
+          </span>
         </div>
       </div>
       <div class="row">
@@ -114,49 +122,56 @@
     <script id="tab_view" type="text/template">
       <div id="channels" class="span4">
         <h2>Channels</h2>
-        <div class="well box">
-          <button id="add_channel_modal_btn" class="btn pull-left" title="Add channel" style="display:none;"><i class="icon-plus"></i></button>
-          <ul id="channel_list" class="nav nav-list"></ul>
+        <div class="well">
+          <button id="add_channel_modal_btn" class="btn pull-left disabled" title="Add channel"><i class="icon-plus"></i></button>
+          <div class="nano">
+            <ul id="channel_list" class="nav nav-list content"></ul>
+          </div>
         </div>
       </div>
       <div id="folders" class="span8" style="display:none;">
         <h2 class="inline">Folders</h2>
-        <button id="settings_btn" class="btn pull-right margin_left_5" title="Settings" style="display:none;">
+        <button id="settings_btn" class="btn pull-right margin_left_5" title="Settings">
           <i class="icon-cogs"></i> Explore tokens 
         </button>
         <div id="folders" class="well">
           <div style="display:inline-block;width:100%;">
-            <button id="add_folder_modal_btn" class="btn pull-left" title="Add folder"><i class="icon-plus"></i></button>
+            <button id="add_folder_modal_btn" class="btn pull-left disabled" title="Add folder"><i class="icon-plus"></i></button>
         </div>
-          <ul id="folder_list" class="nav nav-list folder margin_top_20"></ul>
+          <div class="nano">
+            <ul id="folder_list" class="nav nav-list folder margin_top_20 content"></ul>
+          </div>
         </div>
       </div>
-      <div id="events" class="span8" style="display:none;">
+      <div id="events" class="span12" style="display:none;">
         <h2 class="inline">Events</h2>
         <div class="well">
-          <button id="toggle_edit_events_btn" class="btn pull-left" style="display:none;" title="Edit events"><i class="icon-edit"></i></button>
-          <button id="add_event_modal_btn" class="btn pull-left" title="Add event"><i class="icon-plus"></i></button>
-          <table class="table table-striped">
-            <col style="width:10%">
-            <col style="width:16%">
-            <col style="width:16%">
-            <col style="width:10%">
-            <col style="width:18%">
-            <col style="width:18%">
-            <col style="width:10%">
-            <thead>
-              <tr>
-                <th></th>
-                <th><a>id</a></th>
-                <th><a>folderId</a></th>
-                <th><a>duration</a></th>
-                <th><a>value</a></th>
-                <th><a>comment</a></th>
-                <th><a>file</a></th>
-              </tr>
-            </thead>
-            <tbody id="event_list"></tbody> 
-          </table>
+          <button id="add_event_modal_btn" class="btn pull-left disabled" title="Add event"><i class="icon-plus"></i></button>
+          <div class="nano">
+            <div class="content">
+              <table class="table table-striped" style="display:none;">
+                <col style="width:10%">
+                <col style="width:16%">
+                <col style="width:16%">
+                <col style="width:10%">
+                <col style="width:18%">
+                <col style="width:18%">
+                <col style="width:10%">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th><a>id</a></th>
+                    <th><a>folderId</a></th>
+                    <th><a>duration</a></th>
+                    <th><a>value</a></th>
+                    <th><a>comment</a></th>
+                    <th><a>file</a></th>
+                  </tr>
+                </thead>
+                <tbody id="event_list"></tbody> 
+              </table>
+            </div>
+          </div>
         </div>
       </div>
       <div id="modal"></div>
@@ -346,6 +361,6 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="scripts/vendor/8bc61845.jquery.min.js"><\/script>')</script>
 
-    <script src="scripts/d185e94c.amd-app.js"></script>
+    <script src="scripts/e2859136.amd-app.js"></script>
   </body>
 </html>
