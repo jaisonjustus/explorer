@@ -40,8 +40,7 @@ define(['underscore', 'backbone', 'event', 'duration_event', 'state'], function(
     , url: function(){
       var partialUrl = '';
       if(this.onlyFolders.length){
-        partialUrl = '&onlyFolders[0]='+this.onlyFolders[0];
-        for(var i = 1; i < this.onlyFolders.length; ++i){
+        for(var i = 0; i < this.onlyFolders.length; ++i){
           partialUrl += '&onlyFolders['+i+']='+this.onlyFolders[i];
         }
       }
