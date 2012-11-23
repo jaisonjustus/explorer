@@ -1,4 +1,4 @@
-define(['underscore', 'backbone', 'event', 'duration_event'], function(_, Backbone, Event, DurationEvent) {
+define(['underscore', 'backbone', 'event', 'duration_event', 'state'], function(_, Backbone, Event, DurationEvent, state) {
   'use strict';
 
   return Backbone.Collection.extend({
@@ -26,13 +26,12 @@ define(['underscore', 'backbone', 'event', 'duration_event'], function(_, Backbo
       this.onlyFolders = options.onlyFolders || [];
     } 
     , stopCurrentEvent: function(cb){
-      // showlog(this.name+":stopCurrentEvent");
-      var url = this.baseApiUrl+'/'+this.channelId+'/events/stop';
       $.ajaxSetup({
         beforeSend: _.bind(function(xhr){
-          xhr.setRequestHeader('Authorization', this.token);
+          //xhr.setRequestHeader('Authorization', this.token);
         }, this)
       });
+      var url = this.baseApiUrl+'/'+this.channelId+'/events/stop?auth='+this.token;
 
       var xhr = $.post(url, function(data, status, xhr){
         cb(data, status, xhr);
@@ -41,17 +40,16 @@ define(['underscore', 'backbone', 'event', 'duration_event'], function(_, Backbo
     , url: function(){
       var partialUrl = '';
       if(this.onlyFolders.length){
-        partialUrl = '?onlyFolders[0]='+this.onlyFolders[0];
-        for(var i = 1; i < this.onlyFolders.length; ++i){
+        for(var i = 0; i < this.onlyFolders.length; ++i){
           partialUrl += '&onlyFolders['+i+']='+this.onlyFolders[i];
         }
       }
       $.ajaxSetup({
         beforeSend: _.bind(function(xhr){
-          xhr.setRequestHeader('Authorization',this.token);
+          //xhr.setRequestHeader('Authorization',this.token);
         }, this)
       });
-      return this.baseApiUrl+'/'+this.channelId+'/events'+partialUrl;
+      return this.baseApiUrl+'/'+this.channelId+'/events?state='+state.get('state')+'&auth='+this.token+partialUrl;
     }
   });
 

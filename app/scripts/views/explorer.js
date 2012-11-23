@@ -1,4 +1,4 @@
-define(['underscore', 'backbone', 'store', 'admin', 'token'], function(_, Backbone, Store, AdminView, TokenView) {
+define(['underscore', 'backbone', 'store', 'admin', 'token', 'state'], function(_, Backbone, Store, AdminView, TokenView, state) {
   'use strict';
 
   return Backbone.View.extend({
@@ -19,7 +19,8 @@ define(['underscore', 'backbone', 'store', 'admin', 'token'], function(_, Backbo
       this.views.token.on('signOut',_.bind(this.onClickSignOutBtn,this));
     }
     , events: {
-        'click #signout_btn' : 'onClickSignOutBtn' 
+        'change #view_select' : 'onChangeViewSelect'
+      , 'click #signout_btn'  : 'onClickSignOutBtn' 
     }
     , render: function(){
       console.log(this.name+':render',this.mode);
@@ -35,7 +36,11 @@ define(['underscore', 'backbone', 'store', 'admin', 'token'], function(_, Backbo
       this.mode = mode;
       return this;
     }
-    , onClickSignOutBtn  : function(e){
+    , onChangeViewSelect: function(){
+      console.log(this.name+':onChangeViewSelect', this.$('#view_select').val());
+      state.set('state',this.$('#view_select').val());
+    }
+    , onClickSignOutBtn: function(e){
       console.log(this.name+':onClickSignoutBtn');
       Store.clear();
       window.location.href = window.location.pathname; 

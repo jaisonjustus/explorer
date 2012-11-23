@@ -27,6 +27,7 @@ require.config({
     , explorer:             'views/explorer'
     , admin:                'views/admin'
     , token:                'views/token'
+    , state:                'models/state' 
   }
 });
  

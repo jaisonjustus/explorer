@@ -16,10 +16,10 @@ define(['underscore', 'backbone', 'event'], function(_, Backbone, Event) {
       }
       $.ajaxSetup({
         beforeSend: _.bind(function(xhr){
-          xhr.setRequestHeader('Authorization', this.collection.token);
+          //xhr.setRequestHeader('Authorization', this.collection.token);
         }, this)
       });
-      return url;
+      return url+'?auth='+this.collection.token;
     }
   });
 

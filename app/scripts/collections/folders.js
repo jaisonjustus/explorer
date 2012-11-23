@@ -1,4 +1,4 @@
-define(['underscore', 'backbone', 'folder'], function(_, Backbone, Folder) {
+define(['underscore', 'backbone', 'folder', 'state'], function(_, Backbone, Folder, state) {
   'use strict';
 
   return Backbone.Collection.extend({
@@ -17,10 +17,10 @@ define(['underscore', 'backbone', 'folder'], function(_, Backbone, Folder) {
     , url: function(){
       $.ajaxSetup({
         beforeSend: _.bind(function(xhr){
-          xhr.setRequestHeader('Authorization',this.token);
+          //xhr.setRequestHeader('Authorization',this.token);
         }, this)
       });
-      return this.baseApiUrl+'/'+this.channelId+'/folders';
+      return this.baseApiUrl+'/'+this.channelId+'/folders?state='+state.get('state')+'&auth='+this.token;
     }
   });
 
