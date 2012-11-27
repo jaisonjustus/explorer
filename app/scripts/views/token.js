@@ -104,6 +104,10 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
       this.$el.html(this.template());
       this.$modal = this.$(this.templateId).modal({backdrop:'static'});
       this.delegateEvents();
+      /* Shortcuts */
+      this.$description = this.$('#description');
+      this.$value       = this.$('#value');
+      this.$type        = this.$('#type'); 
       return this;
     }
     , close: function(){
@@ -119,16 +123,26 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
       this.$('.'+selected+'_btn').show();
     }
     , onClickSaveBtn: function(){
-      this.trigger('save', this.$('#comment').val(), this.$('#value').val());
+      this.trigger(
+          'save' 
+        , this.$description.val()
+        , this.$value.val()
+        , JSON.parse(this.$type.val())
+      );
       return false; 
     }
     , onClickStartBtn: function(){
       this.$('#start_btn').hide();
       this.$('#cancel_btn').hide();
-      this.$('#value').attr('disabled', 'disabled');
-      this.$('#comment').attr('disabled', 'disabled');
+      this.$value.attr('disabled', 'disabled');
+      this.$description.attr('disabled', 'disabled');
       this.$('#stop_btn').show();
-      this.trigger('start', this.$('#comment').val(), this.$('#value').val());
+      this.trigger(
+          'start' 
+        , this.$description.val()
+        , this.$value.val()
+        , JSON.parse(this.$type.val())
+      );
       /* Small counter to help timing events. */
       this.interval = setInterval(function(time){
         var time = parseInt($('#timer').text());
@@ -159,14 +173,15 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
     }
     , render: function(){
       Modal.prototype.render.call(this);
-      this.$('#comment').val( this.model.get('comment') );
-      this.$('#value').val( JSON.stringify(this.model.get('value')) );
+      this.$('#description').val( this.model.get('description') );
+      this.$('#value').val( this.model.get('value') );
+      this.$('#type').val( JSON.stringify(this.model.get('type')) );
 
       this.$('#file_upload').fileupload({
         dataType: 'json',
         add: _.bind(function(e, data){
           this.$('#file_upload').attr('name',data.files[0].name);
-          data.url = this.model.url()+'?auth='+this.model.collection.token,
+          data.url = this.model.url(),
           console.log('Adding',data);
           data.submit(); 
         },this),
@@ -187,8 +202,9 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
       this.trigger(
           'save'
         , this.model
-        , this.$('#comment').val()
+        , this.$('#description').val()
         , this.$('#value').val()
+        , JSON.parse(this.$('#type').val())
       );
       return false; 
     }
@@ -259,11 +275,12 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
       console.log(this.name+':openEditModal');
       this.modals.edit.setModel( event ).render();
     }
-    , createEvent: function(comment, value){
+    , createEvent: function(description, value, type){
       this.collection.create(
         {
-            comment: comment
-          , value: JSON.parse(value)
+            description: description
+          , value: value
+          , type: type 
           , folderId: this.collection.folderId
         },
         {
@@ -275,11 +292,12 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
         }
       );
     }
-    , startEvent: function(comment, value){
+    , startEvent: function(description, value, type){
       this.collection.create(
         {
-            comment: comment
-          , value: JSON.parse(value)
+            description: description
+          , value: value
+          , type: type
           , folderId: this.collection.folderId
           , duration: null
         },
@@ -291,18 +309,19 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
       );
     }
     , stopEvent: function(){
-      this.collection.stopCurrentEvent(_.bind(function(data, status, xhr){
+      this.collection.stopCurrentEvent(_.bind(function(data){
           console.log('success stopping event');
           this.refresh();
           this.modals.add.close();
         }, this)
       );
     }
-    , saveEvent: function(event, comment, value){
+    , saveEvent: function(event, description, value, type){
       event.save(
         {
-            comment:comment
-          , value: JSON.parse(value)
+            description:description
+          , value:value
+          , type:type
           , folderId: this.collection.folderId
         }, 
         {
@@ -374,7 +393,7 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
 
         /* Recursively display folders. */
         (function recursive(folder, $folder, that){
-          var folders = new Folders(folder.get('children'), {
+          var folders = new Folders(folder.get('children'), {
               channelId:  folder.collection.channelId
             , parentId:   folder.get('id') 
             , token:      folder.collection.token
@@ -386,9 +405,7 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
               .on('edit', that.edit, that )
               .on('delete', that.deleteFolder, that )
               ;
-          $folder.append(
-            folderView.render().$el
-          );
+          $folder.append( folderView.render().$el );
           folders.each(function(subfolder){
             recursive(subfolder, folderView.$('.folder:first'), that);
           });
@@ -460,7 +477,7 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
   var FolderView = Backbone.View.extend({
     /* Variables */
       model: null
-    , collection: null
+    , collection: null
     , tagName:'li'
     , template: '#folder_view'
     , name: 'FolderView'
@@ -682,8 +699,10 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
       }
       /* Attachments? */
       data.file = (data.attachments && data.attachments.attachment) ?
-        data.file = this.model.url()+'/'+data.attachments.attachment.fileName+'?auth='+this.model.collection.token :
+        this.model.fileUrl(data.attachments.attachment.fileName) :
         '';
+      /* Type */
+      data.type = JSON.stringify(data.type);
 
       this.$el.html( this.template( data ) );
       return this;

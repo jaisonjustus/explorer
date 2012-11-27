@@ -36,7 +36,7 @@ define(['underscore', 'backbone', 'store', 'admin', 'token', 'state'], function(
       this.mode = mode;
       return this;
     }
-    , onChangeViewSelect: function(){
+    , onChangeViewSelect: function(){
       console.log(this.name+':onChangeViewSelect', this.$('#view_select').val());
       state.set('state',this.$('#view_select').val());
     }

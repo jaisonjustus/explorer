@@ -1,8 +1,8 @@
-define(['jquery', 'underscore', 'backbone', 'store', 'access'], function($, _, Backbone, Store, Access) {
+define(['jquery', 'underscore', 'backbone', 'store', 'access', 'pryv'], function($, _, Backbone, Store, Access, PrYv) {
   'use strict';
 
   return Backbone.View.extend({
-    el: '#view_entry'
+      el: '#view_entry'
     , initialize: function(){
       //console.log('LandingView:initialize');
       this.template = _.template( $('#landing_view_template').html() );
@@ -22,15 +22,12 @@ define(['jquery', 'underscore', 'backbone', 'store', 'access'], function($, _, B
     , getToken: function(){
       /* Get app token. */
       var sessionId = this.model.get('sessionId');
-      $.ajaxSetup({
-        beforeSend: _.bind(function(xhr){
-          xhr.setRequestHeader('Authorization', sessionId);
-        }, this)
-      });
 
-      var url = this.model.get('baseApiUrl') + '/admin/get-app-token';
-      var xhr = $.ajax({url:url, type:'POST', dataType:'json'})
-        .success(_.bind(function(res){ 
+      var url = this.model.get('baseApiUrl') + '/admin/get-app-token?auth='+encodeURIComponent(sessionId);
+
+      PrYv.post({
+        url: url, 
+        success: _.bind(function(res){
           console.log("success getting token", res);
           if (typeof(res) === 'string'){
             res = JSON.parse(res);
@@ -39,12 +36,13 @@ define(['jquery', 'underscore', 'backbone', 'store', 'access'], function($, _, B
           this.model.set('appToken', appToken);
           Store.set('appToken', appToken);
           window.location.href = './#/token';
-        }, this));
+        }, this)
+      });
     }
     , onClickSigninBtn  : function(e){
       console.log('LandingView:onClickSigninBtn');
 
-      var username = this.$username.val();
+      var username = this.$username.val();
       var baseApiUrl = 'https://'+username+'.'+this.$domain.val();
 
       this.model.set({username:username, baseApiUrl:baseApiUrl});
@@ -57,14 +55,16 @@ define(['jquery', 'underscore', 'backbone', 'store', 'access'], function($, _, B
       var password  = this.$password.val()
         , url       = baseApiUrl+'/admin/login'
         , data      = {
-            userName:username
+            username:username
           , password:password
           , appId: 'explorer'
         }
       ; 
-  
-      var xhr = $.ajax({url:url, data:data, type:'POST', dataType:'json'})
-        .success(_.bind(function(res){ 
+
+      PrYv.post({
+        url: url, 
+        data:data, 
+        success: _.bind(function(res){
           if (typeof(res) === 'string'){
             res = JSON.parse(res);
           }
@@ -72,10 +72,10 @@ define(['jquery', 'underscore', 'backbone', 'store', 'access'], function($, _, B
           var sessionId = res.sessionID;
           this.model.set('sessionId', sessionId);
           Store.set('sessionId', sessionId);
-
           this.getToken();
-        }, this))
-      ;
+          
+        }, this)
+      });
 
       return false;
     }
