@@ -1,7 +1,7 @@
-# AdminView:initialize (http://localhost:3501/scripts/e2859136.amd-app.js, #1)
+# AdminView:initialize (http://localhost:3501/scripts/53e54a7d.amd-app.js, #1)
 CACHE MANIFEST
 
-# Time: Fri Nov 23 2012 18:03:41 GMT+0530 (IST)
+# Time: Tue Nov 27 2012 17:52:25 GMT+0530 (IST)
 # This manifest was created by confess.js, http://github.com/jamesgpearce/confess
 #
 # Retrieved URL: http://localhost:3501/
@@ -26,7 +26,7 @@ http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js
 http://localhost:3501/img/glyphicons-halflings-white.png
 http://localhost:3501/img/glyphicons-halflings.png
 images/b7ee4668.logo.jpg
-scripts/e2859136.amd-app.js
+scripts/53e54a7d.amd-app.js
 scripts/vendor/cf69c6f2.modernizr.min.js
 styles/38c44198.lib.css
 styles/b6f84bc0.main.css
