@@ -88,7 +88,8 @@
       <td><small><%=folderId%></small></td>
       <td><small><%=duration%></small></td>
       <td><small><%=value%></small></td>
-      <td><small><%=comment%></small></td>
+      <td><small><%=type%></small></td>
+      <td><small><%=description%></small></td>
       <td><% if(file) print('<a href="'+file+'" target="_blank"><i class="icon-file"></i></a>') %></td>
     </script>
 
@@ -155,11 +156,12 @@
             <div class="content">
               <table class="table table-striped" style="display:none;">
                 <col style="width:10%">
-                <col style="width:16%">
-                <col style="width:16%">
+                <col style="width:15%">
+                <col style="width:15%">
                 <col style="width:10%">
-                <col style="width:18%">
-                <col style="width:18%">
+                <col style="width:10%">
+                <col style="width:15%">
+                <col style="width:15%">
                 <col style="width:10%">
                 <thead>
                   <tr>
@@ -168,7 +170,8 @@
                     <th><a>folderId</a></th>
                     <th><a>duration</a></th>
                     <th><a>value</a></th>
-                    <th><a>comment</a></th>
+                    <th><a>type</a></th>
+                    <th><a>description</a></th>
                     <th><a>file</a></th>
                   </tr>
                 </thead>
@@ -231,10 +234,12 @@
               <option id="mark">mark event</option>
               <option id="duration">duration event</option>
             </select>
-            <label>Comment</label>
-            <input id="comment" class="span4" type="text" placeholder="New event"></input>
-            <label>Value (valid JSON)</label>
-            <input id="value" class="span4" type="text" placeholder='{"Type":"Mass:Kilogram","value":100}' value='{"Type":"Mass:Kilogram","value":100}'></input>
+            <label>Description</label>
+            <input id="description" class="span4" type="text" placeholder="New event"></input>
+            <label>Value</label>
+            <input id="value" class="span4" type="text" placeholder="100" value="100"></input>
+            <label>Type (JSON)</label>
+            <input id="type" class="span4" type="text" placeholder='{"class":"Mass","format":"Kilogram"}' value='{"class":"Mass","format":"Kilogram"}'></input>
           </div>
           <div class="modal-footer">
             <label id="timer" class="duration_btn">0 s.</label>
@@ -256,10 +261,12 @@
           <h3>Edit Event</h3>
         </div>
         <div class="modal-body">
-          <label>Comment</label>
-          <input id="comment" type="text" placeholder="New event"></input>
-          <label>Value (valid JSON)</label>
-          <input id="value" class="span4" type="text" placeholder='{"Type":"Mass:Kilogram","value":100}' value='{"Type":"Mass:Kilogram","value":100}'></input>
+          <label>Description</label>
+          <input id="description" type="text" placeholder="New event"></input>
+          <label>Value</label>
+          <input id="value" class="span4" type="text"></input>
+          <label>Type (JSON)</label>
+          <input id="type" class="span4" type="text"></input>
           <label>File attachment</label>
           <input id="file_upload" type="file" name="attachment">
           <button id="attach_btn" class="btn">Attach file</button>
