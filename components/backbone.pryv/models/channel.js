@@ -9,7 +9,6 @@ define(['underscore', 'backbone'], function(_, Backbone) {
     /* Methods. */
     , initialize: function(){
       var id = this.get('id');
-      //showlog('Channel:initialize',id);
     } 
   });
 

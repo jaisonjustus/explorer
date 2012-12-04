@@ -4,22 +4,23 @@ define(['underscore', 'backbone', 'event'], function(_, Backbone, Event) {
   return Backbone.Model.extend({
     defaults: {
         /* id, folderId */
-          comment: null
+          description: null
         , folderId: null
         , value:null
     }
-    , url: function(){
+    , baseUrl: function(){
       var url = this.collection.baseApiUrl+'/'+this.collection.channelId+'/events';
       var id = this.get('id');
       if (id){
         url += '/'+id;
       }
-      $.ajaxSetup({
-        beforeSend: _.bind(function(xhr){
-          //xhr.setRequestHeader('Authorization', this.collection.token);
-        }, this)
-      });
-      return url+'?auth='+this.collection.token;
+      return url; 
+    }
+    , fileUrl: function(file){
+      return this.baseUrl()+'/'+file+'?auth='+encodeURIComponent(this.collection.token); 
+    }
+    , url: function(){
+      return this.baseUrl()+'?auth='+encodeURIComponent(this.collection.token);
     }
   });
 

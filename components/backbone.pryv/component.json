@@ -1,13 +1,13 @@
 {
   "name": "backbone.pryv",
-  "version": "0.1.1",
-  "main": [],
+  "version": "0.1.6",
   "dependencies": {
     "backbone-amd-lodash": "0.9.3"
   },
+  "gitHead": "de17da828cbe536c40016ef25452c41041c29ed8",
   "readme": "#Backbone.Pryv\n\nThis is the Pryv Backbone SDK. If you want to build your Pryv web app using backbone.js: you're in the right place!\n\n## Example\n\n[Pryv Explorer](http://github.com/pryv/explorer)\n",
   "readmeFilename": "README.md",
-  "_id": "myProject@0.1.1",
+  "_id": "backbone.pryv@0.1.6",
   "description": "This is the Pryv Backbone SDK. If you want to build your Pryv web app using backbone.js: you're in the right place!",
   "repository": {
     "type": "git",

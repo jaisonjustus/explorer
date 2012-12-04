@@ -13,12 +13,7 @@ define(['underscore', 'backbone', 'access'], function(_, Backbone, Access) {
       this.baseApiUrl = options.baseApiUrl || null;
     } 
     , url: function(){
-      $.ajaxSetup({
-        beforeSend: _.bind(function(xhr){
-          xhr.setRequestHeader('Authorization', this.sessionId);
-        }, this)
-      });
-      return this.baseApiUrl+'/admin/accesses'; 
+      return this.baseApiUrl+'/admin/accesses?auth='+encodeURIComponent(this.sessionId); 
     }
   });
 

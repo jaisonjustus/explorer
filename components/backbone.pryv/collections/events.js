@@ -1,4 +1,4 @@
-define(['underscore', 'backbone', 'event', 'duration_event', 'state'], function(_, Backbone, Event, DurationEvent, state) {
+define(['underscore', 'backbone', 'event', 'duration_event', 'state', 'pryv'], function(_, Backbone, Event, DurationEvent, state, PrYv) {
   'use strict';
 
   return Backbone.Collection.extend({
@@ -26,15 +26,10 @@ define(['underscore', 'backbone', 'event', 'duration_event', 'state'], function(
       this.onlyFolders = options.onlyFolders || [];
     } 
     , stopCurrentEvent: function(cb){
-      $.ajaxSetup({
-        beforeSend: _.bind(function(xhr){
-          //xhr.setRequestHeader('Authorization', this.token);
-        }, this)
-      });
-      var url = this.baseApiUrl+'/'+this.channelId+'/events/stop?auth='+this.token;
-
-      var xhr = $.post(url, function(data, status, xhr){
-        cb(data, status, xhr);
+      var url = this.baseApiUrl+'/'+this.channelId+'/events/stop?auth='+encodeURIComponent(this.token);
+      PrYv.post({
+          url:url
+        , success:function(res){ cb(res) }
       });
     }
     , url: function(){
@@ -44,12 +39,7 @@ define(['underscore', 'backbone', 'event', 'duration_event', 'state'], function(
           partialUrl += '&onlyFolders['+i+']='+this.onlyFolders[i];
         }
       }
-      $.ajaxSetup({
-        beforeSend: _.bind(function(xhr){
-          //xhr.setRequestHeader('Authorization',this.token);
-        }, this)
-      });
-      return this.baseApiUrl+'/'+this.channelId+'/events?state='+state.get('state')+'&auth='+this.token+partialUrl;
+      return this.baseApiUrl+'/'+this.channelId+'/events?state='+state.get('state')+'&auth='+encodeURIComponent(this.token)+partialUrl;
     }
   });
 

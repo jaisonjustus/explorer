@@ -15,12 +15,7 @@ define(['underscore', 'backbone', 'folder', 'state'], function(_, Backbone, Fold
       this.baseApiUrl = options.baseApiUrl;
     } 
     , url: function(){
-      $.ajaxSetup({
-        beforeSend: _.bind(function(xhr){
-          //xhr.setRequestHeader('Authorization',this.token);
-        }, this)
-      });
-      return this.baseApiUrl+'/'+this.channelId+'/folders?state='+state.get('state')+'&auth='+this.token;
+      return this.baseApiUrl+'/'+this.channelId+'/folders?state='+state.get('state')+'&auth='+encodeURIComponent(this.token);
     }
   });
 

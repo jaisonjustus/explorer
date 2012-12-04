@@ -3,12 +3,7 @@ define(['jquery', 'underscore', 'backbone', 'channels', 'state'], function($, _,
 
   return Channels.extend({
     url: function(){
-      $.ajaxSetup({
-        beforeSend: _.bind(function(xhr){
-          //xhr.setRequestHeader('Authorization', this.token);
-        }, this)
-      });
-      return this.baseApiUrl+'/channels?state='+state.get('state')+'&auth='+this.token;
+      return this.baseApiUrl+'/channels?state='+state.get('state')+'&auth='+encodeURIComponent(this.token);
     }
   });
 
