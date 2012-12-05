@@ -1,4 +1,4 @@
-define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'folders', 'token_channels', 'bootstrap', 'jquery.fileupload', 'nanoscroller'], function($, _, Backbone, Store, Accesses, Events, Folders, TokenChannels) {
+define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'folders', 'channels', 'bootstrap', 'jquery.fileupload', 'nanoscroller'], function($, _, Backbone, Store, Accesses, Events, Folders, TokenChannels) {
   'use strict';
 
   var ChannelsView = Backbone.View.extend({
@@ -6,16 +6,51 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
       id: '#channels'
     , collections: []
     , name: 'ChannelsView'
+    , modals: {
+        addChannel: null
+      , editChannel: null
+    }
     , $channelList: null
     /* Methods */
     , initialize: function(){
+      this.modals.addChannel = new AddChannelModal()
+        .on('save', _.bind(this.add, this))
+        ;
+      this.modals.editChannel = new EditChannelModal()
+        .on('save', _.bind(this.save, this))
+        ;
     }
     , events : {
+      'click #add_channel_modal_btn'  : 'onClickAddModalBtn'
     }
     , render: function(){
       this.setElement(this.id); 
       this.$channelList = this.$('#channel_list');
       return this;
+    }
+    , add: function(name){
+      this.collections[0].create(
+        { name:name },
+        { success: _.bind(function(){
+          this.$channelList.empty();
+          _.each(this.collections, function(col){ col.fetch(); });
+          this.modals.addChannel.close();
+        },this)}    
+      );
+    }
+    , save: function(model, name){
+      console.log('save -> ',model,model.url(),name);
+      model.save(
+        { name:name },
+        {
+          success:_.bind(function(){
+            console.log(this);
+            this.$channelList.empty();
+            _.each(this.collections, function(col){ col.fetch(); });
+            this.modals.editChannel.close();
+          }, this)
+        }    
+      );
     }
     , rebuild: function(accessesByUsername){
       /* Attach to Dom. */
@@ -40,11 +75,13 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
           }
         }, this);
       }, this);
-
     }
     , renderCollection: function(col){
       col.each(function(channel){
-        var channelView = new ChannelView({model: channel});
+        var channelView = new ChannelView({model: channel})
+          .on('edit', _.bind(this.onClickEditModalBtn, this))
+          .on('delete', _.bind(this.onClickDeleteBtn, this))
+          ;
         this.$channelList.append(
           channelView.render().$el
         );
@@ -57,6 +94,24 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
       }, this);
       /* Rebuild page scrollers */
       $('.nano').nanoScroller(); 
+    }
+    , onClickAddModalBtn: function(){
+      this.modals.addChannel.render();
+      return false;
+    }
+    , onClickEditModalBtn: function(channel){
+      this.modals.editChannel.model = channel;
+      this.modals.editChannel.render();
+      return false;
+    }
+    , onClickDeleteBtn: function(channel){
+      channel.destroy()
+        .success(_.bind(function(){
+          this.$channelList.empty();
+          _.each(this.collections, function(col){ col.fetch(); });
+        }, this))
+        ;
+      return false;
     }
   });
 
@@ -104,10 +159,10 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
       this.$el.html(this.template());
       this.$modal = this.$(this.templateId).modal({backdrop:'static'});
       this.delegateEvents();
-      /* Shortcuts */
-      this.$description = this.$('#description');
-      this.$value       = this.$('#value');
-      this.$type        = this.$('#type'); 
+      /* Shortcuts */
+      this.$description = this.$('#description');
+      this.$value       = this.$('#value');
+      this.$type        = this.$('#type'); 
       return this;
     }
     , close: function(){
@@ -206,6 +261,77 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
         , this.$('#value').val()
         , JSON.parse(this.$('#type').val())
       );
+      return false; 
+    }
+  });
+
+  var AddChannelModal = Backbone.View.extend({
+    /* Variables */
+      id: '#modal'
+    , template: '#add_channel_modal'
+    , name: 'AddChannelModal'   
+    , $modal: null
+    , $name: null
+    /* Methods */
+    , initialize: function(){
+      this.template = _.template($(this.template).html());
+    } 
+    , events: {
+      'click #save_btn': 'onClickSaveBtn' 
+    }
+    , render: function(){
+      console.log(this.name+':render'); 
+      this.setElement(this.id);
+      this.$el.html(this.template());
+      this.$modal = this.$('#add_channel_modal').modal();
+      this.$name = this.$('#name');
+      this.delegateEvents();
+      return this;
+    }
+    , close: function(){
+      this.undelegateEvents();
+      this.$modal.modal('hide');
+      this.$name.val('');
+    }
+    , onClickSaveBtn: function(){
+      console.log(this.name+':onClickSaveBtn');
+      this.trigger('save', this.$name.val());
+      return false; 
+    }
+  });
+
+  var EditChannelModal = Backbone.View.extend({
+    /* Variables */
+      id: '#modal'
+    , template: '#edit_channel_modal'
+    , name: 'EditChannelModal'   
+    , model: null
+    , $modal: null
+    , $name: null
+    /* Methods */
+    , initialize: function(){
+      this.template = _.template($(this.template).html());
+    } 
+    , events: {
+      'click #save_btn': 'onClickSaveBtn' 
+    }
+    , render: function(){
+      console.log(this.name+':render'); 
+      this.setElement(this.id);
+      this.$el.html(this.template());
+      this.$modal = this.$('#edit_channel_modal').modal();
+      this.$name = this.$('#name');
+      this.$name.val(this.model.get('name'));
+      this.delegateEvents();
+      return this;
+    }
+    , close: function(){
+      this.undelegateEvents();
+      this.$modal.modal('hide');
+      this.$name.val('');
+    }
+    , onClickSaveBtn: function(){
+      this.trigger('save', this.model, this.$name.val());
       return false; 
     }
   });
@@ -573,14 +699,29 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
     }
     , events: {
         'click .channel'  : 'onClick'
+      , 'click .delete'   : 'onClickDelete'
+      , 'click .edit'     : 'onClickEdit'
     }
     , render: function(){
       this.$el.append( this.template( this.model.toJSON() ) );
+      this.$el.find('.channel').addClass('pull-right');
+      this.$el.find('.delete').show();
+      this.$el.find('.edit').show();
       return this;
     }
     , onClick: function(){
       console.log(this.name+':onClick',this.model.get('id'));  
       this.trigger('click');
+      return false;
+    }
+    , onClickDelete: function(){
+      console.log(this.name+':onClickDelete', this.model.get('id'));
+      this.trigger('delete', this.model);
+      return false;
+    }
+    , onClickEdit: function(){
+      /* Open modal. */
+      this.trigger('edit', this.model);
       return false;
     }
   });
@@ -702,7 +843,7 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
         this.model.fileUrl(data.attachments.attachment.fileName) :
         '';
       /* Type */
-      data.type = JSON.stringify(data.type);
+      data.type = JSON.stringify(data.type);
 
       this.$el.html( this.template( data ) );
       return this;
@@ -722,7 +863,7 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
 
   return Backbone.View.extend({
     /* Variables */
-      id: '#tab'
+      id: '#view'
     , template: '#tab_view'
     , accessesByUsername: {}
     , views: null

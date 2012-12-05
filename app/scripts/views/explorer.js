@@ -1,21 +1,19 @@
-define(['underscore', 'backbone', 'store', 'admin', 'token', 'state'], function(_, Backbone, Store, AdminView, TokenView, state) {
+define(['underscore', 'backbone', 'store', 'token', 'state'], function(_, Backbone, Store, TokenView, state) {
   'use strict';
 
   return Backbone.View.extend({
     /* Variables */
       el: '#view_entry'
     , template: '#explorer_view' 
-    , mode: 'admin'
+    , mode: 'token'
     , views: null
     , name: 'ExplorerView'
     /* Methods */
     , initialize: function(){
       this.template = _.template( $(this.template).html() );
       this.views = {
-          admin: new AdminView({model: this.model})
-        , token: new TokenView({model: this.model})
+        token: new TokenView({model: this.model})
       };
-      this.views.admin.on('signOut',_.bind(this.onClickSignOutBtn,this));
       this.views.token.on('signOut',_.bind(this.onClickSignOutBtn,this));
     }
     , events: {
