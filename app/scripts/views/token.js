@@ -1,4 +1,4 @@
-define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'folders', 'channels', 'bootstrap', 'jquery.fileupload', 'nanoscroller'], function($, _, Backbone, Store, Accesses, Events, Folders, TokenChannels) {
+define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'folders', 'channels', 'modal', 'bootstrap', 'jquery.fileupload', 'nanoscroller'], function($, _, Backbone, Store, Accesses, Events, Folders, Channels, Modal) {
   'use strict';
 
   var ChannelsView = Backbone.View.extend({
@@ -63,7 +63,7 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
         accesses.each(function(access){
           if (access.active) {
             /* Add. */
-            var col = new TokenChannels([], {
+            var col = new Channels([], {
                 token:access.get('token')
               , baseApiUrl:access.baseApiUrl(username)
             });
@@ -112,28 +112,6 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
         }, this))
         ;
       return false;
-    }
-  });
-
-  var Modal = Backbone.View.extend({
-    /* Variables */
-      id: '#modal'
-    , template: null
-    , $modal: null
-    /* Methods */
-    , initialize: function(){
-      this.template = _.template($(this.templateId).html());
-    } 
-    , render: function(){
-      this.setElement(this.id);
-      this.$el.html(this.template());
-      this.$modal = this.$(this.templateId).modal();
-      this.delegateEvents();
-      return this;
-    }
-    , close: function(){
-      this.undelegateEvents();
-      this.$modal.modal('hide');
     }
   });
 
@@ -726,79 +704,6 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
     }
   });
 
-  var TokenSettingsModal = Modal.extend({
-    /* Variables */
-      templateId: '#token_settings_modal'
-    , tokenViewTemplId: '#token_view'
-    , tokenViewTempl: null
-    , accessesByUsername: null
-    , name: 'TokenSettingsModal'   
-    , $name: null
-    /* Methods */
-    , initialize: function(){
-      Modal.prototype.initialize.call(this);
-      this.tokenViewTempl = _.template($(this.tokenViewTemplId).html());
-      this.accessesByUsername = this.options.accessesByUsername;
-    } 
-    , events: {
-        'click #save_btn'   : 'onClickSaveBtn' 
-      , 'click #add_btn'    : 'onClickAddBtn'
-    }
-    , render: function(){
-      Modal.prototype.render.call(this);
-
-      this.$tokenList = this.$('#token_list');
-      this.$name = this.$('#name');
-
-      _.each(this.accessesByUsername, function(accesses, username){
-        accesses.each(function(access){
-          this.$tokenList.prepend(
-            this.tokenViewTempl({
-                username:username
-              , id:access.get('token')
-              , checked:access.active
-            })  
-          );
-        }, this);
-      }, this);      
-
-      return this;
-    }
-    , close: function(){
-      Modal.prototype.close.call(this);
-      this.$name.val('');
-    }
-    , onClickSaveBtn: function(){
-      console.log(this.name+':onClickSaveBtn');
-      var accessesByUsername = this.accessesByUsername;
-      this.$('input[type=checkbox]').parents('tr').each(function(){
-        var $this = $(this);
-        var username = $this.find('.username').text();
-        var id = $this.find('.token').text();
-        var checked = $this.find('input[type=checkbox]').is(':checked');
-        if(!accessesByUsername[username]){
-          accessesByUsername[username] = new Accesses([{token:id}], {});
-        } else if (!(accessesByUsername[username].where({token:id})).length){
-          accessesByUsername[username].add({token:id});
-        }
-        accessesByUsername[username].where({token:id})[0].active = checked;
-      });
-      this.trigger('save');
-      return false; 
-    }
-    , onClickAddBtn: function(){
-      console.log(this.name+':onClickAddBtn');
-      this.$tokenList.prepend(
-        this.tokenViewTempl({
-            username:this.$('#from').val()
-          , id:this.$('#token').val()
-          , checked:true
-        })  
-      );
-      return false; 
-    }
-  });
-
   var EventView = Backbone.View.extend({
     /* Variables */
       tagName:'tr'
@@ -864,14 +769,12 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
   return Backbone.View.extend({
     /* Variables */
       id: '#view'
-    , template: '#tab_view'
-    , accessesByUsername: {}
+    , accessesByUsername: null
     , views: null
-    , modals: null
     , name:'TokenView'
     /* Methods */
     , initialize: function(){
-      this.template = _.template($(this.template).html());
+      this.accessesByUsername = this.options.accessesByUsername;
       this.views = {
           channels: new ChannelsView({})
         , events: new EventsView({})
@@ -879,16 +782,8 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
       }
       this.views.channels.on('click', this.updateFoldersAndEvents, this);
       this.views.folders.on('click', this.updateEvents, this);
-
-      this.modals = {
-          tokenSettings: new TokenSettingsModal({
-            accessesByUsername:this.accessesByUsername
-        })
-      };
-      this.modals.tokenSettings.on('save', this.saveTokenSettings, this);
     }
     , events: {
-      'click #settings_btn' : 'onClickSettingsBtn'
     }
     , render: function(){
       console.log(this.name+':render');
@@ -911,7 +806,6 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
 
       var _attach = function(that){
         that.setElement(that.id);
-        that.$el.html( that.template()); 
         that.$('#settings_btn').show();
         that.$('#folders').show();
         that.$('#events').show();
@@ -946,10 +840,6 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
     
       return this;
     }
-    , saveTokenSettings: function(){
-      this.modals.tokenSettings.close();
-      this.views.channels.rebuild( this.accessesByUsername );
-    } 
     , updateFoldersAndEvents: function(channel){
       var channelId = channel.get('id');
       this.views.events.rebuild({ 
@@ -976,10 +866,6 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
         baseApiUrl: folder.collection.baseApiUrl
       };
       this.views.events.rebuild( options );
-    }
-    , onClickSettingsBtn: function(){
-      this.modals.tokenSettings.render();
-      return false;
     }
   });
 
