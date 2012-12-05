@@ -26,12 +26,12 @@
 
     <script id="landing_view_template" type="text/template">
       <div class="row">
+      </div>
+      <div class="row">
         <div class="span12 center jumbotron margin_top">
           <img src="images/logo.jpg" width="250px">
           <h1>Explorer</h1>    
         </div>
-      </div>
-      <div class="row">
         <div class="offset4 span4 margin_top">
           <form id="signin_form" class="well span3 margin-top">
             <label>Username</label>
@@ -59,7 +59,7 @@
           <i class="icon-edit"></i>
         </span>
         <span class="channel">
-          <%=name%>
+          <%=name%> (<%=id%>)
         </span>
       </a>
     </script>
@@ -96,49 +96,44 @@
     <script id="explorer_view" type="text/template">
       <div class="row">
         <div class="span12 center jumbotron margin_top">  
-          <h1>
-            <img id="logo_channel" src="./images/logo.jpg" width="100px">
+          <h1 class="pull-left">
+            <!-- <img id="logo_channel" src="./images/logo.jpg" width="100px"> -->
             Explorer
           </h1>    
-          <button id="signout_btn" class="btn pull-right margin_left_5" title="Sign out">
-            <i class="icon-signout"></i> Sign out
-          </button>
-          <span class="form-horizontal pull-right">
-            <label style="display:inline-block">View settings:</label>
-            <select id="view_select" class="span2">
-              <option>default</option>
-              <option>all</option>
-              <option>trashed</option>
-            </select>
-          </span>
+          <div id="menu">
+            <button id="signout_btn" class="btn pull-right margin_left_5" title="Sign out">
+              <i class="icon-signout"></i> Sign out
+            </button>
+            <button id="settings_btn" class="btn pull-right margin_left_5" title="Settings">
+              <i class="icon-cogs"></i> Explore tokens 
+            </button>
+            <span class="form-horizontal">
+              <label style="display:inline-block">View settings:</label>
+              <select id="view_select" class="span2">
+                <option>default</option>
+                <option>all</option>
+                <option>trashed</option>
+              </select>
+            </span>
+          </div>
         </div>
       </div>
-      <div class="row">
-        <div class="span12 center">  
-          <ul id="menu" class="nav nav-tabs">
-            <li class="admin"><a href="#/admin">Admin</a></li>
-            <li class="token"><a href="#/token">Token</a></li>
-          </ul>
-        </div>
-        <div id="tab"></div>
-      </div>
+      <hr/>
+      <div id="view" class="row"></div>
     </script>
 
     <script id="tab_view" type="text/template">
-      <div id="channels" class="span4">
+      <div id="channels" class="span6">
         <h2>Channels</h2>
         <div class="well">
-          <button id="add_channel_modal_btn" class="btn pull-left disabled" title="Add channel"><i class="icon-plus"></i></button>
+          <button id="add_channel_modal_btn" class="btn pull-left" title="Add channel"><i class="icon-plus"></i></button>
           <div class="nano">
             <ul id="channel_list" class="nav nav-list content"></ul>
           </div>
         </div>
       </div>
-      <div id="folders" class="span8" style="display:none;">
+      <div id="folders" class="span6" style="display:none;">
         <h2 class="inline">Folders</h2>
-        <button id="settings_btn" class="btn pull-right margin_left_5" title="Settings">
-          <i class="icon-cogs"></i> Explore tokens 
-        </button>
         <div id="folders" class="well">
           <div style="display:inline-block;width:100%;">
             <button id="add_folder_modal_btn" class="btn pull-left disabled" title="Add folder"><i class="icon-plus"></i></button>

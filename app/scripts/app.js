@@ -61,7 +61,6 @@ define(['backbone', 'store', 'explorer', 'landing', 'settings'], function(Backbo
     , setFilter: function(param){
       param = param.trim() || '';
       switch(param){
-        case 'admin':
         case 'token': 
           this.explorerView.setMode(param).render();
           break;

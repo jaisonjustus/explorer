@@ -64,6 +64,9 @@
 }
 
 /* Token view layout */
+#menu {
+  margin-top: 45px;
+}
 #channels .nano, #folders .nano {
   height:200px;
 }
