@@ -1,4 +1,4 @@
-define(['jquery', 'underscore', 'backbone', 'channel'], function($, _, Backbone, Channel) {
+define(['jquery', 'underscore', 'backbone', 'channel', 'state'], function($, _, Backbone, Channel, state) {
   'use strict';
 
   return Backbone.Collection.extend({
@@ -11,6 +11,9 @@ define(['jquery', 'underscore', 'backbone', 'channel'], function($, _, Backbone,
       this.token = options.token;
       this.baseApiUrl = options.baseApiUrl;
     } 
+    , url: function(){
+      return this.baseApiUrl+'/channels?state='+state.get('state')+'&auth='+encodeURIComponent(this.token);
+    }
   });
 
 });

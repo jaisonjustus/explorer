@@ -2,12 +2,17 @@ define(['underscore', 'backbone'], function(_, Backbone) {
   'use strict';
 
   return Backbone.Model.extend({
-    defaults: {}
+      defaults: {}
     , initialize: function(){
-      var id = this.get('id');
     }
     , url: function(){
-      return this.collection.baseApiUrl+'/'+this.collection.channelId+'/folders/'+this.id+'?auth='+encodeURIComponent(this.collection.token);
+      var url = this.collection.baseApiUrl+'/'+this.collection.channelId+'/folders/';
+      var id = this.get('id');
+      if (id) {
+        url += '/'+id;
+      }
+      url += '?auth='+encodeURIComponent(this.collection.token);
+      return url;
     }
   });
 

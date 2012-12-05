@@ -8,7 +8,7 @@ define(['underscore', 'backbone', 'event'], function(_, Backbone, Event) {
         , folderId: null
         , value:null
     }
-    , baseUrl: function(){
+    , baseUrl: function(){
       var url = this.collection.baseApiUrl+'/'+this.collection.channelId+'/events';
       var id = this.get('id');
       if (id){
