@@ -59,7 +59,7 @@
           <i class="icon-edit"></i>
         </span>
         <span class="channel">
-          <%=name%>
+          <%=name%> (<%=id%>)
         </span>
       </a>
     </script>
@@ -125,7 +125,7 @@
     </script>
 
     <script id="tab_view" type="text/template">
-      <div id="channels" class="span4">
+      <div id="channels" class="span5">
         <h2>Channels</h2>
         <div class="well">
           <button id="add_channel_modal_btn" class="btn pull-left disabled" title="Add channel"><i class="icon-plus"></i></button>
@@ -134,7 +134,7 @@
           </div>
         </div>
       </div>
-      <div id="folders" class="span8" style="display:none;">
+      <div id="folders" class="span7" style="display:none;">
         <h2 class="inline">Folders</h2>
         <button id="settings_btn" class="btn pull-right margin_left_5" title="Settings">
           <i class="icon-cogs"></i> Explore tokens 
