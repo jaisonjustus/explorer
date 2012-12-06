@@ -14,7 +14,6 @@ define(['underscore', 'backbone', 'store', 'token', 'accesses', 'modal', 'state'
       Modal.prototype.initialize.call(this);
       this.tokenViewTempl = _.template($(this.tokenViewTemplId).html());
       this.accessesByUsername = this.options.accessesByUsername;
-      console.log('init ->',this.options,this);
     } 
     , events: {
         'click #save_btn'   : 'onClickSaveBtn' 

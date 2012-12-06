@@ -401,7 +401,7 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
         {
             description: description
           , value: value
-          , type: type
+          , type: type
           , folderId: this.collection.folderId
           , duration: null
         },
@@ -751,6 +751,11 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
       data.type = JSON.stringify(data.type);
 
       this.$el.html( this.template( data ) );
+      /* Add time as tooltip. */
+      this.$el.tooltip({
+          placement:'bottom'
+        , title:new Date(data.time*1000)
+      });
       return this;
     }
     , onClickDelete: function(){

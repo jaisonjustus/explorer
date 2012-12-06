@@ -27,8 +27,7 @@ define(['jquery', 'underscore', 'backbone', 'store', 'access', 'pryv'], function
 
       PrYv.post({
         url: url, 
-        success: _.bind(function(res){
-          console.log("success getting token", res);
+        success: _.bind(function(res){
           if (typeof(res) === 'string'){
             res = JSON.parse(res);
           }
