@@ -1,0 +1,14 @@
+{
+  "name": "requirejs-tpl",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:jonmaim/requirejs-tpl.git"
+  },
+  "dependencies": {},
+  "gitHead": "b5e66f485fccd52506ae08e2d12c2f2e640d8028",
+  "readme": "# AMD Template Plugin\n\nUses Underscore.js micro-templates implementation.\n\nAs modules, templates are stand-alone files (not in the DOM…) and they are served already **compiled**.\n\nUnderscore.js **IS NOT** required, this plugin already contains the template method plus some AMD stuffs.\n\nFor more information on micro-templates :\n\nhttp://documentcloud.github.com/underscore/#template\n\nhttp://ejohn.org/blog/javascript-micro-templating/\n\nI use to use the .tpl file extension but you can use whatever you want, but you have to use the \"tpl!\" plugin prefix.\n\n## Usage\n```\ndefine(['tpl!your-template-path.tpl'], function(tpl) {\n\treturn tpl({your: 'data'});\n});\n```\n\n## Optimization\n\nThere are some really good wins with templates optimization you should care about.\n\nWith optimization ( [r.js](http://requirejs.org/docs/optimization.html) ), no more dynamic loading ! So templates are bundled within your code, saving some HTTP requests.\n\nOptimized, templates are still served compiled but most of all they're **written compiled**. This means they're real line of codes and not eval or new Function anymore, so this is less evil **and** clients won't have to compile them ! Double win.\n\nEver have a hard time to debug a template with a console giving no error line ? With optimization (without minification) error lines are back !\n\nIf you can/want avoid dynamic loading, the plugin can be excluded from the build, at least reduced to 64 bytes (empty module) instead of 2Ko. Can't be bad.\n\nOh and of course, templates can be minified… \n\n## Support\n\nI did this plugin for my own needs and as far as I'm using it (almost everyday on many projects) it works well, on every browsers I know… Concerning Node.js, I only made one test which you can check inside the demo folder.\n\nThe only AMD loader I tested with is RequireJS but it should work with others like curl.js theorically…\n\nFeel free to tell if it helped you in any way and of course if you have some time, contribution is open ! I didn't have much time for unit tests so…",
+  "readmeFilename": "README.md",
+  "_id": "requirejs-tpl@1.0.0",
+  "description": "Uses Underscore.js micro-templates implementation."
+}

@@ -1,0 +1,6 @@
+<tr>
+  <td><label class="checkbox"><input type="checkbox" <%=checked?'checked="checked"':''%>></label></td>
+  <td class="username"><small><%=username%></small></td>
+  <td class="token"><small><%=id%></small></td>
+  <td><!--<a class="danger"><i class="icon-remove-circle"></i></a>--></td>
+</tr>
