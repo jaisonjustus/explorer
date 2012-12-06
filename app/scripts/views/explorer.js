@@ -1,18 +1,37 @@
-define(['underscore', 'backbone', 'store', 'token', 'accesses', 'modal', 'state'], function(_, Backbone, Store, TokenView, Accesses, Modal, state) {
+define([
+    'underscore'
+  , 'backbone'
+  , 'store'
+  , 'token'
+  , 'accesses'
+  , 'modal'
+  , 'state'
+  , 'tpl!../templates/token_settings_modal.tpl'
+  , 'tpl!../templates/token.tpl'
+  , 'tpl!../templates/explorer.tpl'
+], function(
+    _
+  , Backbone
+  , Store
+  , TokenView
+  , Accesses
+  , Modal
+  , state
+  , tokenSettingsModalTpl
+  , tokenTpl
+  , explorerTpl
+) {
   'use strict';
 
   var TokenSettingsModal = Modal.extend({
     /* Variables */
-      templateId: '#token_settings_modal'
-    , tokenViewTemplId: '#token_view'
-    , tokenViewTempl: null
+      modalId: '#token_settings_modal'
+    , template: tokenSettingsModalTpl
     , accessesByUsername: null
     , name: 'TokenSettingsModal'   
     , $name: null
     /* Methods */
     , initialize: function(){
-      Modal.prototype.initialize.call(this);
-      this.tokenViewTempl = _.template($(this.tokenViewTemplId).html());
       this.accessesByUsername = this.options.accessesByUsername;
     } 
     , events: {
@@ -28,7 +47,7 @@ define(['underscore', 'backbone', 'store', 'token', 'accesses', 'modal', 'state'
       _.each(this.accessesByUsername, function(accesses, username){
         accesses.each(function(access){
           this.$tokenList.prepend(
-            this.tokenViewTempl({
+            tokenTpl({
                 username:username
               , id:access.get('token')
               , checked:access.active
@@ -64,7 +83,7 @@ define(['underscore', 'backbone', 'store', 'token', 'accesses', 'modal', 'state'
     , onClickAddBtn: function(){
       console.log(this.name+':onClickAddBtn');
       this.$tokenList.prepend(
-        this.tokenViewTempl({
+        tokenTpl({
             username:this.$('#from').val()
           , id:this.$('#token').val()
           , checked:true
@@ -77,14 +96,12 @@ define(['underscore', 'backbone', 'store', 'token', 'accesses', 'modal', 'state'
   return Backbone.View.extend({
     /* Variables */
       el: '#view_entry'
-    , template: '#explorer_view' 
     , accessesByUsername: {}
     , views: {}
     , modals: {}
     , name: 'ExplorerView'
     /* Methods */
     , initialize: function(){
-      this.template = _.template( $(this.template).html() );
       this.views.token = new TokenView({
           model: this.model
         , accessesByUsername: this.accessesByUsername
@@ -103,7 +120,7 @@ define(['underscore', 'backbone', 'store', 'token', 'accesses', 'modal', 'state'
     , render: function(){
       console.log(this.name+':render');
       /* Render frame view and activate correct tab. */
-      this.$el.html(this.template());
+      this.$el.html(explorerTpl());
       /* Render sub-view. */
       this.views.token.render();
       return this; 

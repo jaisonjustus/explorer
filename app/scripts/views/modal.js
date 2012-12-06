@@ -7,13 +7,11 @@ define(['underscore', 'backbone', 'bootstrap'], function(_, Backbone) {
     , template: null
     , $modal: null
     /* Methods */
-    , initialize: function(){
-      this.template = _.template($(this.templateId).html());
-    } 
+    , initialize: function(){} 
     , render: function(){
       this.setElement(this.id);
       this.$el.html(this.template());
-      this.$modal = this.$(this.templateId).modal();
+      this.$modal = this.$(this.modalId).modal();
       this.delegateEvents();
       return this;
     }
