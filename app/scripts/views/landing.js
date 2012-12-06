@@ -1,18 +1,31 @@
-define(['jquery', 'underscore', 'backbone', 'store', 'access', 'pryv'], function($, _, Backbone, Store, Access, PrYv) {
+define([
+    'jquery'
+  , 'underscore'
+  , 'backbone'
+  , 'store'
+  , 'access'
+  , 'pryv'
+  , 'tpl!../templates/landing.tpl'
+], function(
+    $
+  , _
+  , Backbone
+  , Store
+  , Access
+  , PrYv
+  , landingTpl
+) {
   'use strict';
 
   return Backbone.View.extend({
       el: '#view_entry'
-    , initialize: function(){
-      //console.log('LandingView:initialize');
-      this.template = _.template( $('#landing_view_template').html() );
-    } 
+    , initialize: function(){} 
     , events : {
       'click #signin_btn' : 'onClickSigninBtn' 
     }
     , render : function(){
       //console.log('LandingView:render');
-      this.$el.html( this.template() );
+      this.$el.html( landingTpl() );
       /* Shortcuts. */
       this.$username  = this.$('#username');
       this.$password  = this.$('#password');
@@ -27,8 +40,7 @@ define(['jquery', 'underscore', 'backbone', 'store', 'access', 'pryv'], function
 
       PrYv.post({
         url: url, 
-        success: _.bind(function(res){
-          console.log("success getting token", res);
+        success: _.bind(function(res){
           if (typeof(res) === 'string'){
             res = JSON.parse(res);
           }

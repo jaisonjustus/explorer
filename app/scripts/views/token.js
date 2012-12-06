@@ -1,4 +1,45 @@
-define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'folders', 'channels', 'bootstrap', 'jquery.fileupload', 'nanoscroller'], function($, _, Backbone, Store, Accesses, Events, Folders, TokenChannels) {
+define([
+    'jquery'
+  , 'underscore'
+  , 'backbone'
+  , 'store'
+  , 'accesses'
+  , 'events'
+  , 'folders'
+  , 'channels'
+  , 'modal'
+  , 'tpl!../templates/add_event_modal.tpl'
+  , 'tpl!../templates/add_channel_modal.tpl'
+  , 'tpl!../templates/edit_channel_modal.tpl'
+  , 'tpl!../templates/folder.tpl'
+  , 'tpl!../templates/edit_folder_modal.tpl'
+  , 'tpl!../templates/add_folder_modal.tpl'
+  , 'tpl!../templates/channel.tpl'
+  , 'tpl!../templates/event.tpl'
+  , 'tpl!../templates/edit_event_modal.tpl'
+  , 'bootstrap'
+  , 'jquery.fileupload'
+  , 'nanoscroller'
+], function(
+    $
+  , _
+  , Backbone
+  , Store
+  , Accesses
+  , Events
+  , Folders
+  , Channels
+  , Modal
+  , addEventModalTpl
+  , addChannelModalTpl
+  , editChannelModalTpl
+  , folderTpl
+  , editFolderModalTpl
+  , addFolderModalTpl
+  , channelTpl
+  , eventTpl
+  , editEventModalTpl
+) {
   'use strict';
 
   var ChannelsView = Backbone.View.extend({
@@ -63,7 +104,7 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
         accesses.each(function(access){
           if (access.active) {
             /* Add. */
-            var col = new TokenChannels([], {
+            var col = new Channels([], {
                 token:access.get('token')
               , baseApiUrl:access.baseApiUrl(username)
             });
@@ -115,38 +156,14 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
     }
   });
 
-  var Modal = Backbone.View.extend({
-    /* Variables */
-      id: '#modal'
-    , template: null
-    , $modal: null
-    /* Methods */
-    , initialize: function(){
-      this.template = _.template($(this.templateId).html());
-    } 
-    , render: function(){
-      this.setElement(this.id);
-      this.$el.html(this.template());
-      this.$modal = this.$(this.templateId).modal();
-      this.delegateEvents();
-      return this;
-    }
-    , close: function(){
-      this.undelegateEvents();
-      this.$modal.modal('hide');
-    }
-  });
-
   var AddEventModal = Modal.extend({
     /* Variables */
-      templateId: '#add_event_modal'
+      modalId: '#add_event_modal'
     , mode: 'mark'
     , name: 'AddEventModal'   
     , $name: null
     /* Methods */
-    , initialize: function(){
-      Modal.prototype.initialize.call(this);
-    } 
+    , initialize: function(){} 
     , events: {
         'click #save_btn'   : 'onClickSaveBtn' 
       , 'click #start_btn'  : 'onClickStartBtn' 
@@ -156,8 +173,8 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
     , render: function(){
       /* Override Modal so that you can't close it. */
       this.setElement(this.id);
-      this.$el.html(this.template());
-      this.$modal = this.$(this.templateId).modal({backdrop:'static'});
+      this.$el.html(addEventModalTpl());
+      this.$modal = this.$(this.modalId).modal({backdrop:'static'});
       this.delegateEvents();
       /* Shortcuts */
       this.$description = this.$('#description');
@@ -215,7 +232,8 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
 
   var EditEventModal = Modal.extend({
     /* Variables */
-      templateId: '#edit_event_modal'
+      modalId: '#edit_event_modal'
+    , template: editEventModalTpl
     , name: 'EditEventModal'   
     , model: null
     , $name: null
@@ -268,21 +286,18 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
   var AddChannelModal = Backbone.View.extend({
     /* Variables */
       id: '#modal'
-    , template: '#add_channel_modal'
     , name: 'AddChannelModal'   
     , $modal: null
     , $name: null
     /* Methods */
-    , initialize: function(){
-      this.template = _.template($(this.template).html());
-    } 
+    , initialize: function(){} 
     , events: {
       'click #save_btn': 'onClickSaveBtn' 
     }
     , render: function(){
       console.log(this.name+':render'); 
       this.setElement(this.id);
-      this.$el.html(this.template());
+      this.$el.html(addChannelModalTpl());
       this.$modal = this.$('#add_channel_modal').modal();
       this.$name = this.$('#name');
       this.delegateEvents();
@@ -303,14 +318,12 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
   var EditChannelModal = Backbone.View.extend({
     /* Variables */
       id: '#modal'
-    , template: '#edit_channel_modal'
     , name: 'EditChannelModal'   
     , model: null
     , $modal: null
     , $name: null
     /* Methods */
     , initialize: function(){
-      this.template = _.template($(this.template).html());
     } 
     , events: {
       'click #save_btn': 'onClickSaveBtn' 
@@ -318,7 +331,7 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
     , render: function(){
       console.log(this.name+':render'); 
       this.setElement(this.id);
-      this.$el.html(this.template());
+      this.$el.html(editChannelModalTpl());
       this.$modal = this.$('#edit_channel_modal').modal();
       this.$name = this.$('#name');
       this.$name.val(this.model.get('name'));
@@ -423,7 +436,7 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
         {
             description: description
           , value: value
-          , type: type
+          , type: type
           , folderId: this.collection.folderId
           , duration: null
         },
@@ -605,19 +618,16 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
       model: null
     , collection: null
     , tagName:'li'
-    , template: '#folder_view'
     , name: 'FolderView'
     /* Methods */
-    , initialize: function(){
-      this.template = _.template( $(this.template).html() );
-    }
+    , initialize: function(){}
     , events: {
         'click .folder_container' : 'onClick'
       , 'click .edit'             : 'onEdit'
       , 'click .delete'           : 'onDelete'
     }
     , render: function(){
-      this.$el.append( this.template( this.model.toJSON() ) );
+      this.$el.append( folderTpl( this.model.toJSON() ) );
       return this;
     }
     , onClick: function(){
@@ -639,14 +649,13 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
 
   var EditFolderModal = Modal.extend({
     /* Variables */
-      templateId: '#edit_folder_modal'
+      modalId: '#edit_folder_modal'
+    , template: editFolderModalTpl
     , name: 'EditFolderModal'   
     , model: null
     , $name: null
     /* Methods */
-    , initialize: function(){
-      Modal.prototype.initialize.call(this);
-    } 
+    , initialize: function(){} 
     , events: {
         'click #save_btn' : 'onClickSaveBtn' 
     }
@@ -667,7 +676,8 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
 
   var AddFolderModal = Modal.extend({
     /* Variables */
-      templateId: '#add_folder_modal'
+      modalId: '#add_folder_modal'
+    , template: addFolderModalTpl
     , name: 'AddFolderModal'   
     , $name: null
     /* Methods */
@@ -691,19 +701,16 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
     /* Variables */
       model: null
     , tagName:'li'
-    , template: '#channel_view'
     , name: 'ChannelView'
     /* Methods */
-    , initialize: function(){
-      this.template = _.template( $(this.template).html() );
-    }
+    , initialize: function(){}
     , events: {
         'click .channel'  : 'onClick'
       , 'click .delete'   : 'onClickDelete'
       , 'click .edit'     : 'onClickEdit'
     }
     , render: function(){
-      this.$el.append( this.template( this.model.toJSON() ) );
+      this.$el.append( channelTpl( this.model.toJSON() ) );
       this.$el.find('.channel').addClass('pull-right');
       this.$el.find('.delete').show();
       this.$el.find('.edit').show();
@@ -726,89 +733,13 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
     }
   });
 
-  var TokenSettingsModal = Modal.extend({
-    /* Variables */
-      templateId: '#token_settings_modal'
-    , tokenViewTemplId: '#token_view'
-    , tokenViewTempl: null
-    , accessesByUsername: null
-    , name: 'TokenSettingsModal'   
-    , $name: null
-    /* Methods */
-    , initialize: function(){
-      Modal.prototype.initialize.call(this);
-      this.tokenViewTempl = _.template($(this.tokenViewTemplId).html());
-      this.accessesByUsername = this.options.accessesByUsername;
-    } 
-    , events: {
-        'click #save_btn'   : 'onClickSaveBtn' 
-      , 'click #add_btn'    : 'onClickAddBtn'
-    }
-    , render: function(){
-      Modal.prototype.render.call(this);
-
-      this.$tokenList = this.$('#token_list');
-      this.$name = this.$('#name');
-
-      _.each(this.accessesByUsername, function(accesses, username){
-        accesses.each(function(access){
-          this.$tokenList.prepend(
-            this.tokenViewTempl({
-                username:username
-              , id:access.get('token')
-              , checked:access.active
-            })  
-          );
-        }, this);
-      }, this);      
-
-      return this;
-    }
-    , close: function(){
-      Modal.prototype.close.call(this);
-      this.$name.val('');
-    }
-    , onClickSaveBtn: function(){
-      console.log(this.name+':onClickSaveBtn');
-      var accessesByUsername = this.accessesByUsername;
-      this.$('input[type=checkbox]').parents('tr').each(function(){
-        var $this = $(this);
-        var username = $this.find('.username').text();
-        var id = $this.find('.token').text();
-        var checked = $this.find('input[type=checkbox]').is(':checked');
-        if(!accessesByUsername[username]){
-          accessesByUsername[username] = new Accesses([{token:id}], {});
-        } else if (!(accessesByUsername[username].where({token:id})).length){
-          accessesByUsername[username].add({token:id});
-        }
-        accessesByUsername[username].where({token:id})[0].active = checked;
-      });
-      this.trigger('save');
-      return false; 
-    }
-    , onClickAddBtn: function(){
-      console.log(this.name+':onClickAddBtn');
-      this.$tokenList.prepend(
-        this.tokenViewTempl({
-            username:this.$('#from').val()
-          , id:this.$('#token').val()
-          , checked:true
-        })  
-      );
-      return false; 
-    }
-  });
-
   var EventView = Backbone.View.extend({
     /* Variables */
       tagName:'tr'
-    , template: '#event_view'
     , model: null
     , name: 'EventView'
     /* Methods */
-    , initialize: function(){
-      this.template = _.template( $(this.template).html() );
-    }
+    , initialize: function(){}
     , events: {
         'click .delete'   : 'onClickDelete'
       , 'click .edit'     : 'onClickEdit'
@@ -845,7 +776,12 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
       /* Type */
       data.type = JSON.stringify(data.type);
 
-      this.$el.html( this.template( data ) );
+      this.$el.html( eventTpl( data ) );
+      /* Add time as tooltip. */
+      this.$el.tooltip({
+          placement:'bottom'
+        , title:new Date(data.time*1000)
+      });
       return this;
     }
     , onClickDelete: function(){
@@ -864,14 +800,12 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
   return Backbone.View.extend({
     /* Variables */
       id: '#view'
-    , template: '#tab_view'
-    , accessesByUsername: {}
+    , accessesByUsername: null
     , views: null
-    , modals: null
     , name:'TokenView'
     /* Methods */
     , initialize: function(){
-      this.template = _.template($(this.template).html());
+      this.accessesByUsername = this.options.accessesByUsername;
       this.views = {
           channels: new ChannelsView({})
         , events: new EventsView({})
@@ -879,16 +813,8 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
       }
       this.views.channels.on('click', this.updateFoldersAndEvents, this);
       this.views.folders.on('click', this.updateEvents, this);
-
-      this.modals = {
-          tokenSettings: new TokenSettingsModal({
-            accessesByUsername:this.accessesByUsername
-        })
-      };
-      this.modals.tokenSettings.on('save', this.saveTokenSettings, this);
     }
     , events: {
-      'click #settings_btn' : 'onClickSettingsBtn'
     }
     , render: function(){
       console.log(this.name+':render');
@@ -911,7 +837,6 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
 
       var _attach = function(that){
         that.setElement(that.id);
-        that.$el.html( that.template()); 
         that.$('#settings_btn').show();
         that.$('#folders').show();
         that.$('#events').show();
@@ -946,10 +871,6 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
     
       return this;
     }
-    , saveTokenSettings: function(){
-      this.modals.tokenSettings.close();
-      this.views.channels.rebuild( this.accessesByUsername );
-    } 
     , updateFoldersAndEvents: function(channel){
       var channelId = channel.get('id');
       this.views.events.rebuild({ 
@@ -976,10 +897,6 @@ define(['jquery', 'underscore', 'backbone', 'store', 'accesses', 'events', 'fold
         baseApiUrl: folder.collection.baseApiUrl
       };
       this.views.events.rebuild( options );
-    }
-    , onClickSettingsBtn: function(){
-      this.modals.tokenSettings.render();
-      return false;
     }
   });
 

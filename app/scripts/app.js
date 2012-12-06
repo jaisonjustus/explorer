@@ -62,7 +62,7 @@ define(['backbone', 'store', 'explorer', 'landing', 'settings'], function(Backbo
       param = param.trim() || '';
       switch(param){
         case 'token': 
-          this.explorerView.setMode(param).render();
+          this.explorerView.render();
           break;
         default: { 
           new LandingView({model: this.settings}).render();

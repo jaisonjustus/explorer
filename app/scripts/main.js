@@ -24,8 +24,10 @@ require.config({
     , landing:              'views/landing'
     , explorer:             'views/explorer'
     , token:                'views/token'
+    , modal:                'views/modal'
     , state:                '../components/backbone.pryv/models/state' 
     , pryv:                 '../components/backbone.pryv/pryv'
+    , tpl:                  '../components/requirejs-tpl/tpl'
   }
 });
  
