@@ -5,7 +5,7 @@ define([
   , 'store'
   , 'access'
   , 'pryv'
-  , 'tpl!../templates/landing.tpl'
+  , 'tpl!../templates/landing.html'
 ], function(
     $
   , _

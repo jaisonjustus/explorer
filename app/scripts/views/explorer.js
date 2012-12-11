@@ -6,9 +6,9 @@ define([
   , 'accesses'
   , 'modal'
   , 'state'
-  , 'tpl!../templates/token_settings_modal.tpl'
-  , 'tpl!../templates/token.tpl'
-  , 'tpl!../templates/explorer.tpl'
+  , 'tpl!../templates/token_settings_modal.html'
+  , 'tpl!../templates/token.html'
+  , 'tpl!../templates/explorer.html'
 ], function(
     _
   , Backbone

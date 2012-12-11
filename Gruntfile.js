@@ -130,9 +130,15 @@ module.exports = function( grunt ) {
     // renames JS/CSS to prepend a hash of their contents for easier
     // versioning
     rev: {
-      js: 'scripts/**/*.js',
-      css: 'styles/**/*.css',
-      img: 'images/**'
+      //js: 'scripts/**/*.js
+      img: ['images/**', 'img/**'],
+      font: ['font/**'],
+      css: ['styles/theme*.css']
+    },
+    rev2: {
+      js: ['scripts/amd-app.js'],
+      //css: ['styles/lib.css']
+      css: ['styles/**/*.css', '!styles/*theme*.css']
     },
 
     // usemin handler should point to the file containing
@@ -143,13 +149,13 @@ module.exports = function( grunt ) {
 
     // update references in HTML/CSS to revved files
     usemin: {
-      html: ['**/*.html'],
-      css: ['**/*.css']
+      html: ['**/*.html', '!components/**/*.html', '!app/components/**/*.html'],
+      css: ['**/*.css', '!components/**/*.css', '!app/components/**/*.css']
     },
 
     // HTML minification
     html: {
-      files: ['**/*.html']
+      files: ['**/*.html', '!components/**/*.html', '!app/components/**/*.html']
     },
 
     // Optimizes JPGs and PNGs (with jpegtran & optipng)
@@ -185,5 +191,8 @@ module.exports = function( grunt ) {
 
   // Alias the `test` task to run the `mocha` task instead
   grunt.registerTask('test', 'server:phantom mocha');
+  // Original task ordering: intro clean coffee compass mkdirs usemin-handler rjs concat css min img rev usemin manifest copy time
+  // Reorder tasks and adding another rev tasks.
+  grunt.registerTask('build','intro clean mkdirs usemin-handler rev usemin rjs concat css min img rev2 usemin manifest copy time')
 
 };
