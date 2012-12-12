@@ -135,8 +135,9 @@ define([
     }
     , onClickSignOutBtn: function(e){
       console.log(this.name+':onClickSignoutBtn');
+      var baseUrl = Store.get('baseUrl');
       Store.clear();
-      window.location.href = window.location.pathname; 
+      window.location.href = baseUrl; 
       return false;
     }
     , onClickSettingsBtn: function(){
