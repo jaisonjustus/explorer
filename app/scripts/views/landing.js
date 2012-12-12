@@ -25,14 +25,21 @@ define([
     }
     , render : function(){
       //console.log('LandingView:render');
-      this.$el.html( landingTpl() );
+      var rel = 
+        ((window.location.protocol === 'file:') ? 'index.html#' : '#/')
+        + 'token'
+        , loc = window.location
+        , baseUrl = loc.protocol+'//'+loc.host+loc.pathname;
+      this.$el.html( landingTpl({ path : baseUrl+rel }) );
+      /* Init base url */
+      Store.set('baseUrl', baseUrl);
       /* Shortcuts. */
       this.$username  = this.$('#username');
       this.$password  = this.$('#password');
       this.$domain    = this.$('#domain'); 
       return this;
     }
-    , getToken: function(){
+    , getToken: function(href){
       /* Get app token. */
       var sessionId = this.model.get('sessionId');
 
@@ -47,7 +54,7 @@ define([
           var appToken = new Access({token:res.token});
           this.model.set('appToken', appToken);
           Store.set('appToken', appToken);
-          window.location.href = './#/token';
+          window.location.href = href;
         }, this)
       });
     }
@@ -59,7 +66,6 @@ define([
 
       this.model.set({username:username, baseApiUrl:baseApiUrl});
 
-      Store.clear();
       Store.set('username', username);
       Store.set('baseApiUrl', baseApiUrl);
 
@@ -76,7 +82,7 @@ define([
       PrYv.post({
         url: url, 
         data:data, 
-        success: _.bind(function(res){
+        success: _.bind(function(res){
           if (typeof(res) === 'string'){
             res = JSON.parse(res);
           }
@@ -84,7 +90,7 @@ define([
           var sessionId = res.sessionID;
           this.model.set('sessionId', sessionId);
           Store.set('sessionId', sessionId);
-          this.getToken();
+          this.getToken(e.target.href);
           
         }, this)
       });
