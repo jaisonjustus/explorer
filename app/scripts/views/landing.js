@@ -27,7 +27,7 @@ define([
       //console.log('LandingView:render');
       var rel = 
         ((window.location.protocol === 'file:') ? 'index.html#' : '#/')
-        + 'token'
+        + 'explorer'
         , loc = window.location
         , baseUrl = loc.protocol+'//'+loc.host+loc.pathname;
       this.$el.html( landingTpl({ path : baseUrl+rel }) );

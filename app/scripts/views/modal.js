@@ -17,7 +17,9 @@ define(['underscore', 'backbone', 'bootstrap'], function(_, Backbone) {
     }
     , close: function(){
       this.undelegateEvents();
-      this.$modal.modal('hide');
+      if (this.$modal) {
+        this.$modal.modal('hide');
+      }
     }
   });
 
