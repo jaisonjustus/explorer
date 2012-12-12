@@ -27,7 +27,6 @@ require.config({
     , channels:             '../components/backbone.pryv/collections/channels'
     , landing:              'views/landing'
     , explorer:             'views/explorer'
-    , token:                'views/token'
     , modal:                'views/modal'
     , state:                '../components/backbone.pryv/models/state' 
     , pryv:                 '../components/backbone.pryv/pryv'
