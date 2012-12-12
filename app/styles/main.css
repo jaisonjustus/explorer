@@ -47,6 +47,9 @@
 .margin_left_5 {
   margin-left: 5px;
 }
+.margin_right_5 {
+  margin-right: 5px;
+}
 .inline {
   display: inline-block;
 }
@@ -63,7 +66,12 @@
   width: 100%;
 }
 
-/* Token view layout */
+/* Explore view layout */
+#buttons {
+  display:inline-block;
+  margin-left: 20px;
+  width:100%;
+}
 #menu {
   margin-top: 45px;
 }
