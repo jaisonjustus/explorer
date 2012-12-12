@@ -132,6 +132,7 @@ define([
     , onChangeViewSelect: function(){
       console.log(this.name+':onChangeViewSelect', this.$('#view_select').val());
       state.set('state',this.$('#view_select').val());
+      this.views.token.views.channels.rebuild( this.views.token.accessesByUsername );
     }
     , onClickSignOutBtn: function(e){
       console.log(this.name+':onClickSignoutBtn');

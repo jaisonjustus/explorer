@@ -3,6 +3,7 @@ define([
   , 'underscore'
   , 'backbone'
   , 'store'
+  , 'async'
   , 'accesses'
   , 'events'
   , 'folders'
@@ -25,6 +26,7 @@ define([
   , _
   , Backbone
   , Store
+  , Async
   , Accesses
   , Events
   , Folders
@@ -55,8 +57,10 @@ define([
     /* Methods */
     , initialize: function(){
       this.modals.addChannel = new AddChannelModal()
-        .on('save', _.bind(this.add, this))
-        ;
+        .on('save', _.bind(function(name){
+          this.add(name);
+          this.modals.addChannel.close();
+        }, this));
       this.modals.editChannel = new EditChannelModal()
         .on('save', _.bind(this.save, this))
         ;
@@ -70,13 +74,12 @@ define([
       return this;
     }
     , add: function(name){
-      this.collections[0].create(
+      return this.collections[0].create(
         { name:name },
         { success: _.bind(function(){
           this.$channelList.empty();
           _.each(this.collections, function(col){ col.fetch(); });
-          this.modals.addChannel.close();
-        },this)}    
+        },this)} 
       );
     }
     , save: function(model, name){
@@ -85,7 +88,6 @@ define([
         { name:name },
         {
           success:_.bind(function(){
-            console.log(this);
             this.$channelList.empty();
             _.each(this.collections, function(col){ col.fetch(); });
             this.modals.editChannel.close();
@@ -815,6 +817,7 @@ define([
       this.views.folders.on('click', this.updateEvents, this);
     }
     , events: {
+      'click #generate_btn' : 'onClickGenerateBtn'
     }
     , render: function(){
       console.log(this.name+':render');
@@ -898,6 +901,138 @@ define([
       };
       this.views.events.rebuild( options );
     }
-  });
+    , generateData: function(){
+      /* Generate channels. */
+      var channelsToCreate = ['diary', 'health', 'position', 'finance'];
+      var col = this.views.channels.collections[0];
+      var that = this;
+      Async.parallel(
+        _.map(channelsToCreate, function(id){
+          return function(cb){
+            /* Check if channel already exists. */
+            var existingChannel = col.where({name:id}); 
+            if(existingChannel.length){
+              that.generateFolders(existingChannel[0], cb);
+            } else {
+              /* Create channel. */ 
+              col.create(
+                { name: id }
+              , { 
+                  success: function(channel){
+                    /* Generate folders for the channel. */
+                    that.generateFolders(channel, cb)
+                  }
+                , error: function(model, xhr, options){
+                    cb(xhr);
+                  }
+                }
+              );
+            }
+          }
+        })
+        , function(err, results){
+          that.views.channels.$channelList.empty();
+          col.fetch();
+        }
+      );
+    }
+    , generateFolders: function(channel, next){
+      var foldersToCreate = [1, 2];
+      var channelId = channel.get('id');
 
+      this.views.folders.collection = new Folders([],{
+        channelId: channelId, 
+        parentId: channelId, 
+        token: channel.collection.token, 
+        baseApiUrl: channel.collection.baseApiUrl
+      });
+      var that = this;
+      Async.parallel(
+        _.map(foldersToCreate, function(id){
+          return function(cb){
+            that.views.folders.collection.create( 
+              { name : 'folder_'+id }, 
+              { success: function(folder){
+                  that.generateEvents(folder, id, channelId, cb);
+                }
+              , error: function(model, xhr, options){
+                  cb(xhr);
+                }
+              }
+            );
+          }
+        })
+        , function(err, results){
+          next();
+        }
+      );
+    }
+    , generateEvents: function(folder, folderId, channelId, next){
+      
+      var today = new Date().getTime();
+      var oneYear = 12*30*24*60*60*1000;
+      var atEarliest = new Date(today-(oneYear)).getTime();
+      var oneHour = 60*60*1000;
+
+      var eventsToCreate = [];
+      var types = [
+        {'class': 'mass', format: 'kg'}  
+      , {'class': 'money', format: 'chf'}  
+      , {'class': 'money', format: 'eur'}  
+      , {'class': 'length', format: 'm'}  
+      , {'class': 'count', format: 'generic'}  
+      , {'class': 'temperature', format: 'c'}  
+      ];
+      for (var i = 0; i < 10; ++i){
+        var index = Math.floor(
+          Math.min(types.length-1, Math.random()*(types.length))
+        );
+        var type = types[index]
+        var e = 
+        {
+          description:'event_'+ folderId + '' + i
+        , time: Math.floor(atEarliest + Math.random()*oneYear)
+        , value: Math.floor(Math.random()*100)
+        , type: type 
+        }
+        if (Math.random() > 0.5){
+         e.duration = Math.floor(Math.random()*oneHour);
+        }
+        if (Math.random() > 0.5){
+         e.folderId = folder.get('id');
+        }
+        eventsToCreate.push(e);
+        //console.log(channelId, new Date(e.time), e.duration);
+      }
+      this.views.events.collection = new Events([],{
+        channelId: channelId, 
+        parentId: channelId, 
+        token: folder.collection.token, 
+        baseApiUrl: folder.collection.baseApiUrl
+      });
+      var that = this;
+      Async.parallel(
+        _.map(eventsToCreate, function(eventData){
+          return function(cb){
+            that.views.events.collection.create( 
+              eventData, 
+              { success: function(event){
+                  cb(null, event);
+                }
+              , error: function(model, xhr, options){
+                  cb(xhr);
+                }
+              }
+            );
+          }
+        })
+        , function(err, results){
+          next();
+        }
+      );
+    }
+    , onClickGenerateBtn: function(){
+      this.generateData();
+    }
+  });
 });
