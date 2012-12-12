@@ -9,7 +9,7 @@
     "font-awesome": "2.0.0",
     "requirejs-tpl": "git@github.com:jonmaim/requirejs-tpl.git#1.0.0",
     "requirejs": "2.1.2",
-    "nanoscroller": "0.6.9"
-    "async": "git://github.com/jonmaim/async.git#0.1.23",
+    "nanoscroller": "0.6.9",
+    "async": "git://github.com/jonmaim/async.git#0.1.23"
   }
 }
