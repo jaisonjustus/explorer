@@ -7,8 +7,9 @@ define(['underscore', 'backbone', 'event'], function(_, Backbone, Event) {
     , duration: null
     /* Methods. */
     , url: function(){
-      if (!this.get('id')){
-        /* We only override the event creation. */
+      /* We only override the event creation
+       * if no duration is provided ==> start! */
+      if (!this.get('id') && this.get('duration') === null){
         return this.collection.baseApiUrl+'/'+this.collection.channelId+'/events/start?auth='+encodeURIComponent(this.collection.token);
       } else {
         return Event.prototype.url.call(this);

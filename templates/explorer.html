@@ -8,9 +8,6 @@
       <button id="signout_btn" class="btn pull-right margin_left_5" title="Sign out">
         <i class="icon-signout"></i> Sign out
       </button>
-      <button id="settings_btn" class="btn pull-right margin_left_5" title="Settings">
-        <i class="icon-cogs"></i> Explore tokens 
-      </button>
       <span class="form-horizontal">
         <label style="display:inline-block">View settings:</label>
         <select id="view_select" class="span2">
@@ -22,7 +19,18 @@
     </div>
   </div>
 </div>
-<hr/>
+<div id="row">
+  <hr/>
+  <div id="buttons">
+    <button id="settings_btn" class="btn pull-left margin_right_5" title="Settings">
+      <i class="icon-cogs"></i> Explore tokens 
+    </button>
+    <button id="generate_btn" class="btn pull-left margin_right_5" title="Generate">
+      <i class="icon-magic"></i> Generate data 
+    </button>
+  </div>
+  <hr/>
+</div>
 <div id="view" class="row">
   <div id="channels" class="span6">
     <h2>Channels</h2>
@@ -51,18 +59,20 @@
       <div class="nano">
         <div class="content">
           <table class="table table-striped" style="display:none;">
-            <col style="width:10%">
-            <col style="width:15%">
-            <col style="width:15%">
-            <col style="width:10%">
-            <col style="width:10%">
-            <col style="width:15%">
-            <col style="width:15%">
-            <col style="width:10%">
+            <col style="">
+            <!-- <col style=""> -->
+            <col style="">
+            <col style="">
+            <col style="">
+            <col style="">
+            <col style="">
+            <col style="">
+            <col style="">
             <thead>
               <tr>
                 <th></th>
                 <th><a>id</a></th>
+                <!-- <th><a>time</a></th> -->
                 <th><a>folderId</a></th>
                 <th><a>duration</a></th>
                 <th><a>value</a></th>

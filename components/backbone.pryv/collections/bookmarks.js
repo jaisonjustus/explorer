@@ -12,7 +12,7 @@ define(['underscore', 'backbone', 'bookmark'], function(_, Backbone, Bookmark) {
       this.baseApiUrl = options.baseApiUrl;
     } 
     , url: function(){
-      return this.baseApiUrl+'/admin/bookmarks?auth='+this.sessionId; 
+      return this.baseApiUrl+'/admin/bookmarks?auth='+encodeURIComponent(this.sessionId); 
     }
   });
 

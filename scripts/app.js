@@ -1,4 +1,16 @@
-define(['backbone', 'store', 'explorer', 'landing', 'settings'], function(Backbone, Store, ExplorerView, LandingView, Settings) {
+define([
+    'backbone'
+  , 'store'
+  , 'explorer'
+  , 'landing'
+  , 'settings'
+], function(
+    Backbone
+  , Store
+  , ExplorerView
+  , LandingView
+  , Settings
+) {
   'use strict';
 
   /* Backbone hijacking to get API-Version and Server-Time headers. */
@@ -56,12 +68,15 @@ define(['backbone', 'store', 'explorer', 'landing', 'settings'], function(Backbo
     }
     , initialize: function(){
       this.settings = new Settings();
-      this.explorerView = new ExplorerView({model: this.settings});
+      this.explorerView = new ExplorerView({
+          model: this.settings
+        , accessesByUsername: {}
+      });
     }
     , setFilter: function(param){
       param = param.trim() || '';
       switch(param){
-        case 'token': 
+        case 'explorer': 
           this.explorerView.render();
           break;
         default: { 

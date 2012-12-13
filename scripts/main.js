@@ -1,5 +1,8 @@
 require.config({
   shim: {
+      async: {
+      exports: 'Async'
+    } 
   },
 
   paths: {
@@ -9,6 +12,7 @@ require.config({
     , underscore:           '../components/lodash/lodash'
     , backbone:             '../components/backbone-amd-lodash/backbone'
     , store:                '../components/store.js/store'
+    , async:                '../components/async/lib/async'
     , bootstrap:            '../components/bootstrap/docs/assets/js/bootstrap'
     , nanoscroller:         '../components/nanoscroller/bin/javascripts/jquery.nanoscroller'
     , settings:             'models/settings'
@@ -23,7 +27,6 @@ require.config({
     , channels:             '../components/backbone.pryv/collections/channels'
     , landing:              'views/landing'
     , explorer:             'views/explorer'
-    , token:                'views/token'
     , modal:                'views/modal'
     , state:                '../components/backbone.pryv/models/state' 
     , pryv:                 '../components/backbone.pryv/pryv'
