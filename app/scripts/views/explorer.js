@@ -850,7 +850,7 @@ define([
         data.duration = data.duration.toFixed(2);
       }
       /* Attachments? */
-      data.file = (data.attachments && data.attachments.attachment) ?
+      data.file = (data.attachments && data.attachments.attachment) ?
         this.model.fileUrl(data.attachments.attachment.fileName) :
         '';
       /* Type */
@@ -858,10 +858,10 @@ define([
 
       this.$el.html( eventTpl( data ) );
       /* Add time as tooltip. */
-      this.$el.tooltip({
-          placement:'bottom'
-        , title:new Date(data.time*1000)
-      });
+      // this.$el.tooltip({
+      //     placement:'bottom'
+      //   , title:new Date(data.time*1000)
+      // });
       return this;
     }
     , onClickDelete: function(){
