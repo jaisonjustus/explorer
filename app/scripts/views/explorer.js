@@ -501,6 +501,7 @@ define([
           , value: value
           , type: type 
           , folderId: this.collection.folderId
+          , channelId: this.collection.channelId
         },
         {
           success:_.bind(function(event){
@@ -668,6 +669,7 @@ define([
         {
             name: name
           , parentId: parentId
+          , channelId: col.channelId
         },
         {
           success:_.bind(function(){
