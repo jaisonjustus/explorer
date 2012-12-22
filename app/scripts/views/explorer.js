@@ -501,6 +501,7 @@ define([
           , value: value
           , type: type 
           , folderId: this.collection.folderId
+          , channelId: this.collection.channelId
         },
         {
           success:_.bind(function(event){
@@ -668,6 +669,7 @@ define([
         {
             name: name
           , parentId: parentId
+          , channelId: col.channelId
         },
         {
           success:_.bind(function(){
@@ -1059,7 +1061,8 @@ define([
         _.map(foldersToCreate, function(id){
           return function(cb){
             that.views.folders.collection.create( 
-              { name : 'folder_'+id }, 
+              { name : 'folder_'+id
+              , channelId: channelId }, 
               { success: function(folder){
                   that.generateEvents(folder, id, channelId, cb);
                 }
@@ -1102,6 +1105,7 @@ define([
         , time: Math.floor(atEarliest + Math.random()*oneYear)
         , value: Math.floor(Math.random()*100)
         , type: type 
+        , channelId: channelId
         }
         if (Math.random() > 0.5){
          e.duration = Math.floor(Math.random()*oneHour);
