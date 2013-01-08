@@ -65,6 +65,9 @@
 #domain {
   width: 100%;
 }
+.logo_bg {
+  background-color:#999;
+}
 
 /* Explore view layout */
 #buttons {
