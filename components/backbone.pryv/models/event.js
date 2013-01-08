@@ -9,7 +9,7 @@ define(['underscore', 'backbone', 'event'], function(_, Backbone, Event) {
         , value:null
     }
     , baseUrl: function(){
-      var url = this.collection.baseApiUrl+'/'+this.collection.channelId+'/events';
+      var url = this.collection.baseApiUrl+'/'+this.get('channelId')+'/events';
       var id = this.get('id');
       if (id){
         url += '/'+id;

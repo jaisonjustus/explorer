@@ -1,7 +1,7 @@
 <div class="row"></div>
 <div class="row">
   <div class="span12 center jumbotron margin_top">
-    <img src="images/aa99511b.logo.jpg" width="250px">
+    <img class="logo_bg" src="images/8ee8fbf6.logo.png" width="250px">
     <h1>Explorer</h1>    
   </div>
   <div class="offset4 span4 margin_top">
@@ -15,6 +15,11 @@
         <option>pryv.io</option>
         <option>rec.la</option>
         <option>localhost:3443</option>
+      </select>
+      <label>Mode</label>
+      <select id="mode">
+        <option id="trusted">trusted app</option>
+        <option id="standard">standard (not available yet)</option>
       </select>
       <a id="signin_btn" type="submit" class="btn btn-primary" <% print('href="'+path+'"')%>>Sign in</a>
     </form>

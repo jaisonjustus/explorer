@@ -6,7 +6,7 @@ define(['underscore', 'backbone'], function(_, Backbone) {
     , initialize: function(){
     }
     , url: function(){
-      var url = this.collection.baseApiUrl+'/'+this.collection.channelId+'/folders/';
+      var url = this.collection.baseApiUrl+'/'+this.get('channelId')+'/folders';
       var id = this.get('id');
       if (id) {
         url += '/'+id;

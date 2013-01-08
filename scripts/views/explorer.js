@@ -132,6 +132,7 @@ define([
         var channelView = new ChannelView({model: channel})
           .on('edit', _.bind(this.onClickEditModalBtn, this))
           .on('delete', _.bind(this.onClickDeleteBtn, this))
+          .on('restore', _.bind(this.onClickRestoreBtn, this))
           ;
         this.$channelList.append(
           channelView.render().$el
@@ -157,6 +158,15 @@ define([
     }
     , onClickDeleteBtn: function(channel){
       channel.destroy()
+        .success(_.bind(function(){
+          this.$channelList.empty();
+          _.each(this.collections, function(col){ col.fetch(); });
+        }, this))
+        ;
+      return false;
+    }
+    , onClickRestoreBtn: function(channel){
+      channel.save({trashed:false})
         .success(_.bind(function(){
           this.$channelList.empty();
           _.each(this.collections, function(col){ col.fetch(); });
@@ -302,7 +312,6 @@ define([
     , $name: null
     /* Methods */
     , initialize: function(){
-      this.accessesByUsername = this.options.accessesByUsername;
     } 
     , events: {
         'click #save_btn'   : 'onClickSaveBtn' 
@@ -318,7 +327,8 @@ define([
         accesses.each(function(access){
           this.$tokenList.prepend(
             tokenTpl({
-                username:username
+                name:access.get('name')
+              , username:username
               , id:access.get('token')
               , checked:access.active
             })  
@@ -337,13 +347,14 @@ define([
       var accessesByUsername = this.accessesByUsername;
       this.$('input[type=checkbox]').parents('tr').each(function(){
         var $this = $(this);
+        var name = $this.find('.name').text();
         var username = $this.find('.username').text();
         var id = $this.find('.token').text();
         var checked = $this.find('input[type=checkbox]').is(':checked');
         if(!accessesByUsername[username]){
-          accessesByUsername[username] = new Accesses([{token:id}], {});
+          accessesByUsername[username] = new Accesses([{name: name, token:id}], {});
         } else if (!(accessesByUsername[username].where({token:id})).length){
-          accessesByUsername[username].add({token:id});
+          accessesByUsername[username].add({name: name, token:id});
         }
         accessesByUsername[username].where({token:id})[0].active = checked;
       });
@@ -501,6 +512,7 @@ define([
           , value: value
           , type: type 
           , folderId: this.collection.folderId
+          , channelId: this.collection.channelId
         },
         {
           success:_.bind(function(event){
@@ -668,6 +680,7 @@ define([
         {
             name: name
           , parentId: parentId
+          , channelId: col.channelId
         },
         {
           success:_.bind(function(){
@@ -788,12 +801,26 @@ define([
         'click .channel'  : 'onClick'
       , 'click .delete'   : 'onClickDelete'
       , 'click .edit'     : 'onClickEdit'
+      , 'click .restore'  : 'onClickRestore'
     }
     , render: function(){
       this.$el.append( channelTpl( this.model.toJSON() ) );
       this.$el.find('.channel').addClass('pull-right');
-      this.$el.find('.delete').show();
-      this.$el.find('.edit').show();
+
+      var trash = this.$el.find('#deleter');
+      var trashContainer = this.$el.find('.delete');
+      trash.removeClass();
+      if (this.model.get('trashed') === true){
+        trash.addClass('icon-remove-circle');
+        trashContainer.attr('title', 'delete');
+        this.$el.find('.restore').show().tooltip();
+      } else {
+        trash.addClass('icon-trash');
+        trashContainer.attr('title', 'trash');
+        this.$el.find('.restore').hide();
+      }
+      trashContainer.show().tooltip();
+      this.$el.find('.edit').show().tooltip();
       return this;
     }
     , onClick: function(){
@@ -804,6 +831,11 @@ define([
     , onClickDelete: function(){
       console.log(this.name+':onClickDelete', this.model.get('id'));
       this.trigger('delete', this.model);
+      return false;
+    }
+    , onClickRestore: function(){
+      console.log(this.name+':onClickRestore', this.model.get('id'));
+      this.trigger('restore', this.model);
       return false;
     }
     , onClickEdit: function(){
@@ -886,15 +918,12 @@ define([
     , name:'ExplorerView'
     /* Methods */
     , initialize: function(){
-      this.accessesByUsername = this.options.accessesByUsername;
       this.views = {
           channels: new ChannelsView({})
         , events: new EventsView({})
         , folders: new FoldersView({})
       }
-      this.modals.tokenSettings = new TokenSettingsModal({
-        accessesByUsername: this.accessesByUsername
-      });
+      this.modals.tokenSettings = new TokenSettingsModal();
       this.views.channels.on('click', this.updateFoldersAndEvents, this);
       this.views.folders.on('click', this.updateEvents, this);
       this.modals.tokenSettings.on('save', this.saveTokenSettings, this);
@@ -913,34 +942,48 @@ define([
         , baseApiUrl = Store.get('baseApiUrl')
         ;
 
-      if (!sessionId || !appToken || !username || !baseApiUrl){
+      if (!sessionId || !username || !baseApiUrl){
         return this.onClickSignOutBtn();
       }
 
-      this.model.set({
-          sessionId: sessionId
-        , appToken: appToken
-        , username: username
-        , baseApiUrl: baseApiUrl
-      });
+      var _finalize = function(that){
+        /* Save in settings. */
+        that.model.set({
+            sessionId: sessionId
+          , appToken: appToken
+          , username: username
+          , baseApiUrl: baseApiUrl
+        });
 
-      var _attach = function(that){
+        /* Attach to DOM. */
         that.$el.html(explorerTpl());
         that.$('#settings_btn').show();
         that.$('#folders').show();
         that.$('#events').show();
-      };
-      var _renderChannels = function(that){
+        
         /* Rebuild channels. */
         that.views.channels.rebuild( that.accessesByUsername );
+        that.modals.tokenSettings.accessesByUsername = that.accessesByUsername;
       }
+
       var _processUserAccesses = function(){
-        _attach(this);
-        /* Manually add the app token to the user accesses. */
-        /* Main user app token is active by default. */
-        this.accessesByUsername[ username ].unshift(appToken);
-        this.accessesByUsername[ username ].at(0).active = true;
-        _renderChannels(this);
+        appToken = this.accessesByUsername[username].find(function(access){    
+          return (access.get('name') === "pryv-explorer"
+               && access.get('type') === "personal");
+        });
+        if (appToken){
+          appToken.active = true;
+          Store.set('appToken', appToken);
+          _finalize(this);
+        } else {
+          /* Generate access. */ 
+          appToken = this.accessesByUsername[username]
+            .on ('sync', _finalize, this)
+            .create({
+              name: 'pryv-explorer'
+            , type: 'personal'
+          });
+        }
       };
 
       if (!this.accessesByUsername[ username ]) {
@@ -954,8 +997,7 @@ define([
           .fetch()
           ;
       } else {
-        _attach(this);
-        _renderChannels(this);
+        _finalize();
       } 
     
       return this;
@@ -1002,6 +1044,8 @@ define([
       console.log(this.name+':onClickSignoutBtn');
       var baseUrl = Store.get('baseUrl');
       Store.clear();
+      /* Keep baseUrl. */
+      Store.set('baseUrl', baseUrl);
       window.location.href = baseUrl; 
       return false;
     }
@@ -1059,7 +1103,8 @@ define([
         _.map(foldersToCreate, function(id){
           return function(cb){
             that.views.folders.collection.create( 
-              { name : 'folder_'+id }, 
+              { name : 'folder_'+id
+              , channelId: channelId }, 
               { success: function(folder){
                   that.generateEvents(folder, id, channelId, cb);
                 }
@@ -1102,6 +1147,7 @@ define([
         , time: Math.floor(atEarliest + Math.random()*oneYear)
         , value: Math.floor(Math.random()*100)
         , type: type 
+        , channelId: channelId
         }
         if (Math.random() > 0.5){
          e.duration = Math.floor(Math.random()*oneHour);
