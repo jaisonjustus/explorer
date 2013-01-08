@@ -104,8 +104,11 @@
 .nav li > a.selected {
   background-color:#A5E6A0;
 }
-#channel_list .delete, #channel_list .edit {
+#channel_list .delete, #channel_list .restore, #channel_list .edit {
   display:none;
+}
+#channel_list .restore, #channel_list .edit {
+  margin-left: 3px;
 }
 #channel_list, table {
   margin-top:20px;

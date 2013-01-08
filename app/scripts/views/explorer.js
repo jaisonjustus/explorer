@@ -132,6 +132,7 @@ define([
         var channelView = new ChannelView({model: channel})
           .on('edit', _.bind(this.onClickEditModalBtn, this))
           .on('delete', _.bind(this.onClickDeleteBtn, this))
+          .on('restore', _.bind(this.onClickRestoreBtn, this))
           ;
         this.$channelList.append(
           channelView.render().$el
@@ -157,6 +158,15 @@ define([
     }
     , onClickDeleteBtn: function(channel){
       channel.destroy()
+        .success(_.bind(function(){
+          this.$channelList.empty();
+          _.each(this.collections, function(col){ col.fetch(); });
+        }, this))
+        ;
+      return false;
+    }
+    , onClickRestoreBtn: function(channel){
+      channel.save({trashed:false})
         .success(_.bind(function(){
           this.$channelList.empty();
           _.each(this.collections, function(col){ col.fetch(); });
@@ -791,12 +801,26 @@ define([
         'click .channel'  : 'onClick'
       , 'click .delete'   : 'onClickDelete'
       , 'click .edit'     : 'onClickEdit'
+      , 'click .restore'  : 'onClickRestore'
     }
     , render: function(){
       this.$el.append( channelTpl( this.model.toJSON() ) );
       this.$el.find('.channel').addClass('pull-right');
-      this.$el.find('.delete').show();
-      this.$el.find('.edit').show();
+
+      var trash = this.$el.find('#deleter');
+      var trashContainer = this.$el.find('.delete');
+      trash.removeClass();
+      if (this.model.get('trashed') === true){
+        trash.addClass('icon-remove-circle');
+        trashContainer.attr('title', 'delete');
+        this.$el.find('.restore').show().tooltip();
+      } else {
+        trash.addClass('icon-trash');
+        trashContainer.attr('title', 'trash');
+        this.$el.find('.restore').hide();
+      }
+      trashContainer.show().tooltip();
+      this.$el.find('.edit').show().tooltip();
       return this;
     }
     , onClick: function(){
@@ -807,6 +831,11 @@ define([
     , onClickDelete: function(){
       console.log(this.name+':onClickDelete', this.model.get('id'));
       this.trigger('delete', this.model);
+      return false;
+    }
+    , onClickRestore: function(){
+      console.log(this.name+':onClickRestore', this.model.get('id'));
+      this.trigger('restore', this.model);
       return false;
     }
     , onClickEdit: function(){
