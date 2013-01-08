@@ -1,6 +1,6 @@
 {
   "name": "browser.pryv",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "main": "./app/index.html",
   "dependencies": {
     "backbone.pryv": "0.1.12",
