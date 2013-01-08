@@ -3,7 +3,6 @@ define([
   , 'underscore'
   , 'backbone'
   , 'store'
-  , 'access'
   , 'pryv'
   , 'tpl!../templates/landing.html'
 ], function(
@@ -11,7 +10,6 @@ define([
   , _
   , Backbone
   , Store
-  , Access
   , PrYv
   , landingTpl
 ) {
@@ -37,66 +35,50 @@ define([
       this.$username  = this.$('#username');
       this.$password  = this.$('#password');
       this.$domain    = this.$('#domain'); 
+      this.$mode      = this.$('#mode');
       return this;
-    }
-    , getToken: function(href){
-      /* Get app token. */
-      var sessionId = this.model.get('sessionId');
-
-      var url = this.model.get('baseApiUrl') + '/admin/get-app-token?auth='+encodeURIComponent(sessionId);
-
-      PrYv.post({
-        url: url, 
-        success: _.bind(function(res){
-          if (typeof(res) === 'string'){
-            res = JSON.parse(res);
-          }
-          var appToken = new Access({token:res.token});
-          this.model.set('appToken', appToken);
-          Store.set('appToken', appToken);
-          window.location.href = href;
-        }, this)
-      });
     }
     , onClickSigninBtn  : function(e){
       console.log('LandingView:onClickSigninBtn');
 
       var username = this.$username.val();
       var baseApiUrl = 'https://'+username+'.'+this.$domain.val();
+      var mode = this.$mode.find(':selected').attr('id');
 
       this.model.set({username:username, baseApiUrl:baseApiUrl});
 
       Store.set('username', username);
       Store.set('baseApiUrl', baseApiUrl);
 
-      /* Get session ID. */
-      var password  = this.$password.val()
-        , url       = baseApiUrl+'/admin/login'
-        , data      = {
+      if (mode === 'trusted'){
+        /* Get session ID. */
+        var password  = this.$password.val()
+          , url       = baseApiUrl+'/admin/login'
+          , data      = {
             username:username
-          , password:password
-          , appId: 'explorer'
-        }
-      ; 
-
-      PrYv.post({
-        url: url, 
-        data:data, 
-        success: _.bind(function(res){
-          if (typeof(res) === 'string'){
-            res = JSON.parse(res);
+              , password:password
+              , appId: 'pryv-explorer'
           }
+        ; 
 
-          var sessionId = res.sessionID;
-          this.model.set('sessionId', sessionId);
-          Store.set('sessionId', sessionId);
-          this.getToken(e.target.href);
-          
-        }, this)
-      });
+        PrYv.post({
+          url: url, 
+          data:data, 
+          success: _.bind(function(res){
+            if (typeof(res) === 'string'){
+              res = JSON.parse(res);
+            }
+            var sessionId = res.sessionID;
+            this.model.set('sessionId', sessionId);
+            Store.set('sessionId', sessionId);
+            window.location.href = e.target.href;
+          }, this)
+        });
+      } else {
+        console.log( "Standard mode not implemented yet." );
+      }
 
       return false;
     }
   });
-
 });
