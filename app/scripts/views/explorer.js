@@ -1125,7 +1125,8 @@ define([
       var today = new Date().getTime();
       var oneYear = 12*30*24*60*60*1000;
       var atEarliest = new Date(today-(oneYear)).getTime();
-      var oneHour = 60*60*1000;
+      /* One hour in seconds for the server. */
+      var oneHour = 60*60;
 
       var eventsToCreate = [];
       var types = [
@@ -1144,7 +1145,9 @@ define([
         var e = 
         {
           description:'event_'+ folderId + '' + i
-        , time: Math.floor(atEarliest + Math.random()*oneYear)
+          /* choose a random date over the past year,
+           * send time in seconds to server. */
+        , time: (Math.floor(atEarliest + Math.random()*oneYear))/1000
         , value: Math.floor(Math.random()*100)
         , type: type 
         , channelId: channelId
@@ -1156,7 +1159,6 @@ define([
          e.folderId = folder.get('id');
         }
         eventsToCreate.push(e);
-        //console.log(channelId, new Date(e.time), e.duration);
       }
       this.views.events.collection = new Events([],{
         channelId: channelId, 

@@ -3,7 +3,7 @@
   "version": "0.1.13",
   "main": "./app/index.html",
   "dependencies": {
-    "backbone.pryv": "0.1.12",
+    "backbone.pryv": "0.1.14",
     "bootstrap": "2.2.1",
     "store.js": "1.3.3",
     "font-awesome": "3.0.0",
