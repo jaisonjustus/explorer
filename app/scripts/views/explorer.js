@@ -859,7 +859,7 @@ define([
     , render: function(){
 
       /* Stringify JSON object. */
-      var data = this.model.toJSON();
+      var data = this.model.toJSON(), tempDateObj;
 
       /* Beautify value. */
       data.value = JSON.stringify(data.value);
@@ -881,6 +881,13 @@ define([
       } else {
         data.duration = data.duration.toFixed(2);
       }
+
+      /* Extracting unix timestamp for table and title */
+      tempDateObj = new Date(data.time *1000);
+      data.titleTime = "Time(h:m:s) - " + tempDateObj.getHours() + ":" + tempDateObj.getMinutes() + ":" + tempDateObj.getSeconds();
+      data.titleTime += "\nTimestamp(s) - " + data.time;
+      data.time = tempDateObj.getDate() + "/" + (tempDateObj.getMonth() + 1) + "/" + tempDateObj.getFullYear();
+
       /* Attachments? */
       data.file = (data.attachments && data.attachments.attachment) ?
         this.model.fileUrl(data.attachments.attachment.fileName) :
