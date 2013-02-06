@@ -3,9 +3,9 @@
   "version": "0.1.16",
   "main": "./app/index.html",
   "dependencies": {
-    "backbone.pryv": "0.1.14",
-    "bootstrap": "2.2.1",
-    "store.js": "1.3.3",
+    "backbone.pryv": "0.1.15",
+    "bootstrap": "2.2.2",
+    "store.js": "1.3.6",
     "font-awesome": "3.0.0",
     "requirejs-tpl": "git@github.com:jonmaim/requirejs-tpl.git#1.0.0",
     "requirejs": "2.1.2",

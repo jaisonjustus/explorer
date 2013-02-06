@@ -10,6 +10,8 @@ define([
   , 'channels'
   , 'modal'
   , 'state'
+  , 'fileview'
+  , 'pryv'
   , 'tpl!../templates/token_settings_modal.html'
   , 'tpl!../templates/add_event_modal.html'
   , 'tpl!../templates/add_channel_modal.html'
@@ -37,6 +39,8 @@ define([
   , Channels
   , Modal
   , state
+  , FileView
+  , PrYv
   , tokenSettingsModalTpl
   , addEventModalTpl
   , addChannelModalTpl
@@ -182,8 +186,13 @@ define([
     , mode: 'mark'
     , name: 'AddEventModal'   
     , $name: null
+
+    /** List to save the file descriptor with file object. **/
+    , fileList : []
+
     /* Methods */
     , initialize: function(){} 
+
     , events: {
         'click #save_btn'   : 'onClickSaveBtn' 
       , 'click #start_btn'  : 'onClickStartBtn' 
@@ -191,17 +200,80 @@ define([
       , 'change #event_mode': 'onChangeEventMode'
     }
     , render: function(){
+      
+      this.fileList = [];
+
       /* Override Modal so that you can't close it. */
       this.setElement(this.id);
       this.$el.html(addEventModalTpl());
       this.$modal = this.$(this.modalId).modal({backdrop:'static'});
       this.delegateEvents();
+
+      /** Adding the first primary file control. **/
+      this.addNewFileInput();
+
       /* Shortcuts */
       this.$description = this.$('#description');
       this.$value       = this.$('#value');
       this.$type        = this.$('#type'); 
       return this;
+    },
+
+    /**
+     * Method to add new file control. also active in populating the file list
+     * @method addNewFileInput
+     * @param object file
+     */
+    addNewFileInput : function(file)  {
+
+      /** If event supplied by a file descriptor its pushed to the file list. **/
+      if(file)  {
+        this.fileList.push(file);
+      }
+
+      /** 
+       * Initializing the file upload control and rendering it. also store the 
+       * fileview object in fileviewlist array.
+       */
+      var fileView = new FileView();
+      this.$('#attach-file-list').append(fileView.render().$el);
+
+      /** Listening for attached event from the FileView. **/
+      fileView.on("attached", this.addNewFileInput, this);
+
+      /** Listening for deleteFile event from the FileView. **/
+      fileView.on("deleteFile", this.deleteFile, this);
+    },
+
+    /**
+     * Method to remove the file control and dependent html
+     * @method deleteFile
+     * @param object event
+     */
+    deleteFile : function(event) {
+      var parent, target, filename;
+
+      target = $(event.target);
+      parent = $(event.target).parent();
+      filename = target.parent().children('.file').val().split("\\").pop();
+
+      if(target.parent().parent().children().length > 1 && filename !== "")  {
+        this.$('#attach-file-list').find(parent).remove();
+        this.removeFileFromList(filename);
+      }
+    },
+
+    /**
+     * Method to remove the files form the file list
+     * @method removeFileFromList
+     * @param string filename
+     */
+    removeFileFromList : function(filename) {
+      this.fileList = _.reject(this.fileList, function(file)  {
+        return (file.name == filename) ? true : false;  
+      });
     }
+
     , close: function(){
       this.$('#stop_btn').hide();
       this.$('#start_btn').show();
@@ -215,11 +287,20 @@ define([
       this.$('.'+selected+'_btn').show();
     }
     , onClickSaveBtn: function(){
+
+      var formData = new FormData();
+      var i = 0;
+      _.each(this.fileList, function(file)  {
+        formData.append("attachment-" + i, file.object);
+        i++;
+      });
+
       this.trigger(
           'save' 
         , this.$description.val()
         , this.$value.val()
         , JSON.parse(this.$type.val())
+        , formData
       );
       return false; 
     }
@@ -450,13 +531,13 @@ define([
     , modals: null
     /* Methods */
     , initialize: function(){
+      
       this.modals = {
           edit: new EditEventModal()
         , add: new AddEventModal()
       }
-      this.modals.edit
-        .on('save', this.saveEvent, this)
-        ;
+
+      this.modals.edit.on('save', this.saveEvent, this);
       this.modals.add.on('save', this.createEvent, this);
       this.modals.add.on('start', this.startEvent, this);
       this.modals.add.on('stop', this.stopEvent, this);
@@ -505,7 +586,7 @@ define([
       console.log(this.name+':openEditModal');
       this.modals.edit.setModel( event ).render();
     }
-    , createEvent: function(description, value, type){
+    , createEvent: function(description, value, type, fileList){
       this.collection.create(
         {
             description: description
@@ -516,7 +597,21 @@ define([
         },
         {
           success:_.bind(function(event){
-            console.log('success creating mark event');
+
+            var url, that;
+
+            that = this;
+            url = this.collection.baseApiUrl + '/' + this.collection.channelId + '/events/' + event.id + '?auth='+encodeURIComponent(this.collection.token);
+
+            /** Posting the files to server. **/
+            PrYv.postFiles({
+              url : url, 
+              data : fileList, 
+              success : function(response) {
+                console.log(response);
+              }
+            });
+
             this.refresh();
             this.modals.add.close();
           }, this)
@@ -888,10 +983,16 @@ define([
       data.titleTime += "\nTimestamp(s) - " + data.time;
       data.time = tempDateObj.getDate() + "/" + (tempDateObj.getMonth() + 1) + "/" + tempDateObj.getFullYear();
 
-      /* Attachments? */
-      data.file = (data.attachments && data.attachments.attachment) ?
-        this.model.fileUrl(data.attachments.attachment.fileName) :
-        '';
+      data.file = [];
+
+      var i = 0;
+
+      /** Looping throught the attachment list and retriving the first four attachments. **/
+      for(var attachment in data.attachments) {
+        data.file.push(this.model.fileUrl(data.attachments[attachment].fileName));
+        if(i > 3) { break; } else { i++; }
+      }
+
       /* Type */
       data.type = JSON.stringify(data.type);
 

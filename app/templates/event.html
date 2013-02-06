@@ -9,4 +9,8 @@
 <td><small><%=value%></small></td>
 <td><small><%=type%></small></td>
 <td><small><%=description%></small></td>
-<td><% if(file) print('<a href="'+file+'" target="_blank"><i class="icon-file"></i></a>') %></td>
+<td>
+	<% for(var link in file) { %> 
+		<a href="<%=file[link]%>" target="_blank"><i class="icon-file"></i></a>
+	<% } %>
+</td>

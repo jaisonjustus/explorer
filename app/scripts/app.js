@@ -11,6 +11,7 @@ define([
   , LandingView
   , Settings
 ) {
+
   'use strict';
 
   /* Backbone hijacking to get API-Version and Server-Time headers. */
@@ -73,6 +74,7 @@ define([
         , accessesByUsername: {}
       });
     }
+
     , setFilter: function(param){
       param = param.trim() || '';
       switch(param){
