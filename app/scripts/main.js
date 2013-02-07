@@ -29,6 +29,7 @@ require.config({
     , explorer:             'views/explorer'
     , modal:                'views/modal'
     , fileview:             'views/fileupload/fileview'
+    , filelistview:         'views/fileupload/filelistview'
     , state:                '../components/backbone.pryv/models/state' 
     , pryv:                 '../components/backbone.pryv/pryv'
     , tpl:                  '../components/requirejs-tpl/tpl'

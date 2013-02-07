@@ -11,8 +11,17 @@
     <label>Type (JSON)</label>
     <input id="type" class="span4" type="text"></input>
     <label>File attachment</label>
-    <input id="file_upload" type="file" name="attachment">
-    <button id="attach_btn" class="btn">Attach file</button>
+    <div id="file-upload-controller">
+      <!-- Multiple file upload control -->
+      <div id = "multiple-file-uploader-control">
+        
+        <!-- file list and details container -->
+        <ol id="attach-file-list" style="list-style:none;">
+          
+        </ol>
+        
+      </div>
+    </div> 
   </div>
   <div class="modal-footer">
     <a class="btn" data-dismiss="modal">Cancel</a>

@@ -11,6 +11,7 @@ define([
   , 'modal'
   , 'state'
   , 'fileview'
+  , 'filelistview'
   , 'pryv'
   , 'tpl!../templates/token_settings_modal.html'
   , 'tpl!../templates/add_event_modal.html'
@@ -40,6 +41,7 @@ define([
   , Modal
   , state
   , FileView
+  , FileListView
   , PrYv
   , tokenSettingsModalTpl
   , addEventModalTpl
@@ -190,6 +192,8 @@ define([
     /** List to save the file descriptor with file object. **/
     , fileList : []
 
+    ,fileListView : ''
+
     /* Methods */
     , initialize: function(){} 
 
@@ -203,15 +207,16 @@ define([
       
       this.fileList = [];
 
+
+
       /* Override Modal so that you can't close it. */
       this.setElement(this.id);
       this.$el.html(addEventModalTpl());
       this.$modal = this.$(this.modalId).modal({backdrop:'static'});
       this.delegateEvents();
 
-      /** Adding the first primary file control. **/
-      this.addNewFileInput();
-
+      this._initFileListView();
+      
       /* Shortcuts */
       this.$description = this.$('#description');
       this.$value       = this.$('#value');
@@ -220,59 +225,55 @@ define([
     },
 
     /**
-     * Method to add new file control. also active in populating the file list
-     * @method addNewFileInput
-     * @param object file
+     * Method to initialize the file list view
+     * @method _initFileListView
+     * @access private
      */
-    addNewFileInput : function(file)  {
+    _initFileListView : function()  {
+      this.fileListView = new FileListView();
+      this.fileListView.render();
 
-      /** If event supplied by a file descriptor its pushed to the file list. **/
-      if(file)  {
-        this.fileList.push(file);
-      }
-
-      /** 
-       * Initializing the file upload control and rendering it. also store the 
-       * fileview object in fileviewlist array.
-       */
-      var fileView = new FileView();
-      this.$('#attach-file-list').append(fileView.render().$el);
-
-      /** Listening for attached event from the FileView. **/
-      fileView.on("attached", this.addNewFileInput, this);
-
-      /** Listening for deleteFile event from the FileView. **/
-      fileView.on("deleteFile", this.deleteFile, this);
+      this.fileListView
+      .on('onNewFileControl', this._saveFileDescriptor, this)
+      .on('onFileListDelete', this._removeFileFromList, this);
     },
 
     /**
-     * Method to remove the file control and dependent html
-     * @method deleteFile
-     * @param object event
+     * Method to save the file descriptor to the fileList.
+     * @method _saveFileDescriptor
+     * @access private
      */
-    deleteFile : function(event) {
-      var parent, target, filename;
-
-      target = $(event.target);
-      parent = $(event.target).parent();
-      filename = target.parent().children('.file').val().split("\\").pop();
-
-      if(target.parent().parent().children().length > 1 && filename !== "")  {
-        this.$('#attach-file-list').find(parent).remove();
-        this.removeFileFromList(filename);
-      }
+    _saveFileDescriptor : function(fileDescriptor)  {
+      this.fileList.push(fileDescriptor);
     },
 
     /**
-     * Method to remove the files form the file list
-     * @method removeFileFromList
-     * @param string filename
+     * Method to remove file from the fileList.
+     * @method _removeFileFromList
+     * @access private
      */
-    removeFileFromList : function(filename) {
+    _removeFileFromList : function(filename)  {
       this.fileList = _.reject(this.fileList, function(file)  {
         return (file.name == filename) ? true : false;  
       });
-    }
+    },
+
+    /**
+     * Method to prepare the FormData object.
+     * @method _prepapreFormData
+     * @access private
+     */
+    _prepapreFormData : function()  {
+      var formData, i = 0;
+      
+      formData = new FormData();
+      _.each(this.fileList, function(file)  {
+        formData.append('attachment-' + i, file.object);
+        i++;
+      });
+
+      return formData;
+    } 
 
     , close: function(){
       this.$('#stop_btn').hide();
@@ -288,12 +289,9 @@ define([
     }
     , onClickSaveBtn: function(){
 
-      var formData = new FormData();
-      var i = 0;
-      _.each(this.fileList, function(file)  {
-        formData.append("attachment-" + i, file.object);
-        i++;
-      });
+      var formData;
+
+      formData = this._prepapreFormData();
 
       this.trigger(
           'save' 
@@ -301,6 +299,7 @@ define([
         , this.$value.val()
         , JSON.parse(this.$type.val())
         , formData
+        , this.fileList.length
       );
       return false; 
     }
@@ -338,6 +337,23 @@ define([
     , name: 'EditEventModal'   
     , model: null
     , $name: null
+
+    , fileList : []
+
+    , fileListView : {}
+
+    /** 
+     * Form data pointer helps to append the file to formdata object from
+     * overlaping with the attached one. This specify the next formdata key
+     * identifier (eg : attachment-3, 3 is the key identifier).
+     */
+    , formDataPointer : 0
+
+    /**
+     * Prefix for the FormData key
+     */
+    , formDataPrefix : "attachment-"
+
     /* Methods */
     , initialize: function(){
       Modal.prototype.initialize.call(this);
@@ -345,40 +361,132 @@ define([
     , events: {
         'click #save_btn'   : 'onClickSaveBtn'
     }
+
     , render: function(){
+      var filenames = [], attachments;
+
+      this.fileList = [];
+
       Modal.prototype.render.call(this);
       this.$('#description').val( this.model.get('description') );
       this.$('#value').val( this.model.get('value') );
       this.$('#type').val( JSON.stringify(this.model.get('type')) );
 
-      this.$('#file_upload').fileupload({
-        dataType: 'json',
-        add: _.bind(function(e, data){
-          this.$('#file_upload').attr('name',data.files[0].name);
-          data.url = this.model.url(),
-          console.log('Adding',data);
-          data.submit(); 
-        },this),
-        error: function(o){
-          console.log('Error',o);
-        },
-        done: function(e, data){
-          console.log('Done',data); 
-        }
-      });
+      attachments = this.model.get('attachments');  
+      filenames = _.pluck(attachments, 'fileName');
+
+      this.fileListView = new FileListView();
+      this.fileListView.renderPartial(filenames);
+      this.fileListView.render();
+
+      this.fileListView
+      .on('onNewFileControl', this._saveFileDescriptor, this)
+      .on('onFileListDelete', this._removeFileFromList, this);
+        
+      this.formDataPointer = this._setFormDataPointer(attachments);;
       return this;
+    },
+
+    /**
+     * Method to set the current formDataPointer 
+     * @method _setFormDataPointer
+     * @param object attachments
+     * @access private
+     */
+    _setFormDataPointer : function(attachments)  {
+      var that = this, formDataKeys = [], formDataIndex = [];
+
+      for(var attachment in attachments) {
+          formDataKeys.push(attachment);
+      }
+      
+      formDataIndex = _.map(formDataKeys, function(key) { return key.replace(that.formDataPrefix, ''); });
+      return _.max(formDataIndex, function(index) { return index; }) + 1;
+    },
+
+    /**
+     * Method to delete the file from the list. this method is also 
+     * responsible for deleting files from the server.
+     * @method _removeFileFromList
+     * @access private
+     * @param string filename
+     */
+     _removeFileFromList : function(filename) {
+        console.log("remove file from list : ", this.fileList, this._searchFileList(filename), filename);
+        if(this._searchFileList(filename).length > 0) {
+          this.fileList = _.reject(this.fileList, function(file)  {
+            return (file.name == filename) ? true : false;  
+          });
+        }else {
+          var url = this.model.fileUrl(filename);
+          
+          $.ajax({
+            type : 'DELETE',
+            url : url,
+            success : function(response)  {
+              console.log(response);
+            }
+          });
+
+        }
+     },
+
+    /**
+     * Method to search the fileList for the given filename.
+     * @method _searchFileList
+     * @access private
+     * @param string filename
+     * @return array
+     */
+    _searchFileList : function(filename)  {
+      return _.where(this.fileList, {
+        name : filename
+      });
+    },
+
+    /**
+     * Method to save the file descriptor to the fileList.
+     * @method _saveFileDescriptor
+     * @access private
+     */
+    _saveFileDescriptor : function(fileDescriptor)  {
+      this.fileList.push(fileDescriptor);
+    },
+
+    /**
+     * Method to prepare the FormData object.
+     * @method _prepareFormData
+     * @access private
+     */
+    _prepareFormData : function()  {
+      var formData = '', that = this, i = this.formDataPointer;
+
+      formData = new FormData();
+      _.each(this.fileList, function(file)  {
+        formData.append('attachment-' + i, file.object);
+        i++;
+      });
+
+      return formData;
     }
+
     , setModel: function(model) {
       this.model = model;
       return this;
     }
     , onClickSaveBtn: function(){
+      var formData = this._prepareFormData();
+
+      console.log(formData);
+
       this.trigger(
           'save'
         , this.model
         , this.$('#description').val()
         , this.$('#value').val()
         , JSON.parse(this.$('#type').val())
+        , formData
+        , this.fileList.length
       );
       return false; 
     }
@@ -586,7 +694,7 @@ define([
       console.log(this.name+':openEditModal');
       this.modals.edit.setModel( event ).render();
     }
-    , createEvent: function(description, value, type, fileList){
+    , createEvent: function(description, value, type, fileList, listLength){
       this.collection.create(
         {
             description: description
@@ -597,20 +705,21 @@ define([
         },
         {
           success:_.bind(function(event){
-
             var url, that;
 
             that = this;
             url = this.collection.baseApiUrl + '/' + this.collection.channelId + '/events/' + event.id + '?auth='+encodeURIComponent(this.collection.token);
 
-            /** Posting the files to server. **/
-            PrYv.postFiles({
-              url : url, 
-              data : fileList, 
-              success : function(response) {
-                console.log(response);
-              }
-            });
+            if(listLength > 0)  {
+              /** Posting the files to server. **/
+              PrYv.postFiles({
+                url : url, 
+                data : fileList, 
+                success : function(response) {
+                  console.log(response);
+                }
+              });
+            }
 
             this.refresh();
             this.modals.add.close();
@@ -642,7 +751,7 @@ define([
         }, this)
       );
     }
-    , saveEvent: function(event, description, value, type){
+    , saveEvent: function(event, description, value, type, fileList, listLength){
       event.save(
         {
             description:description
@@ -652,7 +761,24 @@ define([
         }, 
         {
           success:_.bind(function(event){
-            console.log('success saving event');
+            console.log('success saving event', event);
+
+            var url, that;
+
+            that = this;
+            url = this.collection.baseApiUrl + '/' + this.collection.channelId + '/events/' + event.id + '?auth='+encodeURIComponent(this.collection.token);
+
+            if(listLength > 0)  {
+              /** Posting the files to server. **/
+              PrYv.postFiles({
+                url : url, 
+                data : fileList, 
+                success : function(response) {
+                  console.log(response);
+                }
+              });
+            }
+
             this.refresh();
             this.modals.edit.close();
           }, this)
