@@ -412,7 +412,6 @@ define([
      * @param string filename
      */
      _removeFileFromList : function(filename) {
-        console.log("remove file from list : ", this.fileList, this._searchFileList(filename), filename);
         if(this._searchFileList(filename).length > 0) {
           this.fileList = _.reject(this.fileList, function(file)  {
             return (file.name == filename) ? true : false;  
@@ -424,7 +423,6 @@ define([
             type : 'DELETE',
             url : url,
             success : function(response)  {
-              console.log(response);
             }
           });
 
@@ -476,8 +474,6 @@ define([
     }
     , onClickSaveBtn: function(){
       var formData = this._prepareFormData();
-
-      console.log(formData);
 
       this.trigger(
           'save'
@@ -609,7 +605,6 @@ define([
       'click #save_btn': 'onClickSaveBtn' 
     }
     , render: function(){
-      console.log(this.name+':render'); 
       this.setElement(this.id);
       this.$el.html(editChannelModalTpl());
       this.$modal = this.$('#edit_channel_modal').modal();
@@ -716,7 +711,6 @@ define([
                 url : url, 
                 data : fileList, 
                 success : function(response) {
-                  console.log(response);
                 }
               });
             }
@@ -774,7 +768,6 @@ define([
                 url : url, 
                 data : fileList, 
                 success : function(response) {
-                  console.log(response);
                 }
               });
             }
@@ -1113,7 +1106,10 @@ define([
 
       var i = 0;
 
-      /** Looping throught the attachment list and retriving the first four attachments. **/
+      /** 
+       * Looping throught the attachment list and retriving the first four attachments. 
+       * we only show 3 file icons, no more (not enough space).
+       */
       for(var attachment in data.attachments) {
         data.file.push(this.model.fileUrl(data.attachments[attachment].fileName));
         if(i > 3) { break; } else { i++; }

@@ -66,7 +66,6 @@ define(['jquery', 'underscore', 'backbone',
 		 * @param object event
 		 */
 		_onFileAttach : function(event)	{
-			console.log('file attach');
 			var fileArray;
 
 			fileArray = event.target.files;

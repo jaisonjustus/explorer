@@ -50,17 +50,13 @@ define(['jquery', 'underscore', 'backbone', 'fileview'], function($, _, Backbone
 		 * @param object eventObj 
 		 */
 		_onFileDelete : function(eventObj)	{
-			console.log('deleting');
-			var target, parent, filename, fileHolder;
+			var deleteImage = this.$(event.target),
+				fileListElement = deleteImage.parent(),
+				fileHolder = deleteImage.parent().children('.file'),
+				filename = (fileHolder.prop('tagName') == 'INPUT') ? fileHolder.val().split('\\').pop() : fileHolder.attr("data-pryv-filename");
 
-			target = $(event.target);
-			parent = target.parent();
-			fileHolder = target.parent().children('.file');
-
-			filename = (fileHolder.prop('tagName') == 'INPUT') ? fileHolder.val().split('\\').pop() : fileHolder.attr("data-pryv-filename");
-
-		    if(parent.parent().children().length > 1 && filename !== "")  {
-		        this.$el.find(parent).remove();
+		    if(fileListElement.parent().children().length > 1 && filename !== "")  {
+		        this.$el.find(fileListElement).remove();
 		    }
 
 			this.trigger('onFileListDelete', filename);
@@ -76,7 +72,6 @@ define(['jquery', 'underscore', 'backbone', 'fileview'], function($, _, Backbone
 		 * @param object fileDescriptor
 		 */
 		_onFileAttach : function(fileDescriptor)	{
-			console.log('on file attach');
 			this._addFileControl();
 			this.trigger('onNewFileControl', fileDescriptor);
 		},
