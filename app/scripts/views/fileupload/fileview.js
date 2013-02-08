@@ -12,6 +12,8 @@ define(['jquery', 'underscore', 'backbone',
 
 		tagName : 'li',
 
+		className : 'file-list-element',
+
 		name : 'FileView',
 
 		/**

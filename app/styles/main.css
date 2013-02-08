@@ -127,3 +127,11 @@
 .form {
   margin-bottom: 0px;
 }
+
+.file-list-element  {
+  height:30px;
+}
+
+.file   {
+  float: left;
+}
